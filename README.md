@@ -33,3 +33,12 @@ Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
 ---
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+
+
+
+
+So aktualisierst du, sobald Wahapedia nachgezogen hat:
+
+powershell -ExecutionPolicy Bypass -File tools\check-updates.ps1 ausführen.
+Bei neuerem Stand import-wahapedia.ps1 für die Teams und import-rules.ps1 für Regeln und Keywords ausführen.
+App neu bauen.
