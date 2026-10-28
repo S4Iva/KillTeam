@@ -297,6 +297,12 @@ private fun AboutPage(app: AppState, onBack: () -> Unit) {
                 Text("All rules texts, datacards, maps and images were imported once from wahapedia.ru (Kill Team 3rd edition, Approved Ops 2025) for private, non-commercial use.")
                 Text("Content and images are property of Games Workshop and Wahapedia (c) Vyacheslav Maltsev. Do not redistribute this app.")
                 Text("Kill team data: ${app.teams.size} teams, imported ${app.teamData?.importedAt ?: "-"}.")
+                val dated = app.teams.filter { it.updated.isNotBlank() }
+                if (dated.isNotEmpty()) {
+                    Text("Rules versions (as on Wahapedia at import time):", fontWeight = FontWeight.Bold)
+                    Text(dated.sortedBy { it.name }.joinToString("\n") { "${it.name}: ${it.version} (${it.updated})" }, style = MaterialTheme.typography.bodySmall)
+                }
+                Text("Check for newer data with tools/check-updates.ps1 and compare with the official downloads on warhammer-community.com.")
                 Text("The data is bundled with the app; re-run tools/import-wahapedia.ps1 (kill teams) and tools/import-rules.ps1 (rules and keywords) to refresh it.")
             }
         }

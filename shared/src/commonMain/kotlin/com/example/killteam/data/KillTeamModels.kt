@@ -88,6 +88,9 @@ class Operative(
 class KillTeam(
     val slug: String,
     val name: String = slug,
+    /** Version label and month of the rules update on Wahapedia at import time, e.g. "APRIL '26" / "April 2026". */
+    val version: String = "",
+    val updated: String = "",
     val description: String = "",
     @Serializable(with = LenientStringList::class) val archetypes: List<String> = emptyList(),
     @Serializable(with = LenientStringList::class) val composition: List<String> = emptyList(),

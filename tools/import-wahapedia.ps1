@@ -203,6 +203,10 @@ foreach ($slug in $slugs) {
         $desc = $lines[$ti + 2]
         if ($desc -eq 'Contents') { $desc = '' }
         $arch = ($lines | Where-Object { $_ -like 'Archetype:*' } | Select-Object -First 1)
+        $version = ''; $updated = ''
+        for ($vi = 0; $vi -lt [Math]::Min($lines.Count - 3, 80); $vi++) {
+            if ($lines[$vi + 1] -eq '3' -and $lines[$vi + 3] -match '^[A-Za-z]+ \d{4}$') { $version = $lines[$vi + 2]; $updated = $lines[$vi + 3]; break }
+        }
         $archList = @()
         if ($arch) { $archList = ($arch -replace '^Archetype:\s*', '') -split '\s*/\s*' }
 
@@ -247,6 +251,7 @@ foreach ($slug in $slugs) {
 
         $teams += [ordered]@{
             slug = $slug; name = $title; description = $desc; archetypes = $archList
+            version = $version; updated = $updated
             composition = $comp
             factionRules = ($fr | Where-Object { -not $_.StartsWith('|') -and -not $_.StartsWith('[IMG') }) -join "`n"
             strategyPloys = @(Parse-Strat $html 'Strategy-Ploys'); firefightPloys = @(Parse-Strat $html 'Firefight-Ploys'); equipment = @(Parse-Strat $html 'Faction-Equipment')

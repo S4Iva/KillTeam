@@ -117,6 +117,9 @@ private fun TeamDetail(app: AppState, team: KillTeam, onBack: () -> Unit) {
                 actions = { FavoriteButton(app.isFavorite(key)) { app.toggleFavorite(key) } },
             ) {
                 if (team.description.isNotBlank()) Text(team.description)
+                if (team.updated.isNotBlank()) {
+                    Text("Rules version: ${team.version} (${team.updated}), imported ${app.teamData?.importedAt}", style = MaterialTheme.typography.bodySmall, color = Waha.Orange)
+                }
                 team.composition.forEach { KeywordText(it, style = MaterialTheme.typography.bodyMedium) }
                 NoteField(key, app.note(key)) { app.setNote(key, it) }
             }
