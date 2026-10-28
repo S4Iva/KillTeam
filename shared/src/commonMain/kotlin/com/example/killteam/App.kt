@@ -1,9 +1,18 @@
 package com.example.killteam
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -86,9 +95,11 @@ fun App() {
         }
         CompositionLocalProvider(LocalKeywords provides keywords, LocalUi provides ui) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                Column(Modifier.safeContentPadding().fillMaxSize()) {
+                Column(Modifier.fillMaxSize().imePadding()) {
+                    // The status bar area gets the header colour; the navigation bar draws itself under the gesture bar.
+                    Spacer(Modifier.fillMaxWidth().background(Waha.Black).windowInsetsTopHeight(WindowInsets.statusBars))
                     if (app.loading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = Waha.Orange)
-                    Column(Modifier.weight(1f)) {
+                    Column(Modifier.weight(1f).fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))) {
                         when (tab) {
                             Tab.Generator -> GeneratorScreen(app, onStartGame = { tab = Tab.Game })
                             Tab.Game -> GameScreen(app, onOpenGenerator = { tab = Tab.Generator })
