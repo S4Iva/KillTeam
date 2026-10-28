@@ -141,6 +141,17 @@ fun NavButton(icon: DrawableResource, onClick: () -> Unit) {
     Image(painterResource(icon), null, Modifier.size(52.dp).clickable(onClick = onClick))
 }
 
+/** Asks before an action that cannot be undone. */
+@Composable
+fun ConfirmDialog(text: String, confirmLabel: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        text = { Text(text) },
+        confirmButton = { Button({ onDismiss(); onConfirm() }) { Text(confirmLabel) } },
+        dismissButton = { TextButton(onDismiss) { Text("Cancel") } },
+    )
+}
+
 /** Dialog with a list of entries to jump to. */
 @Composable
 fun JumpDialog(title: String, entries: List<String>, onPick: (Int) -> Unit, onDismiss: () -> Unit) {

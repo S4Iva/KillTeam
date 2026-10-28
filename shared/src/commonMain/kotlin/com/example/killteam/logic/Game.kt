@@ -74,6 +74,14 @@ data class GameState(
     /** Index of the player with initiative. */
     val initiative: Int = 0,
     val ended: Boolean = false,
+    /** Initiative roll-off results of the current turning point, including card modifiers. */
+    val rolls: List<Int?> = listOf(null, null),
+    /** Winner of this turning point's roll-off; null until the roll-off is resolved. */
+    val rollOffWinner: Int? = null,
+    val gainedCard: InitiativeCard? = null,
+    val initiativeBeforeRollOff: Int = 0,
+    val initiativeChosen: Boolean = false,
+    val readyDone: Boolean = false,
 ) {
     fun updatePlayer(index: Int, change: (PlayerState) -> PlayerState) =
         copy(players = players.mapIndexed { i, p -> if (i == index) change(p) else p })
@@ -141,7 +149,13 @@ object Initiative {
 }
 
 fun GameState.advanceTurningPoint(): GameState =
-    if (turningPoint >= ApprovedOps.TURNING_POINTS) copy(phase = GamePhase.End)
-    else copy(turningPoint = turningPoint + 1, players = players.map { p ->
-        p.copy(operatives = p.operatives.map { it.copy(expended = false) })
-    })
+    if (turningPoint >= ApprovedOps.TURNING_POINTS) copy(phase = GamePhase.End, ended = true)
+    else copy(
+        turningPoint = turningPoint + 1,
+        rolls = listOf(null, null),
+        rollOffWinner = null,
+        gainedCard = null,
+        initiativeChosen = false,
+        readyDone = false,
+        players = players.map { p -> p.copy(operatives = p.operatives.map { it.copy(expended = false) }) },
+    )
