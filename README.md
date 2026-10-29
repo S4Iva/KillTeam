@@ -10,7 +10,7 @@ Die App hat fünf Tabs:
 
 - **Generator:** zufällige oder manuell gewählte Mission (Crit Op), Map und Killzone, Kill-Op-Regeln mit Kill-Grade-Tabelle, Tac Ops nach Archetyp filterbar. Auswahl und Mission bleiben nach dem Neustart erhalten.
 - **Game:** Assistent durch die fünf Schritte eines Approved-Ops-Spiels, mit Spielverlauf, Turnieren und Statistiken.
-- **Teams:** alle 48 Kill Teams mit Zusammensetzung, Datacards, Fraktionsregeln, Ploys, Equipment und Markern. Dazu Favoriten, Notizen und Rosters.
+- **Teams:** alle 48 Kill Teams mit Zusammensetzung (Pfeile, Optionen und Auswahllisten wie auf Wahapedia), Datacards, Fraktionsregeln, Ploys, Equipment und Markern. Dazu Favoriten, Notizen und Rosters.
 - **Rules:** Regelseiten von Wahapedia mit Suche.
 - **More:** weitere Hilfen und Einstellungen.
 
@@ -30,11 +30,23 @@ Schlüsselbegriffe in den Texten sind antippbar. Ein Popup zeigt die Definition 
 - Desktop: `./gradlew :desktopApp:run`, mit Hot Reload `./gradlew :desktopApp:hotRun --auto`
 - iOS: Ordner [iosApp](iosApp) in Xcode öffnen (nur unter macOS)
 
+### Windows-App zum Weitergeben an eigene Geräte
+
+`./gradlew :desktopApp:createDistributable` erzeugt unter `desktopApp/build/compose/binaries/main/app/com.example.killteam` einen eigenständigen Ordner mit `com.example.killteam.exe` und mitgelieferter Java-Laufzeit (rund 140 MB). Den ganzen Ordner auf das Zielgerät kopieren, dort ist keine Installation nötig. Der Build braucht ein vollständiges JDK mit `jpackage` (z. B. die JetBrains Runtime 21 unter `~/.jdks`), das JDK von Android Studio enthält es nicht. Einen MSI-Installer erzeugt `:desktopApp:packageMsi`.
+
 ## Tests
 
 - Desktop (JVM): `./gradlew :shared:jvmTest`
 - Android: `./gradlew :shared:testAndroidHostTest`
 - iOS: `./gradlew :shared:iosSimulatorArm64Test` (nur unter macOS)
+
+## Zugangspasswort
+
+Beim ersten Start nach der Installation fragt die App einmalig nach einem Passwort, danach nicht mehr. Das Passwort lässt sich beim Eingeben anzeigen. Es soll verhindern, dass die APK unbedacht weitergegeben wird.
+
+- Setzen oder ändern: `powershell -ExecutionPolicy Bypass -File tools\set-access-password.ps1`, danach neu bauen. Das Skript schreibt nur Salt und Hash nach `logic/AccessGate.kt`. Ein leeres Passwort schaltet die Abfrage ab.
+- Ein geändertes Passwort wird auf allen Geräten erneut abgefragt.
+- Das ist kein Kopierschutz: Die Daten liegen unverschlüsselt in der APK, und das Passwort lässt sich weitergeben.
 
 ## Daten aktualisieren
 
@@ -51,4 +63,4 @@ Kill-Grade-Tabelle, Tac Ops und weitere Approved-Ops-Daten stehen fest im Code i
 
 ## Technik
 
-Kotlin Multiplatform und Compose Multiplatform, kotlinx-serialization für die JSON-Daten, multiplatform-settings für die lokale Persistenz.
+Kotlin Multiplatform und Compose Multiplatform, kotlinx-serialization für die JSON-Daten, multiplatform-settings für die lokale Persistenz. Die Passwortprüfung nutzt eine eigene SHA-256-Implementierung ohne zusätzliche Abhängigkeit.
