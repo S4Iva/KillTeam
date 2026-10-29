@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -101,13 +102,14 @@ fun Page(
         HorizontalDivider(thickness = 3.dp, color = Waha.Orange)
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             LazyColumn(
-                Modifier.widthIn(max = 900.dp).fillMaxSize(),
+                Modifier.widthIn(max = 900.dp).fillMaxSize().dragToScroll(listState),
                 state = listState,
                 contentPadding = PaddingValues(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 content = content,
             )
-            Column(Modifier.align(Alignment.BottomEnd).padding(12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            ListScrollbar(listState, Modifier.align(Alignment.CenterEnd).fillMaxHeight())
+            Column(Modifier.align(Alignment.BottomEnd).padding(start = 12.dp, top = 12.dp, bottom = 12.dp, end = if (isDesktop) 32.dp else 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (onContents != null) NavButton(navContentsIcon, onContents)
                 if (onList != null) NavButton(navListIcon, onList)
                 if (listState.canScrollBackward) NavButton(navTopIcon) { scope.launch { listState.animateScrollToItem(0) } }
@@ -159,7 +161,8 @@ fun JumpDialog(title: String, entries: List<String>, onPick: (Int) -> Unit, onDi
         onDismissRequest = onDismiss,
         title = { Text(title.uppercase()) },
         text = {
-            Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
+            val scroll = rememberScrollState()
+            Column(Modifier.heightIn(max = 420.dp).dragToScroll(scroll).verticalScroll(scroll)) {
                 entries.forEachIndexed { i, e ->
                     TextButton({ onPick(i); onDismiss() }, Modifier.fillMaxWidth()) {
                         Text(e, Modifier.fillMaxWidth(), textAlign = TextAlign.Start)

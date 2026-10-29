@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -33,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.killteam.logic.AccessGate
 import com.example.killteam.logic.AppState
 import com.example.killteam.ui.GameScreen
@@ -47,6 +49,7 @@ import com.example.killteam.ui.Tab
 import com.example.killteam.ui.TeamsScreen
 import com.example.killteam.ui.UiState
 import com.example.killteam.ui.Waha
+import com.example.killteam.ui.isDesktop
 import com.russhwolf.settings.Settings
 
 private val KillTeamColors = darkColorScheme(
@@ -104,6 +107,7 @@ private fun KillTeamApp() {
     }
 
     MaterialTheme(colorScheme = KillTeamColors) {
+        val touchTarget = if (isDesktop) 56.dp else 48.dp
         val keywords = remember(app.matcher) {
             KeywordContext(app.matcher) { ref ->
                 ui.returnTab = tab
@@ -111,7 +115,7 @@ private fun KillTeamApp() {
                 tab = Tab.Rules
             }
         }
-        CompositionLocalProvider(LocalKeywords provides keywords, LocalUi provides ui) {
+        CompositionLocalProvider(LocalKeywords provides keywords, LocalUi provides ui, LocalMinimumInteractiveComponentSize provides touchTarget) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                 Column(Modifier.fillMaxSize().imePadding()) {
                     // The status bar area gets the header colour; the navigation bar draws itself under the gesture bar.

@@ -93,9 +93,10 @@ fun KeywordText(
             onDismissRequest = { selected.value = null },
             title = { Text(term.title.ifBlank { term.phrase }.uppercase()) },
             text = {
+                val scroll = rememberScrollState()
                 Text(
                     term.text.ifBlank { "No description available." },
-                    Modifier.heightIn(max = 320.dp).verticalScroll(rememberScrollState()),
+                    Modifier.heightIn(max = 320.dp).dragToScroll(scroll).verticalScroll(scroll),
                 )
             },
             confirmButton = {

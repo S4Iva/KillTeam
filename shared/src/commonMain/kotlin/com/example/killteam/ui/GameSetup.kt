@@ -126,7 +126,8 @@ fun SecretSelectionDialog(app: AppState, game: GameState, index: Int, onDismiss:
         onDismissRequest = onDismiss,
         title = { Text("${player.name}: secret selection") },
         text = {
-            Column(Modifier.heightIn(max = 460.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            val scroll = rememberScrollState()
+            Column(Modifier.heightIn(max = 460.dp).dragToScroll(scroll).verticalScroll(scroll), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Tac op (from the archetypes of the kill team)")
                 ChipRow(tacOps, { it.id == tacId }, { "${it.name} (${it.archetype.label})" }, { tacId = it.id })
                 tacOps.firstOrNull { it.id == tacId }?.let { OpSectionsView(it.sections) }
