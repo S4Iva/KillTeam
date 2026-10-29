@@ -1,6 +1,6 @@
 {
     "source":  "wahapedia.ru/kill-team3",
-    "importedAt":  "2026-10-28",
+    "importedAt":  "2026-10-29",
     "pages":  [
                   {
                       "id":  "about",
@@ -673,7 +673,7 @@
                      {
                          "page":  "core-rules",
                          "id":  "Reposition",
-                         "title":  "Reposition1AP",
+                         "title":  "Reposition 1AP",
                          "level":  2,
                          "paras":  [
                                        {
@@ -709,7 +709,7 @@
                      {
                          "page":  "core-rules",
                          "id":  "Dash",
-                         "title":  "Dash1AP",
+                         "title":  "Dash 1AP",
                          "level":  2,
                          "paras":  [
                                        {
@@ -729,7 +729,7 @@
                      {
                          "page":  "core-rules",
                          "id":  "Fall-Back",
-                         "title":  "Fall Back2AP",
+                         "title":  "Fall Back 2AP",
                          "level":  2,
                          "paras":  [
                                        {
@@ -749,7 +749,7 @@
                      {
                          "page":  "core-rules",
                          "id":  "Charge",
-                         "title":  "Charge1AP",
+                         "title":  "Charge 1AP",
                          "level":  2,
                          "paras":  [
                                        {
@@ -773,7 +773,7 @@
                      {
                          "page":  "core-rules",
                          "id":  "Pick-Up-Marker",
-                         "title":  "Pick Up Marker1AP",
+                         "title":  "Pick Up Marker 1AP",
                          "level":  2,
                          "paras":  [
                                        {
@@ -793,7 +793,7 @@
                      {
                          "page":  "core-rules",
                          "id":  "Place-Marker",
-                         "title":  "Place Marker1AP",
+                         "title":  "Place Marker 1AP",
                          "level":  2,
                          "paras":  [
                                        {
@@ -817,7 +817,7 @@
                      {
                          "page":  "core-rules",
                          "id":  "Shoot",
-                         "title":  "Shoot1AP",
+                         "title":  "Shoot 1AP",
                          "level":  2,
                          "paras":  [
                                        {
@@ -981,7 +981,7 @@
                      {
                          "page":  "core-rules",
                          "id":  "Fight",
-                         "title":  "Fight1AP",
+                         "title":  "Fight 1AP",
                          "level":  2,
                          "paras":  [
                                        {
@@ -2672,8 +2672,8 @@
                      },
                      {
                          "page":  "killzones",
-                         "id":  "OPEN-STOCKADE-DOOR1AP",
-                         "title":  "OPEN STOCKADE DOOR1AP",
+                         "id":  "OPEN-STOCKADE-DOOR-1AP",
+                         "title":  "OPEN STOCKADE DOOR 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -2740,8 +2740,8 @@
                      },
                      {
                          "page":  "killzones",
-                         "id":  "DOOR-FIGHT1AP",
-                         "title":  "DOOR FIGHT1AP",
+                         "id":  "DOOR-FIGHT-1AP",
+                         "title":  "DOOR FIGHT 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -2909,7 +2909,7 @@
                      {
                          "page":  "killzones",
                          "id":  "Operate-Hatch",
-                         "title":  "Operate Hatch1AP",
+                         "title":  "Operate Hatch 1AP",
                          "level":  2,
                          "paras":  [
                                        {
@@ -3068,8 +3068,8 @@
                      },
                      {
                          "page":  "killzones",
-                         "id":  "OPERATE-HATCH1AP",
-                         "title":  "OPERATE HATCH1AP",
+                         "id":  "OPERATE-HATCH-1AP",
+                         "title":  "OPERATE HATCH 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -3144,8 +3144,8 @@
                      },
                      {
                          "page":  "killzones",
-                         "id":  "BREACH2AP",
-                         "title":  "BREACH2AP",
+                         "id":  "BREACH-2AP",
+                         "title":  "BREACH 2AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -3230,7 +3230,7 @@
                      {
                          "page":  "killzones",
                          "id":  "Guard",
-                         "title":  "Guard1AP",
+                         "title":  "Guard 1AP",
                          "level":  2,
                          "paras":  [
                                        {
@@ -3298,7 +3298,7 @@
                      {
                          "page":  "killzones",
                          "id":  "Hatchway-Fight",
-                         "title":  "Hatchway Fight1AP",
+                         "title":  "Hatchway Fight 1AP",
                          "level":  2,
                          "paras":  [
                                        {
@@ -3573,8 +3573,8 @@
                      },
                      {
                          "page":  "killzones",
-                         "id":  "OPEN-STOCKADE-DOOR1AP",
-                         "title":  "OPEN STOCKADE DOOR1AP",
+                         "id":  "OPEN-STOCKADE-DOOR-1AP",
+                         "title":  "OPEN STOCKADE DOOR 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -3693,8 +3693,8 @@
                      },
                      {
                          "page":  "killzones",
-                         "id":  "BREACH2AP",
-                         "title":  "BREACH2AP",
+                         "id":  "BREACH-2AP",
+                         "title":  "BREACH 2AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -3881,8 +3881,8 @@
                      },
                      {
                          "page":  "the-missions",
-                         "id":  "SECURE1AP",
-                         "title":  "SECURE1AP",
+                         "id":  "SECURE-1AP",
+                         "title":  "SECURE 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -3929,8 +3929,8 @@
                      },
                      {
                          "page":  "the-missions",
-                         "id":  "LOOT1AP",
-                         "title":  "LOOT1AP",
+                         "id":  "LOOT-1AP",
+                         "title":  "LOOT 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -3969,8 +3969,8 @@
                      },
                      {
                          "page":  "the-missions",
-                         "id":  "INITIATE-TRANSMISSION1AP",
-                         "title":  "INITIATE TRANSMISSION1AP",
+                         "id":  "INITIATE-TRANSMISSION-1AP",
+                         "title":  "INITIATE TRANSMISSION 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -4982,8 +4982,8 @@
                      },
                      {
                          "page":  "the-missions",
-                         "id":  "SABOTAGE1AP",
-                         "title":  "SABOTAGE1AP",
+                         "id":  "SABOTAGE-1AP",
+                         "title":  "SABOTAGE 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -5238,8 +5238,8 @@
                      },
                      {
                          "page":  "the-missions",
-                         "id":  "SECURE1AP",
-                         "title":  "SECURE1AP",
+                         "id":  "SECURE-1AP",
+                         "title":  "SECURE 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -5278,8 +5278,8 @@
                      },
                      {
                          "page":  "the-missions",
-                         "id":  "LOOT1AP",
-                         "title":  "LOOT1AP",
+                         "id":  "LOOT-1AP",
+                         "title":  "LOOT 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -5318,8 +5318,8 @@
                      },
                      {
                          "page":  "the-missions",
-                         "id":  "INITIATE-TRANSMISSION1AP",
-                         "title":  "INITIATE TRANSMISSION1AP",
+                         "id":  "INITIATE-TRANSMISSION-1AP",
+                         "title":  "INITIATE TRANSMISSION 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -6266,8 +6266,8 @@
                      },
                      {
                          "page":  "universal-equipment",
-                         "id":  "AMMO-RESUPPLY0AP",
-                         "title":  "AMMO RESUPPLY0AP",
+                         "id":  "AMMO-RESUPPLY-0AP",
+                         "title":  "AMMO RESUPPLY 0AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -6682,8 +6682,8 @@
                      },
                      {
                          "page":  "universal-equipment",
-                         "id":  "BREACH2AP",
-                         "title":  "BREACH2AP",
+                         "id":  "BREACH-2AP",
+                         "title":  "BREACH 2AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -7531,8 +7531,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Secure1AP",
-                         "title":  "Secure1AP",
+                         "id":  "Secure-1AP",
+                         "title":  "Secure 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -7579,8 +7579,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Loot1AP",
-                         "title":  "Loot1AP",
+                         "id":  "Loot-1AP",
+                         "title":  "Loot 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -7619,8 +7619,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Initiate-Transmission1AP",
-                         "title":  "Initiate Transmission1AP",
+                         "id":  "Initiate-Transmission-1AP",
+                         "title":  "Initiate Transmission 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -7667,8 +7667,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Move-Orb1AP",
-                         "title":  "Move Orb1AP",
+                         "id":  "Move-Orb-1AP",
+                         "title":  "Move Orb 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -7819,8 +7819,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Download1AP",
-                         "title":  "Download1AP",
+                         "id":  "Download-1AP",
+                         "title":  "Download 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -7867,8 +7867,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Compile-Data1AP",
-                         "title":  "Compile Data1AP",
+                         "id":  "Compile-Data-1AP",
+                         "title":  "Compile Data 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -7883,8 +7883,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Send-Data1AP",
-                         "title":  "Send Data1AP",
+                         "id":  "Send-Data-1AP",
+                         "title":  "Send Data 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -7935,8 +7935,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Reboot2AP",
-                         "title":  "Reboot2AP",
+                         "id":  "Reboot-2AP",
+                         "title":  "Reboot 2AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -7991,8 +7991,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Plant-Device1AP",
-                         "title":  "Plant Device1AP",
+                         "id":  "Plant-Device-1AP",
+                         "title":  "Plant Device 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -8203,8 +8203,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Retrieve1AP",
-                         "title":  "Retrieve1AP",
+                         "id":  "Retrieve-1AP",
+                         "title":  "Retrieve 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -8259,8 +8259,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Scout1AP",
-                         "title":  "Scout1AP",
+                         "id":  "Scout-1AP",
+                         "title":  "Scout 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -8315,8 +8315,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Plant-Banner1AP",
-                         "title":  "Plant Banner1AP",
+                         "id":  "Plant-Banner-1AP",
+                         "title":  "Plant Banner 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -8495,8 +8495,8 @@
                      },
                      {
                          "page":  "approved-ops-2025",
-                         "id":  "Clear1AP",
-                         "title":  "Clear1AP",
+                         "id":  "Clear-1AP",
+                         "title":  "Clear 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -11345,8 +11345,8 @@
                      },
                      {
                          "page":  "volkus-compound",
-                         "id":  "AMMO-RESUPPLY0AP",
-                         "title":  "AMMO RESUPPLY0AP",
+                         "id":  "AMMO-RESUPPLY-0AP",
+                         "title":  "AMMO RESUPPLY 0AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -11713,8 +11713,8 @@
                      },
                      {
                          "page":  "airborn-assault",
-                         "id":  "PLANT-BOMB1AP",
-                         "title":  "PLANT BOMB1AP",
+                         "id":  "PLANT-BOMB-1AP",
+                         "title":  "PLANT BOMB 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -11733,8 +11733,8 @@
                      },
                      {
                          "page":  "airborn-assault",
-                         "id":  "DEFUSE-BOMB1AP",
-                         "title":  "DEFUSE BOMB1AP",
+                         "id":  "DEFUSE-BOMB-1AP",
+                         "title":  "DEFUSE BOMB 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -12213,8 +12213,8 @@
                      },
                      {
                          "page":  "airborn-assault",
-                         "id":  "DIG-IN1AP",
-                         "title":  "DIG IN1AP",
+                         "id":  "DIG-IN-1AP",
+                         "title":  "DIG IN 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -12341,8 +12341,8 @@
                      },
                      {
                          "page":  "blood-and-zeal",
-                         "id":  "PRAISE-BLASPHEME1AP",
-                         "title":  "PRAISE/BLASPHEME1AP",
+                         "id":  "PRAISE-BLASPHEME-1AP",
+                         "title":  "PRAISE/BLASPHEME 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -12361,8 +12361,8 @@
                      },
                      {
                          "page":  "blood-and-zeal",
-                         "id":  "HALLOW-DEFILE1AP",
-                         "title":  "HALLOW/DEFILE1AP",
+                         "id":  "HALLOW-DEFILE-1AP",
+                         "title":  "HALLOW/DEFILE 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -14115,8 +14115,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "DEPLOY-SEARCH-DRONE1AP",
-                         "title":  "DEPLOY SEARCH DRONE1AP",
+                         "id":  "DEPLOY-SEARCH-DRONE-1AP",
+                         "title":  "DEPLOY SEARCH DRONE 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -17707,8 +17707,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "PLANT-TARGETER1AP",
-                         "title":  "PLANT TARGETER1AP",
+                         "id":  "PLANT-TARGETER-1AP",
+                         "title":  "PLANT TARGETER 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -18895,8 +18895,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "PRIME-BOMB-AND-DESCEND1AP",
-                         "title":  "PRIME BOMB AND DESCEND1AP",
+                         "id":  "PRIME-BOMB-AND-DESCEND-1AP",
+                         "title":  "PRIME BOMB AND DESCEND 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -22725,8 +22725,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Secure1AP",
-                         "title":  "Secure1AP",
+                         "id":  "Secure-1AP",
+                         "title":  "Secure 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -22773,8 +22773,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Loot1AP",
-                         "title":  "Loot1AP",
+                         "id":  "Loot-1AP",
+                         "title":  "Loot 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -22813,8 +22813,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Initiate-Transmission1AP",
-                         "title":  "Initiate Transmission1AP",
+                         "id":  "Initiate-Transmission-1AP",
+                         "title":  "Initiate Transmission 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -22861,8 +22861,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Move-Orb1AP",
-                         "title":  "Move Orb1AP",
+                         "id":  "Move-Orb-1AP",
+                         "title":  "Move Orb 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -23013,8 +23013,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Download1AP",
-                         "title":  "Download1AP",
+                         "id":  "Download-1AP",
+                         "title":  "Download 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -23061,8 +23061,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Compile-Data1AP",
-                         "title":  "Compile Data1AP",
+                         "id":  "Compile-Data-1AP",
+                         "title":  "Compile Data 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -23077,8 +23077,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Send-Data1AP",
-                         "title":  "Send Data1AP",
+                         "id":  "Send-Data-1AP",
+                         "title":  "Send Data 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -23129,8 +23129,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Reboot2AP",
-                         "title":  "Reboot2AP",
+                         "id":  "Reboot-2AP",
+                         "title":  "Reboot 2AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -23185,8 +23185,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Plant-Device1AP",
-                         "title":  "Plant Device1AP",
+                         "id":  "Plant-Device-1AP",
+                         "title":  "Plant Device 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -23397,8 +23397,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Retrieve1AP",
-                         "title":  "Retrieve1AP",
+                         "id":  "Retrieve-1AP",
+                         "title":  "Retrieve 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -23453,8 +23453,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Scout1AP",
-                         "title":  "Scout1AP",
+                         "id":  "Scout-1AP",
+                         "title":  "Scout 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -23509,8 +23509,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Plant-Banner1AP",
-                         "title":  "Plant Banner1AP",
+                         "id":  "Plant-Banner-1AP",
+                         "title":  "Plant Banner 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -23689,8 +23689,8 @@
                      },
                      {
                          "page":  "typhon",
-                         "id":  "Clear1AP",
-                         "title":  "Clear1AP",
+                         "id":  "Clear-1AP",
+                         "title":  "Clear 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -36597,8 +36597,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "SCOUT-ROOM1AP",
-                         "title":  "SCOUT ROOM1AP",
+                         "id":  "SCOUT-ROOM-1AP",
+                         "title":  "SCOUT ROOM 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -45083,8 +45083,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Secure1AP",
-                         "title":  "Secure1AP",
+                         "id":  "Secure-1AP",
+                         "title":  "Secure 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -45131,8 +45131,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Loot1AP",
-                         "title":  "Loot1AP",
+                         "id":  "Loot-1AP",
+                         "title":  "Loot 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -45171,8 +45171,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Initiate-Transmission1AP",
-                         "title":  "Initiate Transmission1AP",
+                         "id":  "Initiate-Transmission-1AP",
+                         "title":  "Initiate Transmission 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -45219,8 +45219,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Move-Orb1AP",
-                         "title":  "Move Orb1AP",
+                         "id":  "Move-Orb-1AP",
+                         "title":  "Move Orb 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -45371,8 +45371,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Download1AP",
-                         "title":  "Download1AP",
+                         "id":  "Download-1AP",
+                         "title":  "Download 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -45419,8 +45419,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Compile-Data1AP",
-                         "title":  "Compile Data1AP",
+                         "id":  "Compile-Data-1AP",
+                         "title":  "Compile Data 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -45435,8 +45435,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Send-Data1AP",
-                         "title":  "Send Data1AP",
+                         "id":  "Send-Data-1AP",
+                         "title":  "Send Data 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -45487,8 +45487,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Reboot2AP",
-                         "title":  "Reboot2AP",
+                         "id":  "Reboot-2AP",
+                         "title":  "Reboot 2AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -45543,8 +45543,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Plant-Device1AP",
-                         "title":  "Plant Device1AP",
+                         "id":  "Plant-Device-1AP",
+                         "title":  "Plant Device 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -45755,8 +45755,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Retrieve1AP",
-                         "title":  "Retrieve1AP",
+                         "id":  "Retrieve-1AP",
+                         "title":  "Retrieve 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -45811,8 +45811,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Scout1AP",
-                         "title":  "Scout1AP",
+                         "id":  "Scout-1AP",
+                         "title":  "Scout 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -45867,8 +45867,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Plant-Banner1AP",
-                         "title":  "Plant Banner1AP",
+                         "id":  "Plant-Banner-1AP",
+                         "title":  "Plant Banner 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -46047,8 +46047,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "Clear1AP",
-                         "title":  "Clear1AP",
+                         "id":  "Clear-1AP",
+                         "title":  "Clear 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -47812,8 +47812,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "OPERATE-HATCH1AP",
-                         "title":  "OPERATE HATCH1AP",
+                         "id":  "OPERATE-HATCH-1AP",
+                         "title":  "OPERATE HATCH 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -47852,8 +47852,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "BREACH2AP",
-                         "title":  "BREACH2AP",
+                         "id":  "BREACH-2AP",
+                         "title":  "BREACH 2AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -47932,8 +47932,8 @@
                      },
                      {
                          "page":  "tomb-world",
-                         "id":  "BREACH2AP",
-                         "title":  "BREACH2AP",
+                         "id":  "BREACH-2AP",
+                         "title":  "BREACH 2AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -49330,8 +49330,8 @@
                      },
                      {
                          "page":  "the-great-gun-fires",
-                         "id":  "Initiate-Transmission1AP",
-                         "title":  "Initiate Transmission1AP",
+                         "id":  "Initiate-Transmission-1AP",
+                         "title":  "Initiate Transmission 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -52468,8 +52468,8 @@
                      },
                      {
                          "page":  "nemesis-operatives",
-                         "id":  "SABOTAGE-NEXUS1AP",
-                         "title":  "SABOTAGE NEXUS1AP",
+                         "id":  "SABOTAGE-NEXUS-1AP",
+                         "title":  "SABOTAGE NEXUS 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -52888,8 +52888,8 @@
                      },
                      {
                          "page":  "nemesis-operatives",
-                         "id":  "COORDINATE-EXTRACTION1AP",
-                         "title":  "COORDINATE EXTRACTION1AP",
+                         "id":  "COORDINATE-EXTRACTION-1AP",
+                         "title":  "COORDINATE EXTRACTION 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -53588,8 +53588,8 @@
                      },
                      {
                          "page":  "nemesis-operatives",
-                         "id":  "SECURE1AP",
-                         "title":  "SECURE1AP",
+                         "id":  "SECURE-1AP",
+                         "title":  "SECURE 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -53708,8 +53708,8 @@
                      },
                      {
                          "page":  "nemesis-operatives",
-                         "id":  "SECURE1AP",
-                         "title":  "SECURE1AP",
+                         "id":  "SECURE-1AP",
+                         "title":  "SECURE 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -53789,7 +53789,7 @@
                      {
                          "page":  "nemesis-operatives",
                          "id":  "DEMOLISH1-3AP",
-                         "title":  "DEMOLISH1-3AP",
+                         "title":  "DEMOLISH1- 3AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -54307,8 +54307,8 @@
                      },
                      {
                          "page":  "nemesis-operatives",
-                         "id":  "ELIMINATE-ASSETS1AP",
-                         "title":  "ELIMINATE ASSETS1AP",
+                         "id":  "ELIMINATE-ASSETS-1AP",
+                         "title":  "ELIMINATE ASSETS 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -54387,8 +54387,8 @@
                      },
                      {
                          "page":  "nemesis-operatives",
-                         "id":  "SIPHON-POWER1AP",
-                         "title":  "SIPHON POWER1AP",
+                         "id":  "SIPHON-POWER-1AP",
+                         "title":  "SIPHON POWER 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -55089,8 +55089,8 @@
                      },
                      {
                          "page":  "nemesis-operatives",
-                         "id":  "OPERATE-HATCH1AP",
-                         "title":  "OPERATE HATCH1AP",
+                         "id":  "OPERATE-HATCH-1AP",
+                         "title":  "OPERATE HATCH 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -55109,8 +55109,8 @@
                      },
                      {
                          "page":  "nemesis-operatives",
-                         "id":  "BREACH2AP",
-                         "title":  "BREACH2AP",
+                         "id":  "BREACH-2AP",
+                         "title":  "BREACH 2AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -55133,8 +55133,8 @@
                      },
                      {
                          "page":  "nemesis-operatives",
-                         "id":  "SABOTAGE-NEXUS1AP",
-                         "title":  "SABOTAGE NEXUS1AP",
+                         "id":  "SABOTAGE-NEXUS-1AP",
+                         "title":  "SABOTAGE NEXUS 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -55149,8 +55149,8 @@
                      },
                      {
                          "page":  "nemesis-operatives",
-                         "id":  "COORDINATE-EXTRACTION1AP",
-                         "title":  "COORDINATE EXTRACTION1AP",
+                         "id":  "COORDINATE-EXTRACTION-1AP",
+                         "title":  "COORDINATE EXTRACTION 1AP",
                          "level":  3,
                          "paras":  [
                                        {
@@ -55165,8 +55165,8 @@
                      },
                      {
                          "page":  "nemesis-operatives",
-                         "id":  "SIPHON-POWER1AP",
-                         "title":  "SIPHON POWER1AP",
+                         "id":  "SIPHON-POWER-1AP",
+                         "title":  "SIPHON POWER 1AP",
                          "level":  3,
                          "paras":  [
                                        {

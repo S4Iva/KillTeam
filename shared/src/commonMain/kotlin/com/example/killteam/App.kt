@@ -33,18 +33,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.killteam.logic.AccessGate
 import com.example.killteam.logic.AppState
 import com.example.killteam.ui.GameScreen
 import com.example.killteam.ui.GeneratorScreen
 import com.example.killteam.ui.KeywordContext
 import com.example.killteam.ui.LocalKeywords
 import com.example.killteam.ui.LocalUi
+import com.example.killteam.ui.LockScreen
 import com.example.killteam.ui.MoreScreen
 import com.example.killteam.ui.RulesScreen
 import com.example.killteam.ui.Tab
 import com.example.killteam.ui.TeamsScreen
 import com.example.killteam.ui.UiState
 import com.example.killteam.ui.Waha
+import com.russhwolf.settings.Settings
 
 private val KillTeamColors = darkColorScheme(
     primary = Waha.Orange,
@@ -59,10 +62,25 @@ private val KillTeamColors = darkColorScheme(
     error = Color(0xFFFF5252),
 )
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 @Preview
 fun App() {
+    val gate = remember { AccessGate(Settings()) }
+    var unlocked by remember { mutableStateOf(gate.isUnlocked()) }
+    if (unlocked) {
+        KillTeamApp()
+    } else {
+        MaterialTheme(colorScheme = KillTeamColors) {
+            Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                LockScreen { password -> gate.tryUnlock(password).also { if (it) unlocked = true } }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun KillTeamApp() {
     val app = remember { AppState() }
     val ui = remember { UiState() }
     var tab by remember { mutableStateOf(Tab.Generator) }

@@ -34,10 +34,13 @@ function Html-ToText($html) {
 
 function Strip($html) { ((Html-ToText $html) -replace "`n", ' ').Trim() }
 
+function Fix-Title($t) { [regex]::Replace($t, '(?<=\S)(\d+AP)$', ' $1') }
+
 function Normalize($t) {
     $x = $t.ToLower()
     $x = [regex]::Replace($x, '\s+x\+?(\s|$)', ' ')
     $x = [regex]::Replace($x, '[^a-z0-9 ]', '')
+    $x = [regex]::Replace($x, '\s(\d+ap)(\s|$)', '$1$2')
     ([regex]::Replace($x, '\s+', ' ')).Trim()
 }
 
@@ -98,7 +101,7 @@ foreach ($p in $pageList) {
     $heads = [regex]::Matches($html, '<h([2-4])(?: id="([^"]*)")?[^>]*>([\s\S]*?)</h\1>')
     for ($i = 0; $i -lt $heads.Count; $i++) {
         $h = $heads[$i]
-        $title = Strip $h.Groups[3].Value
+        $title = Fix-Title (Strip $h.Groups[3].Value)
         $id = [System.Net.WebUtility]::HtmlDecode($h.Groups[2].Value)
         if (-not $title -and -not $id) { continue }
         if (-not $id) { $id = Slug $title }
@@ -136,7 +139,7 @@ function Harvest($html, $withLinks) {
     foreach ($s in (Get-TooltipSurfaces $html)) {
         if (-not $tips.ContainsKey($s.id)) { continue }
         $t = $tips[$s.id]
-        $tipTitle = if ($t.title) { $t.title } else { $s.text }
+        $tipTitle = Fix-Title $(if ($t.title) { $t.title } else { $s.text })
         $target = $sectionIndex[(Normalize $tipTitle)]
         $page = $null; $anchor = $null
         if ($target) { $page = $target.page; $anchor = $target.id }
@@ -166,6 +169,6 @@ foreach ($slug in $slugs) {
 $utf8 = New-Object Text.UTF8Encoding($false)
 $rulesJson = [ordered]@{ source = 'wahapedia.ru/kill-team3'; importedAt = (Get-Date -Format 'yyyy-MM-dd'); pages = @($pageList); sections = @($sections | Select-Object page, id, title, level, paras) } | ConvertTo-Json -Depth 7
 [IO.File]::WriteAllText((Join-Path $res 'rules.json'), $rulesJson, $utf8)
-$lookupJson = [ordered]@{ terms = @($terms.Values) } | ConvertTo-Json -Depth 6 -Compress
+$lookupJson = [ordered]@{ terms = @($terms.Values) } | ConvertTo-Json -Depth 6
 [IO.File]::WriteAllText((Join-Path $res 'lookup.json'), $lookupJson, $utf8)
 Write-Output "Fertig: $($sections.Count) Abschnitte, $($terms.Count) Begriffe"

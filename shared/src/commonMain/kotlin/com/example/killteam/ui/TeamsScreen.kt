@@ -120,7 +120,7 @@ private fun TeamDetail(app: AppState, team: KillTeam, onBack: () -> Unit) {
                 if (team.updated.isNotBlank()) {
                     Text("Rules version: ${team.version} (${team.updated}), imported ${app.teamData?.importedAt}", style = MaterialTheme.typography.bodySmall, color = Waha.Orange)
                 }
-                team.composition.forEach { KeywordText(it, style = MaterialTheme.typography.bodyMedium) }
+                CompositionList(team)
                 NoteField(key, app.note(key)) { app.setNote(key, it) }
             }
         }
@@ -204,7 +204,7 @@ private fun RosterEditor(app: AppState, initial: Roster, onBack: () -> Unit) {
             SectionCard("Roster") {
                 OutlinedTextField(roster.name, { save(roster.copy(name = it)) }, Modifier.fillMaxWidth(), label = { Text("Name") }, singleLine = true)
                 Text("${team?.name ?: roster.teamSlug}: ${roster.operatives.size} operatives" + (team?.let { " (expected ${RosterRules.expectedSize(it)})" } ?: ""))
-                team?.composition?.forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
+                team?.let { CompositionList(it, MaterialTheme.typography.bodySmall) }
                 val problems = team?.let { RosterRules.problems(it, roster) }.orEmpty()
                 if (problems.isEmpty()) Text("Roster size is valid. Check the selection limits in the text above.", color = MaterialTheme.colorScheme.primary)
                 problems.forEach { Text(it, color = MaterialTheme.colorScheme.error) }

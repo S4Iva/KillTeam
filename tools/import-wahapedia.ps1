@@ -68,6 +68,28 @@ function Get-Region($html, $id) {
     if ($m.Success) { $m.Groups[1].Value } else { '' }
 }
 
+# Operatives-Abschnitt als Liste: Ebene 1 = arrow, Ebene 2 = bullet, Rest = text.
+function Parse-Composition($html) {
+    $region = (Get-Region $html 'Operatives') -replace '^[\s\S]*?</h2>', ''
+    $script:ulDepth = 0
+    $region = [regex]::Replace($region, '<ul[^>]*>|</ul>|<li[^>]*>', {
+        param($m)
+        if ($m.Value -like '<ul*') { $script:ulDepth++; return "`n" }
+        if ($m.Value -eq '</ul>') { $script:ulDepth--; return "`n" }
+        if ($script:ulDepth -le 1) { return "`n@@A@@" } else { return "`n@@B@@" }
+    })
+    $kinds = @{ '@@A@@' = 'arrow'; '@@B@@' = 'bullet' }
+    $out = @()
+    foreach ($line in ((Html-ToText $region) -split "`n")) {
+        $t = $line.Trim()
+        if (-not $t -or $t.StartsWith('[IMG')) { continue }
+        $kind = 'text'
+        if ($t.Length -ge 5 -and $kinds.ContainsKey($t.Substring(0, 5))) { $kind = $kinds[$t.Substring(0, 5)]; $t = $t.Substring(5).Trim() }
+        if ($t) { $out += [ordered]@{ kind = $kind; text = $t } }
+    }
+    $out
+}
+
 function Parse-Strat($html, $id) {
     $items = @()
     $chunks = [regex]::Split((Get-Region $html $id), '<div class=" ?stratWrapper[^"]*">')
@@ -253,6 +275,8 @@ foreach ($slug in $slugs) {
             slug = $slug; name = $title; description = $desc; archetypes = $archList
             version = $version; updated = $updated
             composition = $comp
+            compositionParas = @(Parse-Composition $html)
+            factionKeyword = [regex]::Match($html, '<span class="inb fkwb">([^<]*)<').Groups[1].Value
             factionRules = ($fr | Where-Object { -not $_.StartsWith('|') -and -not $_.StartsWith('[IMG') }) -join "`n"
             strategyPloys = @(Parse-Strat $html 'Strategy-Ploys'); firefightPloys = @(Parse-Strat $html 'Firefight-Ploys'); equipment = @(Parse-Strat $html 'Faction-Equipment')
             factionRuleItems = @(Parse-FactionRules $html)
@@ -264,6 +288,6 @@ foreach ($slug in $slugs) {
 }
 
 if ($failed.Count -gt 0) { Write-Output "Abbruch, nichts geschrieben. Fehlgeschlagen: $($failed -join ', ')"; exit 1 }
-$json = [ordered]@{ source = 'wahapedia.ru/kill-team3'; importedAt = (Get-Date -Format 'yyyy-MM-dd'); teams = $teams } | ConvertTo-Json -Depth 10 -Compress
+$json = [ordered]@{ source = 'wahapedia.ru/kill-team3'; importedAt = (Get-Date -Format 'yyyy-MM-dd'); teams = $teams } | ConvertTo-Json -Depth 10
 [IO.File]::WriteAllText((Join-Path $res 'killteams.json'), $json, (New-Object Text.UTF8Encoding($false)))
 Write-Output "Fertig: $($teams.Count) Teams"

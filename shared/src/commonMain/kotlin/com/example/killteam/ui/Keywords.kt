@@ -18,6 +18,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -32,6 +33,29 @@ class KeywordContext(val matcher: TermMatcher?, val openRule: (RuleRef) -> Unit)
 
 val LocalKeywords = compositionLocalOf { KeywordContext(null) {} }
 
+private val CapsRun = Regex("[A-Z][A-Z0-9.*'-]+(?: [A-Z][A-Z0-9.*'-]*)*")
+
+/** Appends plain text; when [accent] is set, capitalised keywords become bold and the accent phrase orange. */
+private fun AnnotatedString.Builder.appendPlain(s: String, accent: String?) {
+    if (accent == null) { append(s); return }
+    val bold = SpanStyle(fontWeight = FontWeight.Bold)
+    var pos = 0
+    CapsRun.findAll(s).forEach { m ->
+        append(s.substring(pos, m.range.first))
+        val run = m.value
+        val i = if (accent.isNotEmpty()) run.indexOf(accent) else -1
+        if (i < 0) {
+            withStyle(bold) { append(run) }
+        } else {
+            withStyle(bold) { append(run.substring(0, i)) }
+            withStyle(bold.copy(color = Waha.Orange)) { append(accent) }
+            withStyle(bold) { append(run.substring(i + accent.length)) }
+        }
+        pos = m.range.last + 1
+    }
+    append(s.substring(pos))
+}
+
 /** Text whose keywords are tappable: a small popup shows the definition, its arrow opens the rule. */
 @Composable
 fun KeywordText(
@@ -41,16 +65,17 @@ fun KeywordText(
     color: Color = Color.Unspecified,
     boldPrefix: String = "",
     linkColor: Color = Waha.Link,
+    capsAccent: String? = null,
 ) {
     val ctx = LocalKeywords.current
     val selected = remember { mutableStateOf<LookupTerm?>(null) }
-    val annotated = remember(text, boldPrefix, linkColor, ctx.matcher) {
+    val annotated = remember(text, boldPrefix, linkColor, capsAccent, ctx.matcher) {
         buildAnnotatedString {
             if (boldPrefix.isNotEmpty()) withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(boldPrefix) }
             var pos = 0
             ctx.matcher?.find(text).orEmpty().forEach { m ->
                 if (m.start < pos) return@forEach
-                append(text.substring(pos, m.start))
+                appendPlain(text.substring(pos, m.start), capsAccent)
                 val link = LinkAnnotation.Clickable(
                     tag = m.term.phrase,
                     styles = TextLinkStyles(SpanStyle(color = linkColor, textDecoration = TextDecoration.Underline)),
@@ -58,7 +83,7 @@ fun KeywordText(
                 withLink(link) { append(text.substring(m.start, m.end)) }
                 pos = m.end
             }
-            append(text.substring(pos))
+            appendPlain(text.substring(pos), capsAccent)
         }
     }
     Text(annotated, modifier, style = style, color = color)

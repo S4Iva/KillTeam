@@ -94,6 +94,10 @@ class KillTeam(
     val description: String = "",
     @Serializable(with = LenientStringList::class) val archetypes: List<String> = emptyList(),
     @Serializable(with = LenientStringList::class) val composition: List<String> = emptyList(),
+    /** Composition as structured lines: arrow (top level), bullet (options / operative list), text (notes). */
+    @Serializable(with = LenientParaList::class) val compositionParas: List<AbilityPara> = emptyList(),
+    /** Faction keyword in capitals, e.g. "IMPERIAL NAVY BREACHER". */
+    val factionKeyword: String = "",
     val factionRules: String = "",
     @Serializable(with = LenientItemList::class) val factionRuleItems: List<NamedText> = emptyList(),
     @Serializable(with = LenientItemList::class) val strategyPloys: List<NamedText> = emptyList(),
