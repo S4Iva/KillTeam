@@ -3,7 +3,7 @@
 #
 # Aufruf (genau eine Ablaufangabe):
 #   tools\generate-access-code.ps1 -d 7 -h 12            Dauer ab jetzt: 7 Tage und 12 Stunden (beides einzeln oder kombiniert)
-#   tools\generate-access-code.ps1 -Until "2026-12-24"   fester Ablauf (UTC); nur Datum = bis Ende dieses Tages
+#   tools\generate-access-code.ps1 -Until "2026-12-24"   fester Ablauf in UTC; nur Datum = bis Ende dieses Tages (UTC)
 #   tools\generate-access-code.ps1 -Until "2026-12-24 18:00"
 #   tools\generate-access-code.ps1 -Unlimited            unbegrenzt
 #   tools\generate-access-code.ps1 -NewKey               neuen geheimen Schluessel nach AccessGate.kt schreiben (macht alle alten Codes ungueltig, danach App neu bauen)

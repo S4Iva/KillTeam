@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.example.killteam.logic.AccessGate
 import com.example.killteam.logic.AccessResult
 import com.example.killteam.logic.AccessStatus
-import com.example.killteam.logic.formatDate
+import com.example.killteam.logic.formatLocalDateTime
 import com.example.killteam.logic.formatRemaining
 import com.example.killteam.logic.AppState
 import com.example.killteam.ui.GameScreen
@@ -95,7 +95,7 @@ fun App() {
                     text = {
                         Text(
                             if (n is AccessStatus.Temporary) {
-                                "The app can be used for ${formatRemaining(n.remainingMillis)} (until ${formatDate(n.expiresAt)} UTC). " +
+                                "The app can be used for ${formatRemaining(n.remainingMillis)} (until ${formatLocalDateTime(n.expiresAt)}, device time). " +
                                     "After that it asks for a new code. The remaining time is shown under More."
                             } else "Unlimited access. This is shown under More.",
                         )

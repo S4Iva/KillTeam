@@ -54,7 +54,7 @@ Codes erzeugen (extern, am PC):
 - Festes Ablaufdatum (UTC, nur Datum = bis Ende des Tages): `... -Until "2026-12-24 18:00"`
 - Unbegrenzt: `... -Unlimited`
 
-Der Ablauf wird auf volle Stunden aufgerundet. Der geheime Schlüssel steht als `AccessConfig.KEY` in `logic/AccessGate.kt` und wird von App und Generator gemeinsam genutzt. Einen neuen Schlüssel setzt `tools\generate-access-code.ps1 -NewKey`, danach die App neu bauen. Alle bisherigen Codes sind dann ungültig. Ist der Schlüssel leer, entfällt die Abfrage.
+Der Ablauf wird auf volle Stunden aufgerundet. Der Generator arbeitet in UTC, der Code speichert den Zeitpunkt absolut. Die App rechnet ihn auf die Zeitzone des Geräts um und zeigt den Ablauf in Gerätezeit. Der geheime Schlüssel steht als `AccessConfig.KEY` in `logic/AccessGate.kt` und wird von App und Generator gemeinsam genutzt. Einen neuen Schlüssel setzt `tools\generate-access-code.ps1 -NewKey`, danach die App neu bauen. Alle bisherigen Codes sind dann ungültig. Ist der Schlüssel leer, entfällt die Abfrage.
 
 Das ist kein Kopierschutz: Wer die APK zerlegt, findet den Schlüssel und kann eigene Codes erzeugen. Ein Code ist nicht an ein Gerät gebunden und lässt sich weitergeben.
 

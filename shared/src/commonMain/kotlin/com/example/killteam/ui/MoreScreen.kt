@@ -33,6 +33,7 @@ import com.example.killteam.logic.TRound
 import com.example.killteam.logic.Tournament
 import com.example.killteam.logic.TournamentLogic
 import com.example.killteam.logic.formatDate
+import com.example.killteam.logic.formatLocalDateTime
 import com.example.killteam.logic.formatRemaining
 import com.example.killteam.logic.nowMillis
 import org.jetbrains.compose.resources.painterResource
@@ -65,7 +66,7 @@ private fun AccessCard(gate: AccessGate) {
             is AccessStatus.Temporary -> {
                 Text("Limited access code.")
                 Text("Remaining: ${formatRemaining(status.remainingMillis)}", fontWeight = FontWeight.Bold)
-                Text("Valid until ${formatDate(status.expiresAt)} (UTC).", style = MaterialTheme.typography.bodySmall)
+                Text("Valid until ${formatLocalDateTime(status.expiresAt)} (device time).", style = MaterialTheme.typography.bodySmall)
             }
             AccessStatus.Disabled -> Text("No access code is required (no key set).")
             AccessStatus.Locked -> Text("Access is locked.")
@@ -314,7 +315,7 @@ private fun describeKey(app: AppState, key: String): String {
 private fun AboutPage(app: AppState, onBack: () -> Unit) {
     Page("Data sources", onBack) {
         item {
-            SectionCard("Wahapedia") {
+            SectionCard("Info") {
                 Text("All rules texts, datacards, maps and images were imported  (Kill Team 3rd edition, Approved Ops 2025) for private, non-commercial use.")
                 Text("Copyright:  Do not redistribute this app.")
                 Text("Kill team data: ${app.teams.size} teams, imported ${app.teamData?.importedAt ?: "-"}.")
@@ -323,8 +324,6 @@ private fun AboutPage(app: AppState, onBack: () -> Unit) {
                     Text("Rules versions:", fontWeight = FontWeight.Bold)
                     Text(dated.sortedBy { it.name }.joinToString("\n") { "${it.name}: ${it.version} (${it.updated})" }, style = MaterialTheme.typography.bodySmall)
                 }
-                Text("Check for newer data with tools/check-updates.ps1 and compare with the official downloads on warhammer-community.com.")
-                Text("The data is bundled with the app; re-run tools/import-wahapedia.ps1 (kill teams) and tools/import-rules.ps1 (rules and keywords) to refresh it.")
             }
         }
     }

@@ -44,11 +44,11 @@ class AccessGateTest {
 
     @Test
     fun codesMatchTheGeneratorScript() {
-        // tools/generate-access-code.ps1 -Until "2026-12-01 00:00" -Key test-key -Nonce 1234
+        // tools/generate-access-code.ps1 -Key test-key -Nonce 1234 for an expiry of 2026-12-01 00:00 UTC (8016 h)
         assertEquals("07TG-9MGR-F5EP", code(8016, 1234))
         // -Unlimited -Key test-key -Nonce 1
         assertEquals("0000-00F4-QZ5J", code(0, 1))
-        // -Until 2026-12-24 -Key test-key -Nonce 5 (date only means the end of that day)
+        // -Nonce 5 for an expiry of 2026-12-25 00:00 UTC (8592 h)
         assertEquals("08CG-01F2-NNXB", code(8592, 5))
     }
 
