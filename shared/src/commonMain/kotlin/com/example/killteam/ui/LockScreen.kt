@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.killteam.logic.AccessCode
 import com.example.killteam.logic.AccessResult
 
 @Composable
@@ -45,11 +46,11 @@ fun LockScreen(startReason: AccessResult?, onSubmit: (String) -> AccessResult) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text("KILL TEAM", style = MaterialTheme.typography.headlineMedium, color = Palette.Accent)
-        Text("Enter your access code to unlock the app.")
+        Text("Enter your access code to unlock the app. Paste it from the message you received.")
         OutlinedTextField(
-            code, { code = it.uppercase().filter { c -> c.isLetterOrDigit() }.take(12); if (result == AccessResult.Wrong) result = null },
+            code, { code = it.uppercase().filter { c -> c.isLetterOrDigit() }.take(AccessCode.LENGTH); if (result == AccessResult.Wrong) result = null },
             Modifier.widthIn(max = 360.dp).fillMaxWidth(),
-            label = { Text("Access code (XXXX-XXXX-XXXX)") }, singleLine = true, isError = result == AccessResult.Wrong,
+            label = { Text("Access code") }, minLines = 3, maxLines = 6, isError = result == AccessResult.Wrong,
             visualTransformation = CodeTransformation,
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, keyboardType = KeyboardType.Ascii),
         )
@@ -84,13 +85,13 @@ private val termsOfUse = listOf(
     "Ending access" to "Access can be ended at any time. When it expires or on request, delete the app.",
 )
 
-/** Shows the typed characters as XXXX-XXXX-XXXX while the text itself stays without dashes, so the cursor does not jump. */
+/** Shows the typed characters in groups of 5 separated by dashes while the text itself stays without dashes, so the cursor does not jump. */
 private object CodeTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
-        val shown = text.text.chunked(4).joinToString("-")
+        val shown = text.text.chunked(5).joinToString("-")
         val mapping = object : OffsetMapping {
-            override fun originalToTransformed(offset: Int) = offset + (offset - 1).coerceAtLeast(0) / 4
-            override fun transformedToOriginal(offset: Int) = offset - offset / 5
+            override fun originalToTransformed(offset: Int) = offset + (offset - 1).coerceAtLeast(0) / 5
+            override fun transformedToOriginal(offset: Int) = offset - offset / 6
         }
         return TransformedText(AnnotatedString(shown), mapping)
     }

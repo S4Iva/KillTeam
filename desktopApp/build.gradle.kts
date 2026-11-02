@@ -19,6 +19,12 @@ compose.desktop {
     application {
         mainClass = "com.example.killteam.MainKt"
 
+        buildTypes.release.proguard {
+            isEnabled.set(true)
+            obfuscate.set(true)
+            configurationFiles.from(project.file("proguard-rules.pro"))
+        }
+
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.example.killteam"

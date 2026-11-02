@@ -44,7 +44,7 @@ Das Design ist bewusst eigenständig (petrolfarbenes Dunkel-Theme mit Teal-Akzen
 
 ## Zugangscode
 
-Beim Start fragt die App nach einem Zugangscode der Form `XXXX-XXXX-XXXX`. Er soll verhindern, dass die APK unbedacht weitergegeben wird. Der Code trägt seinen Ablaufzeitpunkt und eine Signatur; die App prüft ihn offline. Abgelaufene Codes lassen sich nicht mehr verwenden, auch nicht nach Neuinstallation. Läuft der Code ab, sperrt die App (auch bei laufender App) und fragt nach einem neuen Code, der den alten ersetzt. Wird die Systemuhr bei einem befristeten Code zurückgestellt, sperrt die App ebenfalls.
+Beim Start fragt die App nach einem Zugangscode (109 Zeichen in 5er-Gruppen, zum Einfügen aus der Nachricht gedacht). Er soll verhindern, dass die APK unbedacht weitergegeben wird. Der Code trägt seinen Ablaufzeitpunkt und eine Ed25519-Signatur; die App prüft ihn offline. Abgelaufene Codes lassen sich nicht mehr verwenden, auch nicht nach Neuinstallation. Läuft der Code ab, sperrt die App (auch bei laufender App) und fragt nach einem neuen Code, der den alten ersetzt. Wird die Systemuhr bei einem befristeten Code zurückgestellt, sperrt die App ebenfalls.
 
 Nach der Eingabe zeigt ein Dialog einmalig den Ablauf. Unter **More** steht dauerhaft, ob der Code unbegrenzt ist oder wie lange die App noch nutzbar ist.
 
@@ -53,10 +53,18 @@ Codes erzeugen (extern, am PC):
 - Dauer ab jetzt: `powershell -ExecutionPolicy Bypass -File tools\generate-access-code.ps1 -d 7 -h 12`
 - Festes Ablaufdatum (UTC, nur Datum = bis Ende des Tages): `... -Until "2026-12-24 18:00"`
 - Unbegrenzt: `... -Unlimited`
+Code: 00009-SWRKF-WTDH1-A3458-SEB96-H0HJJ-QY0T2-2V4VT-6G49P-MDVJ1-N15AT-BKSXJ-6W7G2-1T0VZ-H68PT-WTJHS-GSJHJ-5YGVG-FMDBW-GPRCC-2SP3X-W20M
 
-Der Ablauf wird auf volle Stunden aufgerundet. Der Generator arbeitet in UTC, der Code speichert den Zeitpunkt absolut. Die App rechnet ihn auf die Zeitzone des Geräts um und zeigt den Ablauf in Gerätezeit. Der geheime Schlüssel steht als `AccessConfig.KEY` in `logic/AccessGate.kt` und wird von App und Generator gemeinsam genutzt. Einen neuen Schlüssel setzt `tools\generate-access-code.ps1 -NewKey`, danach die App neu bauen. Alle bisherigen Codes sind dann ungültig. Ist der Schlüssel leer, entfällt die Abfrage.
+Code: 07F8H-0GA18-JYGWR-VEXWQ-WN78K-PSQQT-09GQJ-G56TZ-MWA0F-CSVPG-ZGYHT-C49FW-W05XX-4N2K8-JX32G-BEEJ7-MD6E6-WK5BQ-S0M82-HTZS3-GW81N-CGGA
+Gueltig bis: 2026-11-16 00:00 UTC
 
-Das ist kein Kopierschutz: Wer die APK zerlegt, findet den Schlüssel und kann eigene Codes erzeugen. Ein Code ist nicht an ein Gerät gebunden und lässt sich weitergeben.
+Der Ablauf wird auf volle Stunden aufgerundet. Der Generator arbeitet in UTC, der Code speichert den Zeitpunkt absolut. Die App rechnet ihn auf die Zeitzone des Geräts um und zeigt den Ablauf in Gerätezeit. Die App enthält nur den öffentlichen Schlüssel (`AccessConfig.PUBLIC_KEY` in `logic/AccessGate.kt`) und kann keine Codes erzeugen. Den privaten Schlüssel hält nur der Generator in `tools/access-private-key.txt` (steht in `.gitignore`, bitte sichern). Ein neues Schlüsselpaar erzeugt `tools\generate-access-code.ps1 -NewKey` (ein vorhandenes nur mit `-Force`), danach die App neu bauen. Alle bisherigen Codes sind dann ungültig. Ist der öffentliche Schlüssel leer, entfällt die Abfrage.
+
+Das ist kein vollständiger Kopierschutz: Wer die APK zerlegt, kann die Abfrage überspringen, aber keine gültigen Codes erzeugen. Ein Code ist nicht an ein Gerät gebunden und lässt sich weitergeben.
+
+## Release-Build und Verschleierung
+
+Die Release-Builds verkleinern und verschleiern den Code: Android über R8 (`isMinifyEnabled`, `isShrinkResources`), Desktop über ProGuard (`desktopApp/proguard-rules.pro`). Android: `./gradlew :androidApp:assembleRelease`.
 
 ## Daten aktualisieren
 

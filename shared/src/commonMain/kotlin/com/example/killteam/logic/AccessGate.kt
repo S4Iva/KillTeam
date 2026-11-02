@@ -2,9 +2,9 @@ package com.example.killteam.logic
 
 import com.russhwolf.settings.Settings
 
-/** Secret key of the access codes; set with `tools/generate-access-code.ps1 -NewKey`. An empty key switches the access check off. */
+/** Ed25519 public key (hex) of the access codes; set with `tools/generate-access-code.ps1 -NewKey`. An empty key switches the access check off. */
 object AccessConfig {
-    const val KEY = "f7e098daa04b6d32ced5d89a90895931"
+    const val PUBLIC_KEY = "783f7b3f61be219380ac1b4c5acf100f71f4198e27f75346512aede1c1415eaf"
 }
 
 enum class AccessResult { Unlocked, Wrong, Expired, ClockChanged }
@@ -31,59 +31,64 @@ fun formatRemaining(millis: Long): String {
 }
 
 /**
- * Access code `XXXX-XXXX-XXXX` (60 bits, Crockford base32): 20 bit expiry in hours since 2026-01-01 UTC (0 = unlimited),
- * 12 bit nonce and a 28 bit signature (HMAC-SHA256 over expiry and nonce). Must match tools/generate-access-code.ps1.
+ * Access code (Crockford base32, 109 characters, shown in groups of 5): 4 payload bytes (20 bit expiry in hours since
+ * 2026-01-01 UTC, 0 = unlimited, then a 12 bit nonce) followed by the 64 byte Ed25519 signature of the payload.
+ * Must match tools/generate-access-code.ps1. The app only holds the public key, so it cannot create codes.
  */
 object AccessCode {
     const val EPOCH_MILLIS = 1_767_225_600_000L
     const val HOUR_MILLIS = 3_600_000L
     const val MAX_HOURS = (1 shl 20) - 1
+    const val LENGTH = 109
     private const val ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
-    private const val LENGTH = 12
+    private const val PAYLOAD_BYTES = 4
+    private const val BYTES = PAYLOAD_BYTES + 64
 
     class Parsed(val normalized: String, val expiryHours: Int, val nonce: Int) {
         val unlimited get() = expiryHours == 0
         val expiresAt get() = EPOCH_MILLIS + expiryHours * HOUR_MILLIS
     }
 
-    fun create(key: String, expiryHours: Int, nonce: Int): String {
-        require(expiryHours in 0..MAX_HOURS)
-        val payload = (expiryHours.toLong() shl 12) or (nonce.toLong() and 0xFFF)
-        val value = (payload shl 28) or signature(key, payload)
-        val chars = CharArray(LENGTH) { i -> ALPHABET[((value ushr (55 - 5 * i)) and 31).toInt()] }
-        return chars.concatToString().chunked(4).joinToString("-")
-    }
-
-    /** Upper-case, without separators; O, I and L count as 0, 1 and 1. Null if it is not 12 valid characters. */
+    /** Upper-case, without separators; O, I and L count as 0, 1 and 1. Null if it is not 109 valid characters. */
     fun normalize(input: String): String? {
         val s = input.uppercase().filter { it != '-' && !it.isWhitespace() }
             .replace('O', '0').replace('I', '1').replace('L', '1')
         return if (s.length == LENGTH && s.all { it in ALPHABET }) s else null
     }
 
-    /** The code's content if the signature is valid for [key], otherwise null. */
-    fun parse(key: String, input: String): Parsed? {
+    /** The code's content if the signature is valid for the hex [publicKey], otherwise null. */
+    fun parse(publicKey: String, input: String): Parsed? {
         val s = normalize(input) ?: return null
-        var value = 0L
-        s.forEach { value = (value shl 5) or ALPHABET.indexOf(it).toLong() }
-        val payload = value ushr 28
-        if ((signature(key, payload) xor (value and 0xFFFFFFF)) != 0L) return null
-        return Parsed(s, (payload ushr 12).toInt(), (payload and 0xFFF).toInt())
+        val bytes = decode(s) ?: return null
+        val key = hexToBytes(publicKey) ?: return null
+        val payload = bytes.copyOfRange(0, PAYLOAD_BYTES)
+        if (!Ed25519.verify(key, payload, bytes.copyOfRange(PAYLOAD_BYTES, BYTES))) return null
+        val value = payload.fold(0L) { acc, b -> (acc shl 8) or (b.toLong() and 0xff) }
+        return Parsed(s, (value ushr 12).toInt(), (value and 0xFFF).toInt())
     }
 
-    private fun signature(key: String, payload: Long): Long {
-        val data = ByteArray(4) { i -> (payload ushr (24 - 8 * i)).toByte() }
-        val h = hmacSha256(key.encodeToByteArray(), data)
-        val first = h.take(4).fold(0L) { acc, b -> (acc shl 8) or (b.toLong() and 0xff) }
-        return first ushr 4
+    /** The 68 bytes behind the characters; null if the padding bit is not zero. */
+    private fun decode(s: String): ByteArray? {
+        val out = ByteArray(BYTES)
+        var buffer = 0
+        var bits = 0
+        var n = 0
+        for (c in s) {
+            buffer = (buffer shl 5) or ALPHABET.indexOf(c)
+            bits += 5
+            if (bits >= 8) {
+                bits -= 8
+                if (n < BYTES) out[n++] = (buffer ushr bits).toByte()
+                buffer = buffer and ((1 shl bits) - 1)
+            }
+        }
+        return if (buffer == 0) out else null
     }
-}
 
-internal fun hmacSha256(key: ByteArray, data: ByteArray): ByteArray {
-    val block = if (key.size > 64) Sha256.digest(key) else key
-    val padded = block.copyOf(64)
-    val inner = Sha256.digest(ByteArray(64) { (padded[it].toInt() xor 0x36).toByte() } + data)
-    return Sha256.digest(ByteArray(64) { (padded[it].toInt() xor 0x5c).toByte() } + inner)
+    private fun hexToBytes(hex: String): ByteArray? {
+        if (hex.length % 2 != 0) return null
+        return ByteArray(hex.length / 2) { (hex.substring(it * 2, it * 2 + 2).toIntOrNull(16) ?: return null).toByte() }
+    }
 }
 
 /**
@@ -92,10 +97,18 @@ internal fun hmacSha256(key: ByteArray, data: ByteArray): ByteArray {
  */
 class AccessGate(
     private val settings: Settings,
-    private val key: String = AccessConfig.KEY,
+    private val key: String = AccessConfig.PUBLIC_KEY,
     private val clock: () -> Long = ::nowMillis,
 ) {
     val enabled get() = key.isNotEmpty()
+
+    // Verifying a signature is slow compared to the rest, and the stored code rarely changes.
+    private var verified: Pair<String, AccessCode.Parsed?>? = null
+
+    private fun parse(input: String): AccessCode.Parsed? {
+        verified?.let { (code, parsed) -> if (code == input) return parsed }
+        return AccessCode.parse(key, input).also { verified = input to it }
+    }
 
     private sealed interface State {
         data object Disabled : State
@@ -125,7 +138,7 @@ class AccessGate(
     /** Checks a typed code and stores it if it is valid; a new code replaces the old one. */
     fun attempt(input: String): AccessResult {
         if (!enabled) return AccessResult.Unlocked
-        val code = AccessCode.parse(key, input) ?: return AccessResult.Wrong
+        val code = parse(input) ?: return AccessResult.Wrong
         if (!code.unlimited) {
             val now = clock()
             if (now >= code.expiresAt) return AccessResult.Expired
@@ -138,7 +151,7 @@ class AccessGate(
 
     private fun evaluate(): State {
         if (!enabled) return State.Disabled
-        val code = settings.getStringOrNull(KEY_CODE)?.let { AccessCode.parse(key, it) } ?: return State.None
+        val code = settings.getStringOrNull(KEY_CODE)?.let { parse(it) } ?: return State.None
         if (code.unlimited) return State.Unlimited
         val now = clock()
         if (now >= code.expiresAt) return State.Expired

@@ -1,0 +1,3 @@
+-dontwarn kotlinx.coroutines.**
+-dontwarn org.jetbrains.skia.**
+-dontwarn org.slf4j.**

@@ -4,74 +4,71 @@ import com.example.killteam.logic.AccessCode
 import com.example.killteam.logic.AccessGate
 import com.example.killteam.logic.AccessResult
 import com.example.killteam.logic.AccessStatus
-import com.example.killteam.logic.Sha256
+import com.example.killteam.logic.Ed25519
 import com.example.killteam.logic.formatRemaining
-import com.example.killteam.logic.hmacSha256
-import com.example.killteam.logic.toHex
 import com.russhwolf.settings.MapSettings
+import java.security.KeyFactory
+import java.security.KeyPairGenerator
+import java.security.Signature
+import java.security.spec.PKCS8EncodedKeySpec
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+/** Creates codes like tools/generate-access-code.ps1, signing with the JDK's Ed25519. */
+object TestCodes {
+    // RFC 8032, test 1
+    const val SEED = "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"
+    const val PUBLIC_KEY = "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
+    private const val ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+
+    fun create(hours: Int, nonce: Int, seed: String = SEED): String {
+        val value = (hours shl 12) or nonce
+        val payload = ByteArray(4) { (value ushr (24 - 8 * it)).toByte() }
+        val pkcs8 = "302e020100300506032b657004220420" + seed
+        val key = KeyFactory.getInstance("Ed25519").generatePrivate(
+            PKCS8EncodedKeySpec(ByteArray(pkcs8.length / 2) { pkcs8.substring(it * 2, it * 2 + 2).toInt(16).toByte() }),
+        )
+        val signature = Signature.getInstance("Ed25519").run { initSign(key); update(payload); sign() }
+        val sb = StringBuilder()
+        var buffer = 0
+        var bits = 0
+        for (b in payload + signature) {
+            buffer = (buffer shl 8) or (b.toInt() and 0xff)
+            bits += 8
+            while (bits >= 5) {
+                bits -= 5
+                sb.append(ALPHABET[(buffer ushr bits) and 31])
+                buffer = buffer and ((1 shl bits) - 1)
+            }
+        }
+        if (bits > 0) sb.append(ALPHABET[(buffer shl (5 - bits)) and 31])
+        return sb.toString().chunked(5).joinToString("-")
+    }
+}
+
 class AccessGateTest {
-    private val key = "test-key"
+    private val key = TestCodes.PUBLIC_KEY
     private val hour = AccessCode.HOUR_MILLIS
     private val epoch = AccessCode.EPOCH_MILLIS
 
-    private fun code(hours: Int, nonce: Int = 1) = AccessCode.create(key, hours, nonce)
+    private fun code(hours: Int, nonce: Int = 1) = TestCodes.create(hours, nonce)
     private fun gate(settings: MapSettings, now: () -> Long) = AccessGate(settings, key, now)
 
     @Test
-    fun sha256MatchesTheKnownVectors() {
-        assertEquals("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", Sha256.digest("abc".encodeToByteArray()).toHex())
-        assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", Sha256.digest(ByteArray(0)).toHex())
+    fun jdkSignaturesMatchTheGeneratorScript() {
+        // tools/generate-access-code.ps1 -Key <SEED> -Nonce 1234 -Until "2026-12-01 00:00" (8016 h)
         assertEquals(
-            "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1",
-            Sha256.digest("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq".encodeToByteArray()).toHex(),
+            "07TG9-MH52S-EMT7W-PRQZT-F4HCZ-E89J6-9HXDG-8WCES-8QNFA-4XKB8-J4EP1-WF6BG-5GTZ9-VAW91-XY8N1-BWANA-JA6G0-XG1PZ-HJ6FS-EZM6C-CXVR5-SXGW",
+            code(8016, 1234),
         )
-    }
-
-    @Test
-    fun hmacMatchesRfc4231() {
+        // -Nonce 1 -Unlimited
         assertEquals(
-            "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843",
-            hmacSha256("Jefe".encodeToByteArray(), "what do ya want for nothing?".encodeToByteArray()).toHex(),
+            "00000-0AXKZ-96YN8-5YTKB-ZBSSH-MK3ZP-Y5XB1-YD31B-V2T76-RJGAM-153N2-5RVG8-KYF1B-WZP7V-3A1TY-DVZW5-5GZPY-N26DB-AGZXG-51JZY-G1903-1J0C",
+            code(0, 1),
         )
-    }
-
-    @Test
-    fun codesMatchTheGeneratorScript() {
-        // tools/generate-access-code.ps1 -Key test-key -Nonce 1234 for an expiry of 2026-12-01 00:00 UTC (8016 h)
-        assertEquals("07TG-9MGR-F5EP", code(8016, 1234))
-        // -Unlimited -Key test-key -Nonce 1
-        assertEquals("0000-00F4-QZ5J", code(0, 1))
-        // -Nonce 5 for an expiry of 2026-12-25 00:00 UTC (8592 h)
-        assertEquals("08CG-01F2-NNXB", code(8592, 5))
-    }
-
-    @Test
-    fun parseReadsExpiryAndToleratesTypingVariants() {
-        val parsed = assertNotNull(AccessCode.parse(key, "07tg 9mgr-f5ep"))
-        assertEquals(8016, parsed.expiryHours)
-        assertEquals(1234, parsed.nonce)
-        assertEquals(epoch + 8016 * hour, parsed.expiresAt)
-        assertFalse(parsed.unlimited)
-        assertTrue(assertNotNull(AccessCode.parse(key, "0000-00F4-QZ5J")).unlimited)
-        // O, I and L are read as 0, 1 and 1.
-        assertEquals(parsed.normalized, AccessCode.parse(key, "O7TG-9MGR-F5EP")?.normalized)
-    }
-
-    @Test
-    fun tamperedOrForeignCodesAreRejected() {
-        assertNull(AccessCode.parse(key, "07TG-9MGR-F5EQ"))
-        assertNull(AccessCode.parse(key, "08TG-9MGR-F5EP"))
-        assertNull(AccessCode.parse("other-key", "07TG-9MGR-F5EP"))
-        assertNull(AccessCode.parse(key, "07TG-9MGR"))
-        assertNull(AccessCode.parse(key, ""))
-        assertNull(AccessCode.parse(key, "UUUU-UUUU-UUUU"))
     }
 
     @Test
@@ -81,6 +78,25 @@ class AccessGateTest {
             assertEquals(hours, parsed.expiryHours)
             assertEquals(nonce, parsed.nonce)
         }
+    }
+
+    @Test
+    fun randomKeysAndSignaturesAreAcceptedByTheVerifier() {
+        val generator = KeyPairGenerator.getInstance("Ed25519")
+        repeat(20) { i ->
+            val pair = generator.generateKeyPair()
+            val message = ByteArray(i * 7) { (it * 31 + i).toByte() }
+            val signature = Signature.getInstance("Ed25519").run { initSign(pair.private); update(message); sign() }
+            val publicKey = pair.public.encoded.takeLast(32).toByteArray()
+            assertTrue(Ed25519.verify(publicKey, message, signature))
+            assertFalse(Ed25519.verify(publicKey, message + byteArrayOf(1), signature))
+        }
+    }
+
+    @Test
+    fun aCodeSignedWithAnotherKeyIsRejected() {
+        val other = "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"
+        assertEquals(null, AccessCode.parse(key, TestCodes.create(100, 1, other)))
     }
 
     @Test
@@ -97,7 +113,8 @@ class AccessGateTest {
         val g = gate(settings) { epoch }
         assertFalse(g.isUnlocked())
         assertEquals(AccessStatus.Locked, g.status())
-        assertEquals(AccessResult.Wrong, g.attempt("0000-0000-0000"))
+        assertEquals(AccessResult.Wrong, g.attempt("00000-00000"))
+        assertEquals(AccessResult.Wrong, g.attempt("0".repeat(AccessCode.LENGTH)))
         assertFalse(gate(settings) { epoch }.isUnlocked())
     }
 
