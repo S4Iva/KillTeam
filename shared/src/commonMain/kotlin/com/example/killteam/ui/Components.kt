@@ -41,6 +41,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -60,6 +61,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.killteam.data.Archetype
 import com.example.killteam.data.OpSection
+import killteam.shared.generated.resources.Res
+import killteam.shared.generated.resources.ic_nav_cards
+import killteam.shared.generated.resources.ic_nav_index
+import killteam.shared.generated.resources.ic_nav_top
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -117,9 +122,9 @@ fun Page(
             )
             ListScrollbar(listState, Modifier.align(Alignment.CenterEnd).fillMaxHeight())
             Column(Modifier.align(Alignment.BottomEnd).padding(start = 12.dp, top = 12.dp, bottom = 12.dp, end = if (isDesktop) 32.dp else 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                if (onContents != null) NavButton("Index", onContents)
-                if (onList != null) NavButton("Cards", onList)
-                if (listState.canScrollBackward) NavButton("Top") { scope.launch { listState.animateScrollToItem(0) } }
+                if (onContents != null) NavButton("Index", Res.drawable.ic_nav_index, onContents)
+                if (onList != null) NavButton("Cards", Res.drawable.ic_nav_cards, onList)
+                if (listState.canScrollBackward) NavButton("Top", Res.drawable.ic_nav_top) { scope.launch { listState.animateScrollToItem(0) } }
             }
         }
     }
@@ -146,12 +151,15 @@ fun LoadStatus(app: AppState, what: String) {
 
 /** Small pill button floating over the page (index, card list, back to top). */
 @Composable
-fun NavButton(label: String, onClick: () -> Unit) {
-    Text(
-        label,
-        Modifier.clip(RoundedCornerShape(50)).background(Palette.Header).clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 10.dp),
-        color = Palette.Accent, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge,
-    )
+fun NavButton(label: String, icon: DrawableResource, onClick: () -> Unit) {
+    Row(
+        Modifier.clip(RoundedCornerShape(50)).background(Palette.Header).clickable(onClick = onClick).padding(start = 12.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Icon(painterResource(icon), contentDescription = null, tint = Palette.Accent, modifier = Modifier.size(18.dp))
+        Text(label, color = Palette.Accent, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+    }
 }
 
 /** Asks before an action that cannot be undone. */

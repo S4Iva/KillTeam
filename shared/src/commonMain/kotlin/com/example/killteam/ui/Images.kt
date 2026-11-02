@@ -39,9 +39,6 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.killteam.data.Archetype
 import com.example.killteam.data.Killzone
 import killteam.shared.generated.resources.Res
-import killteam.shared.generated.resources.btn_nav_armylist
-import killteam.shared.generated.resources.btn_nav_contents
-import killteam.shared.generated.resources.btn_nav_totop
 import killteam.shared.generated.resources.btn_remove
 import killteam.shared.generated.resources.btn_select
 import killteam.shared.generated.resources.icon_condition
@@ -145,9 +142,6 @@ val reconFlankImage: DrawableResource get() = Res.drawable.recon_flank_example
 val selectIcon: DrawableResource get() = Res.drawable.btn_select
 val removeIcon: DrawableResource get() = Res.drawable.btn_remove
 val effectIcon: DrawableResource get() = Res.drawable.icon_effect
-val navContentsIcon: DrawableResource get() = Res.drawable.btn_nav_contents
-val navListIcon: DrawableResource get() = Res.drawable.btn_nav_armylist
-val navTopIcon: DrawableResource get() = Res.drawable.btn_nav_totop
 val conditionIcon: DrawableResource get() = Res.drawable.icon_condition
 
 fun tacOpIcon(archetype: Archetype): DrawableResource = when (archetype) {

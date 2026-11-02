@@ -200,7 +200,7 @@ Die untere Navigationsleiste (`NavigationBar` in `App.kt`) zeigt bisher nur Text
 | TI-3 | **Farben:** Das aktive Icon nutzt `Palette.Accent`, inaktive `Palette.Text`, analog zu den Beschriftungen (`selectedIconColor`, `unselectedIconColor`). Die Icons sind dafür einfarbig und werden vom Theme eingefärbt. | M |
 | TI-4 | **Label bleibt:** Die Textbeschriftung bleibt unter dem Icon sichtbar, damit die Tabs eindeutig bleiben. Der aktive Tab behält den Indikator (`0xFF3C3C3C`). | M |
 | TI-5 | **Plattformen:** Die Icons erscheinen unverändert auf Android, iOS und Desktop. Die Leiste bleibt in Hoch- und Querformat bedienbar (NF-4), Touch-Fläche mindestens 48 dp. | M |
-| TI-6 | **Motive:** Generator = Würfel oder Zufall, Game = Spielfigur oder Play, Teams = Gruppe, Rules = Buch, More = drei Punkte oder Menü. Die Motive sind frei wählbar, solange sie sich klar unterscheiden. | S |
+| TI-6 | **Motive:** Alle Icons haben einen achteckigen Rahmen (Oktagon) mit einem Symbol darin: Generator = Würfelaugen, Game = Play, Teams = drei Figuren, Rules = offenes Buch, More = drei Punkte. Die Icons sind einfarbig und eigenständig gezeichnet, nicht die Wahapedia-Grafiken (siehe Abschnitt 2, Rechtliches). | S |
 | TI-7 | **Abnahme:** Alle fünf Tabs zeigen auf Android und Desktop ein Icon in beiden Zuständen (aktiv/inaktiv), kein Icon ist abgeschnitten oder falsch eingefärbt. `./gradlew :shared:jvmTest` und `:androidApp:assembleDebug` laufen weiterhin fehlerfrei. | M |
 
 Nicht Teil dieser Anforderung: Badges auf Tabs, Animationen beim Tabwechsel, ein Wechsel auf `material-icons-extended`.
