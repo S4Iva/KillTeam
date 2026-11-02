@@ -166,6 +166,29 @@ Führt durch die fünf Schritte des Approved-Ops-Spiels:
 | WS-1 | Würfelsimulator (W6, mehrere Würfel, Re-roll). | K |
 | WS-2 | Schadensrechner: Wahrscheinlichkeiten für Angriff und Verteidigung anhand von Waffenprofil und Save. | K |
 
+### 4.12 Zugangscodes für Alpha-Tests
+
+Ersetzt die zwei festen Passwörter aus AT-13 (unbegrenzt, 7 Tage ab erster Eingabe) durch Codes, die ein externer Generator erzeugt. Die App prüft die Codes offline.
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| ZC-1 | **Format:** Der Code hat die Form `XXXX-XXXX-XXXX` (12 Zeichen, Base32 ohne verwechselbare Zeichen wie 0/O und 1/I/L). Bei der Eingabe sind Groß-/Kleinschreibung und Bindestriche egal. | M |
+| ZC-2 | **Inhalt:** Ein Code enthält den Ablaufzeitpunkt (in vollen Stunden, UTC; Wert 0 = unbegrenzt), eine Zufallszahl, damit jeder Code einmalig ist, und eine Signatur (HMAC-SHA256 mit geheimem Schlüssel, gekürzt). Die App liest daraus ab, ob der Code unbegrenzt ist oder bis wann er gilt. | M |
+| ZC-3 | **Frist ab Generierung:** Der Ablauf ist fest im Code eingetragen und gilt ab dem Zeitpunkt der Erzeugung, nicht ab der ersten Eingabe. Ein Code lässt sich nach Ablauf nicht mehr verwenden, auch nicht nach Neuinstallation oder Löschen der App-Daten. | M |
+| ZC-4 | **Generator (extern):** Das Skript `tools/generate-access-code.ps1` erzeugt einen Code und gibt Code und Ablaufzeitpunkt aus. Die Dauer ab Generierung wird mit `-d` (Tage) und `-h` (Stunden) angegeben, beides ist kombinierbar (z. B. `-d 7 -h 12`). Alternativ legt `-Until yyyy-MM-dd[ HH:mm]` ein festes Ablaufdatum fest (UTC, auf volle Stunden gerundet). `-Unlimited` erzeugt einen unbegrenzten Code. Genau eine dieser drei Angaben ist nötig. | M |
+| ZC-5 | **Schlüssel:** Der geheime Schlüssel steht einmalig in `AccessConfig` (`logic/AccessGate.kt`); Generator und App nutzen denselben. Ein Schlüsselwechsel macht alle bisherigen Codes ungültig. Ohne Schlüssel ist die Abfrage abgeschaltet. | M |
+| ZC-6 | **Prüfung beim Start:** Die App fragt beim Start nach einem Code, solange kein gültiger gespeichert ist. Ein gültiger Code wird lokal gespeichert, bis er abläuft. Ungültige oder manipulierte Codes werden mit "Wrong code" abgelehnt, abgelaufene mit "Code expired". | M |
+| ZC-7 | **Ablauf im Betrieb:** Läuft der Code ab (auch bei geöffneter App, Prüfung mindestens minütlich), sperrt die App und fragt nach einem neuen Code. Ein neuer Code ersetzt den alten. Die Spielstände bleiben erhalten. | M |
+| ZC-8 | **Uhr-Schutz:** Wird die Systemuhr hinter den zuletzt gesehenen Zeitpunkt zurückgestellt (Toleranz 5 Minuten), sperrt die App, bis die Uhr wieder stimmt. | S |
+| ZC-9 | **Anzeige:** Nach der Eingabe zeigt ein Dialog einmalig "Unlimited" oder Ablaufzeitpunkt (UTC) und Restzeit. Unter More steht dauerhaft der Status: unbegrenzt oder Restzeit und Ablaufzeitpunkt. | M |
+| ZC-10 | **Tests:** Unit-Tests für Erzeugen und Prüfen (Round-Trip), Tippfehler und manipulierte Zeichen, unbegrenzt, abgelaufen, Uhr zurückgestellt und ein fester Testvektor, damit PowerShell-Generator und App-Prüfung übereinstimmen. | M |
+
+Grenzen: Wer die APK zerlegt, findet den Schlüssel und kann eigene Codes erzeugen (kein Kopierschutz, wie bisher). Ein Code ist nicht an ein Gerät gebunden und lässt sich weitergeben. Die Frist startet bei der Erzeugung, ein spät eingegebener Code hat entsprechend weniger Restzeit.
+
+Entscheidung: Die zwei festen Passwörter (`tools/set-access-password.ps1`, `HASH`/`HASH_TEMP`) sind nach der Umstellung entfallen.
+
+Status 2026-11-02: ZC-1 bis ZC-10 sind umgesetzt (`tools/generate-access-code.ps1`, `logic/AccessGate.kt`).
+
 ## 5. Nicht-funktionale Anforderungen
 
 | ID | Anforderung |
@@ -197,7 +220,7 @@ Führt durch die fünf Schritte des Approved-Ops-Spiels:
 
 Priorität: **M** = Muss, **S** = Soll, **K** = Kann.
 
-Status 2026-11-02: AT-1 bis AT-14 sind umgesetzt (Passwörter für Alpha-Tests werden mit `tools/set-access-password.ps1` bzw. `-Temp` gesetzt).
+Status 2026-11-02: AT-1 bis AT-14 sind umgesetzt (AT-13 wurde durch die Zugangscodes aus Abschnitt 4.12 ersetzt).
 
 | ID | Bereich | Anforderung | Prio |
 | --- | --- | --- | --- |
@@ -213,7 +236,7 @@ Status 2026-11-02: AT-1 bis AT-14 sind umgesetzt (Passwörter für Alpha-Tests w
 | AT-10 | Tracker | Anzahl der "Incapacitated"-Operatives auf die Operative-Anzahl des gewählten Teams begrenzen. Betrifft DT-1, VP-4. | M |
 | AT-11 | Teams | Suchleiste im Teams-Bereich mit Wortsuche (Volltext über Teamname, Operatives, Regeln, Equipment). Betrifft KB-1, KB-3. | S |
 | AT-12 | Teams / Darstellung | Bei "Following Equipment" (Team-Detail) Einträge um eine Ebene weiter einrücken. | S |
-| AT-13 | Zugang | Passwortschutz für Alpha-Tests: Die App fragt beim Start ein Passwort ab. Es gibt zwei Passwörter: (1) ein unbegrenztes Passwort ohne Ablauf; (2) ein Einmal-Passwort, das nach der ersten erfolgreichen Eingabe 7 Tage gültig ist und danach nicht mehr funktioniert (auch nicht erneut nach Neuinstallation oder Löschen der App-Daten, soweit offline möglich). Der Ablaufzeitpunkt wird bei der ersten Eingabe lokal gespeichert und gegen Zurückstellen der Systemuhr geprüft. Offline prüfbar (Passwörter nur gehasht im Build, Hilfsskript `tools/set-access-password.ps1`). | S |
+| AT-13 | Zugang | Passwortschutz für Alpha-Tests (Vorstufe, ersetzt durch die Zugangscodes aus Abschnitt 4.12; das Skript `set-access-password.ps1` entfällt): Die App fragt beim Start ein Passwort ab. Es gibt zwei Passwörter: (1) ein unbegrenztes Passwort ohne Ablauf; (2) ein Einmal-Passwort, das nach der ersten erfolgreichen Eingabe 7 Tage gültig ist und danach nicht mehr funktioniert (auch nicht erneut nach Neuinstallation oder Löschen der App-Daten, soweit offline möglich). Der Ablaufzeitpunkt wird bei der ersten Eingabe lokal gespeichert und gegen Zurückstellen der Systemuhr geprüft. Offline prüfbar (Passwörter nur gehasht im Build, Hilfsskript `tools/set-access-password.ps1`). | S |
 | AT-14 | Design | Design bewusst von Wahapedia abgrenzen (eigene Farben, Typografie, Komponenten, Icons), da nur die Inhalte, nicht das Layout übernommen werden. Betrifft Rechtliches (Abschnitt 2). | S |
 
 ## 8. Abgrenzung

@@ -61,13 +61,13 @@ private fun AccessCard(gate: AccessGate) {
     val status = gate.status()
     SectionCard("App access") {
         when (status) {
-            AccessStatus.Unlimited -> Text("Unlimited access (permanent password).")
+            AccessStatus.Unlimited -> Text("Unlimited access code.")
             is AccessStatus.Temporary -> {
-                Text("Test access with the 7-day password.")
+                Text("Limited access code.")
                 Text("Remaining: ${formatRemaining(status.remainingMillis)}", fontWeight = FontWeight.Bold)
                 Text("Valid until ${formatDate(status.expiresAt)} (UTC).", style = MaterialTheme.typography.bodySmall)
             }
-            AccessStatus.Disabled -> Text("No password is set, the app is not locked.")
+            AccessStatus.Disabled -> Text("No access code is required (no key set).")
             AccessStatus.Locked -> Text("Access is locked.")
         }
     }
@@ -315,12 +315,12 @@ private fun AboutPage(app: AppState, onBack: () -> Unit) {
     Page("Data sources", onBack) {
         item {
             SectionCard("Wahapedia") {
-                Text("All rules texts, datacards, maps and images were imported once from wahapedia.ru (Kill Team 3rd edition, Approved Ops 2025) for private, non-commercial use.")
-                Text("Content and images are property of Games Workshop and Wahapedia (c) Vyacheslav Maltsev. Do not redistribute this app.")
+                Text("All rules texts, datacards, maps and images were imported  (Kill Team 3rd edition, Approved Ops 2025) for private, non-commercial use.")
+                Text("Copyright:  Do not redistribute this app.")
                 Text("Kill team data: ${app.teams.size} teams, imported ${app.teamData?.importedAt ?: "-"}.")
                 val dated = app.teams.filter { it.updated.isNotBlank() }
                 if (dated.isNotEmpty()) {
-                    Text("Rules versions (as on Wahapedia at import time):", fontWeight = FontWeight.Bold)
+                    Text("Rules versions:", fontWeight = FontWeight.Bold)
                     Text(dated.sortedBy { it.name }.joinToString("\n") { "${it.name}: ${it.version} (${it.updated})" }, style = MaterialTheme.typography.bodySmall)
                 }
                 Text("Check for newer data with tools/check-updates.ps1 and compare with the official downloads on warhammer-community.com.")

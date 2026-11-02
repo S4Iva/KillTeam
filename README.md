@@ -42,23 +42,21 @@ Das Design ist bewusst eigenständig (petrolfarbenes Dunkel-Theme mit Teal-Akzen
 - Android: `./gradlew :shared:testAndroidHostTest`
 - iOS: `./gradlew :shared:iosSimulatorArm64Test` (nur unter macOS)
 
-## Zugangspasswort
+## Zugangscode
 
-Beim Start fragt die App nach einem Passwort. Das Passwort lässt sich beim Eingeben anzeigen. Es soll verhindern, dass die APK unbedacht weitergegeben wird. Es gibt zwei Passwörter:
+Beim Start fragt die App nach einem Zugangscode der Form `XXXX-XXXX-XXXX`. Er soll verhindern, dass die APK unbedacht weitergegeben wird. Der Code trägt seinen Ablaufzeitpunkt und eine Signatur; die App prüft ihn offline. Abgelaufene Codes lassen sich nicht mehr verwenden, auch nicht nach Neuinstallation. Läuft der Code ab, sperrt die App (auch bei laufender App) und fragt nach einem neuen Code, der den alten ersetzt. Wird die Systemuhr bei einem befristeten Code zurückgestellt, sperrt die App ebenfalls.
 
-- **Unbegrenzt:** wird einmalig abgefragt und gilt danach dauerhaft.
-- **Einmalig, 7 Tage:** startet bei der ersten Eingabe eine Frist von 7 Tagen. Danach ist es abgelaufen und lässt sich nicht erneut starten. Die Frist endet auch, wenn die Systemuhr zurückgestellt wird. Nach einer Neuinstallation oder dem Löschen der App-Daten beginnt sie von vorn, das ist offline nicht zu verhindern.
+Nach der Eingabe zeigt ein Dialog einmalig den Ablauf. Unter **More** steht dauerhaft, ob der Code unbegrenzt ist oder wie lange die App noch nutzbar ist.
 
-Nach der Eingabe des 7-Tage-Passworts zeigt die App einmal die verbleibende Zeit an. Unter **More** steht dauerhaft, ob der Zugang unbegrenzt ist oder wie lange die App noch nutzbar ist.
+Codes erzeugen (extern, am PC):
 
-Setzen oder ändern, danach jeweils neu bauen:
+- Dauer ab jetzt: `powershell -ExecutionPolicy Bypass -File tools\generate-access-code.ps1 -d 7 -h 12`
+- Festes Ablaufdatum (UTC, nur Datum = bis Ende des Tages): `... -Until "2026-12-24 18:00"`
+- Unbegrenzt: `... -Unlimited`
 
-- Unbegrenzt: `powershell -ExecutionPolicy Bypass -File tools\set-access-password.ps1`
-- 7 Tage: `powershell -ExecutionPolicy Bypass -File tools\set-access-password.ps1 -Temp`
+Der Ablauf wird auf volle Stunden aufgerundet. Der geheime Schlüssel steht als `AccessConfig.KEY` in `logic/AccessGate.kt` und wird von App und Generator gemeinsam genutzt. Einen neuen Schlüssel setzt `tools\generate-access-code.ps1 -NewKey`, danach die App neu bauen. Alle bisherigen Codes sind dann ungültig. Ist der Schlüssel leer, entfällt die Abfrage.
 
-Das Skript schreibt nur Salt und Hash nach `logic/AccessGate.kt`. Ein leeres Passwort entfernt das jeweilige Passwort, sind beide leer, entfällt die Abfrage. Ein geändertes Passwort wird auf allen Geräten erneut abgefragt.
-
-Das ist kein Kopierschutz: Die Daten liegen unverschlüsselt in der APK, und das Passwort lässt sich weitergeben.
+Das ist kein Kopierschutz: Wer die APK zerlegt, findet den Schlüssel und kann eigene Codes erzeugen. Ein Code ist nicht an ein Gerät gebunden und lässt sich weitergeben.
 
 ## Daten aktualisieren
 
@@ -75,4 +73,4 @@ Kill-Grade-Tabelle, Tac Ops, die Liste der allgemeinen Ausrüstung und weitere A
 
 ## Technik
 
-Kotlin Multiplatform und Compose Multiplatform, kotlinx-serialization für die JSON-Daten, multiplatform-settings für die lokale Persistenz. Die Passwortprüfung nutzt eine eigene SHA-256-Implementierung ohne zusätzliche Abhängigkeit.
+Kotlin Multiplatform und Compose Multiplatform, kotlinx-serialization für die JSON-Daten, multiplatform-settings für die lokale Persistenz. Die Code-Prüfung nutzt eine eigene SHA-256- und HMAC-Implementierung ohne zusätzliche Abhängigkeit.

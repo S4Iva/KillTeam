@@ -77,8 +77,8 @@ private val KillTeamColors = darkColorScheme(
 fun App() {
     val gate = remember { AccessGate(Settings()) }
     var unlocked by remember { mutableStateOf(gate.isUnlocked()) }
-    var notice by remember { mutableStateOf<AccessStatus.Temporary?>(null) }
-    // The temporary password can run out while the app stays open.
+    var notice by remember { mutableStateOf<AccessStatus?>(null) }
+    // A limited code can run out while the app stays open.
     LaunchedEffect(unlocked) {
         while (unlocked) {
             delay(60_000)
@@ -91,11 +91,13 @@ fun App() {
             MaterialTheme(colorScheme = KillTeamColors) {
                 AlertDialog(
                     onDismissRequest = { notice = null },
-                    title = { Text("Test access") },
+                    title = { Text("Access code accepted") },
                     text = {
                         Text(
-                            "You unlocked the app with the 7-day password. It can be used for ${formatRemaining(n.remainingMillis)} " +
-                                "(until ${formatDate(n.expiresAt)} UTC). The remaining time is shown under More.",
+                            if (n is AccessStatus.Temporary) {
+                                "The app can be used for ${formatRemaining(n.remainingMillis)} (until ${formatDate(n.expiresAt)} UTC). " +
+                                    "After that it asks for a new code. The remaining time is shown under More."
+                            } else "Unlimited access. This is shown under More.",
                         )
                     },
                     confirmButton = { TextButton({ notice = null }) { Text("OK") } },
@@ -105,10 +107,10 @@ fun App() {
     } else {
         MaterialTheme(colorScheme = KillTeamColors) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                LockScreen(gate.isExpired()) { password ->
-                    gate.attempt(password).also {
+                LockScreen(gate.lockReason()) { code ->
+                    gate.attempt(code).also {
                         if (it == AccessResult.Unlocked) {
-                            notice = gate.status() as? AccessStatus.Temporary
+                            notice = gate.status().takeIf { s -> s is AccessStatus.Unlimited || s is AccessStatus.Temporary }
                             unlocked = true
                         }
                     }
