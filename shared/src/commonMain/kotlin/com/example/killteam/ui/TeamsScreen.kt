@@ -10,6 +10,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import com.example.killteam.data.NamedText
+import com.example.killteam.data.SearchEntry
+import com.example.killteam.data.SearchKind
+import kotlinx.coroutines.delay
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -40,14 +43,19 @@ fun TeamsScreen(app: AppState) {
     val roster = app.rosters.value.firstOrNull { it.id == ui.rosterEditing }
     when {
         roster != null -> RosterEditor(app, roster) { ui.rosterEditing = null }
-        team != null -> TeamDetail(app, team, onBack = { ui.teamsSelected = null })
+        team != null -> TeamDetail(app, team, onBack = { if (ui.favoritesBack(Tab.Teams)) ui.leaveToFavorites() else ui.teamsSelected = null })
         ui.teamsPage == TeamsPage.Rosters -> RosterList(app, onBack = { ui.teamsPage = TeamsPage.List }, onEdit = { ui.rosterEditing = it.id })
-        else -> TeamList(app, onOpen = { ui.teamTab = 0; ui.teamsSelected = it.slug }, onRosters = { ui.teamsPage = TeamsPage.Rosters })
+        else -> TeamList(
+            app,
+            onOpen = { ui.teamTab = 0; ui.teamHit = null; ui.teamsSelected = it.slug },
+            onOpenHit = { t, e -> ui.teamTab = detailTabFor(e.kind).ordinal; ui.teamHit = e; ui.teamsSelected = t.slug },
+            onRosters = { ui.teamsPage = TeamsPage.Rosters },
+        )
     }
 }
 
 @Composable
-private fun TeamList(app: AppState, onOpen: (KillTeam) -> Unit, onRosters: () -> Unit) {
+private fun TeamList(app: AppState, onOpen: (KillTeam) -> Unit, onOpenHit: (KillTeam, SearchEntry) -> Unit, onRosters: () -> Unit) {
     val ui = LocalUi.current
     val query = ui.teamQuery
     val archetype = ui.teamArchetype
@@ -86,16 +94,39 @@ private fun TeamList(app: AppState, onOpen: (KillTeam) -> Unit, onRosters: () ->
                 actions = { FavoriteButton(app.isFavorite("team:${t.slug}")) { app.toggleFavorite("team:${t.slug}") } },
             ) {
                 Text(t.archetypes.joinToString(" / ").ifEmpty { "-" } + "  |  ${t.operatives.size} datacards", style = MaterialTheme.typography.bodySmall)
-                val hits = TeamSearch.hits(t, query)
-                if (hits.isNotEmpty()) {
-                    Text("Found in: " + hits.take(6).joinToString("; ") + if (hits.size > 6) "; +${hits.size - 6} more" else "", style = MaterialTheme.typography.bodySmall, color = Palette.Accent)
-                } else if (t.description.isNotBlank()) Text(t.description, maxLines = 3, style = MaterialTheme.typography.bodyMedium)
+                val hits = TeamSearch.hitEntries(t, query)
+                hits.take(6).forEach { e ->
+                    Text(
+                        "> ${e.label}",
+                        Modifier.fillMaxWidth().clickable { onOpenHit(t, e) }.padding(vertical = 6.dp),
+                        style = MaterialTheme.typography.bodyMedium, color = Palette.Accent, fontWeight = FontWeight.SemiBold,
+                    )
+                }
+                if (hits.size > 6) Text("+${hits.size - 6} more", style = MaterialTheme.typography.bodySmall, color = Palette.Accent)
+                if (hits.isEmpty() && t.description.isNotBlank()) Text(t.description, maxLines = 3, style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
 }
 
 private enum class DetailTab(val label: String) { Datacards("Datacards"), Rules("Faction rules"), Ploys("Ploys"), Equipment("Equipment"), Tokens("Markers") }
+
+private fun detailTabFor(kind: SearchKind) = when (kind) {
+    SearchKind.Team, SearchKind.Operative -> DetailTab.Datacards
+    SearchKind.FactionRule -> DetailTab.Rules
+    SearchKind.StrategyPloy, SearchKind.FirefightPloy -> DetailTab.Ploys
+    SearchKind.Equipment -> DetailTab.Equipment
+}
+
+/** Position of the hit in the detail list, counted from the first item below the chip row. */
+private fun hitOffset(team: KillTeam, e: SearchEntry): Int = when (e.kind) {
+    SearchKind.Team, SearchKind.Operative, SearchKind.Equipment -> e.index.coerceAtLeast(0)
+    SearchKind.FactionRule -> e.index.coerceAtLeast(0)
+    SearchKind.StrategyPloy -> 1 + e.index
+    SearchKind.FirefightPloy -> 2 + team.strategyPloys.size + e.index
+}
+
+private fun SearchEntry?.isAt(kind: SearchKind, index: Int) = this != null && this.kind == kind && this.index == index
 
 @Composable
 private fun TeamDetail(app: AppState, team: KillTeam, onBack: () -> Unit) {
@@ -107,6 +138,22 @@ private fun TeamDetail(app: AppState, team: KillTeam, onBack: () -> Unit) {
     val state = ui.list("team:${team.slug}")
     val key = "team:${team.slug}"
     val leadingItems = 2
+
+    val hit = ui.teamHit
+    var highlighted by remember { mutableStateOf<SearchEntry?>(null) }
+    LaunchedEffect(hit) {
+        if (hit != null) {
+            highlighted = hit
+            state.scrollToItem(if (hit.kind == SearchKind.Team) 0 else leadingItems + hitOffset(team, hit))
+            ui.teamHit = null
+        }
+    }
+    LaunchedEffect(highlighted) {
+        if (highlighted != null) {
+            delay(3000)
+            highlighted = null
+        }
+    }
 
     LaunchedEffect(scrollTo, tab) {
         scrollTo?.let { state.scrollToItem(it); scrollTo = null }
@@ -134,18 +181,18 @@ private fun TeamDetail(app: AppState, team: KillTeam, onBack: () -> Unit) {
         }
         item { ChipRow(DetailTab.entries, { it == tab }, { it.label }, { setTab(it) }) }
         when (tab) {
-            DetailTab.Datacards -> items(team.operatives.size) { OperativeDatacard(team.operatives[it]) }
+            DetailTab.Datacards -> items(team.operatives.size) { HitFrame(highlighted.isAt(SearchKind.Operative, it)) { OperativeDatacard(team.operatives[it]) } }
             DetailTab.Rules -> {
-                if (team.factionRuleItems.isEmpty()) item { SectionCard("Faction rules") { KeywordText(team.factionRules.ifBlank { "-" }) } }
-                items(team.factionRuleItems.size) { NamedTextCard(team.factionRuleItems[it], Palette.Accent) }
+                if (team.factionRuleItems.isEmpty()) item { HitFrame(highlighted?.kind == SearchKind.FactionRule) { SectionCard("Faction rules") { KeywordText(team.factionRules.ifBlank { "-" }) } } }
+                items(team.factionRuleItems.size) { HitFrame(highlighted.isAt(SearchKind.FactionRule, it)) { NamedTextCard(team.factionRuleItems[it], Palette.Accent) } }
             }
             DetailTab.Ploys -> {
                 item { Text("STRATEGY PLOYS", style = MaterialTheme.typography.titleMedium, color = Palette.Accent) }
-                items(team.strategyPloys.size) { NamedTextCard(team.strategyPloys[it], Palette.StrategyPloy) }
+                items(team.strategyPloys.size) { HitFrame(highlighted.isAt(SearchKind.StrategyPloy, it)) { NamedTextCard(team.strategyPloys[it], Palette.StrategyPloy) } }
                 item { Text("FIREFIGHT PLOYS", style = MaterialTheme.typography.titleMedium, color = Palette.Accent) }
-                items(team.firefightPloys.size) { NamedTextCard(team.firefightPloys[it], Palette.FirefightPloy) }
+                items(team.firefightPloys.size) { HitFrame(highlighted.isAt(SearchKind.FirefightPloy, it)) { NamedTextCard(team.firefightPloys[it], Palette.FirefightPloy) } }
             }
-            DetailTab.Equipment -> items(team.equipment.size) { NamedTextCard(team.equipment[it], Palette.Equipment) }
+            DetailTab.Equipment -> items(team.equipment.size) { HitFrame(highlighted.isAt(SearchKind.Equipment, it)) { NamedTextCard(team.equipment[it], Palette.Equipment) } }
             DetailTab.Tokens -> items(team.tokens.size) { i ->
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     TokenImage(team.tokens[i].image, 56.dp)

@@ -1,10 +1,12 @@
 package com.example.killteam.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -283,7 +285,7 @@ private fun FavoritesPage(app: AppState, onBack: () -> Unit) {
         item {
             SectionCard("Favorites") {
                 if (favorites.isEmpty()) Text("Mark crit ops, tac ops and kill teams with the Favorite button.")
-                favorites.forEach { key -> Text(describeKey(app, key)) }
+                favorites.forEach { key -> KeyLink(app, key) }
             }
         }
         val notes = app.notes.value.entries.toList()
@@ -292,11 +294,57 @@ private fun FavoritesPage(app: AppState, onBack: () -> Unit) {
                 if (notes.isEmpty()) Text("No notes yet.")
                 notes.forEach { (key, text) ->
                     Column {
-                        Text(describeKey(app, key), fontWeight = FontWeight.Bold)
+                        KeyLink(app, key, FontWeight.Bold)
                         Text(text)
                     }
                 }
             }
+        }
+    }
+}
+
+/** Entry of Favorites and notes; tapping it opens the team, crit op or tac op it belongs to. */
+@Composable
+private fun KeyLink(app: AppState, key: String, weight: FontWeight? = null) {
+    val ui = LocalUi.current
+    val label = describeKey(app, key)
+    if (canOpenKey(app, key)) {
+        Text(
+            "$label  >",
+            Modifier.fillMaxWidth().clickable { openKey(app, ui, key) }.padding(vertical = 6.dp),
+            color = Palette.Accent, fontWeight = weight ?: FontWeight.SemiBold,
+        )
+    } else Text(label, fontWeight = weight)
+}
+
+private fun canOpenKey(app: AppState, key: String): Boolean {
+    val id = key.substringAfter(':')
+    return when (key.substringBefore(':')) {
+        "tac" -> ApprovedOps.tacOps.any { it.id == id }
+        "crit" -> id.toIntOrNull() in ApprovedOps.critOps.indices
+        "team" -> app.team(id) != null
+        else -> false
+    }
+}
+
+/** Shows the entry in its own tab. A crit op becomes the current generator mission, as the generator shows only that one. */
+private fun openKey(app: AppState, ui: UiState, key: String) {
+    val id = key.substringAfter(':')
+    when (key.substringBefore(':')) {
+        "team" -> {
+            ui.teamsPage = TeamsPage.List
+            ui.rosterEditing = null
+            ui.teamTab = 0
+            ui.teamHit = null
+            ui.teamsSelected = id
+            ui.favoritesOrigin = Tab.Teams
+            ui.requestedTab = Tab.Teams
+        }
+        "crit", "tac" -> {
+            if (key.startsWith("crit:")) app.mission.update(app.mission.value.withCritOp(id.toInt()))
+            ui.generatorTarget = key
+            ui.favoritesOrigin = Tab.Generator
+            ui.requestedTab = Tab.Generator
         }
     }
 }

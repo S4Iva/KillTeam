@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -129,11 +130,14 @@ private fun KillTeamApp(gate: AccessGate) {
     val ui = remember { UiState() }
     var tab by remember { mutableStateOf(Tab.Generator) }
     LaunchedEffect(Unit) { app.load() }
+    LaunchedEffect(ui.requestedTab) { ui.requestedTab?.let { tab = it; ui.requestedTab = null } }
+    LaunchedEffect(tab) { if (ui.favoritesOrigin != tab) ui.favoritesOrigin = null }
 
     // Back steps out of detail pages first, then returns to where a keyword arrow came from, then to the generator.
     BackHandler(enabled = tab != Tab.Generator || ui.canGoBack(tab)) {
         val returnTo = ui.returnTab
         when {
+            ui.favoritesBack(tab) -> ui.leaveToFavorites()
             tab == Tab.Rules && returnTo != null && ui.rulesPage != null -> {
                 ui.closeRulesPage()
                 ui.returnTab = null
@@ -163,18 +167,20 @@ private fun KillTeamApp(gate: AccessGate) {
                     Spacer(Modifier.fillMaxWidth().background(Palette.Header).windowInsetsTopHeight(WindowInsets.statusBars))
                     if (app.loading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = Palette.Accent)
                     Column(Modifier.weight(1f).fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))) {
-                        when (tab) {
-                            Tab.Generator -> GeneratorScreen(app, onStartGame = { tab = Tab.Game })
-                            Tab.Game -> GameScreen(app, onOpenGenerator = { tab = Tab.Generator })
-                            Tab.Teams -> TeamsScreen(app)
-                            Tab.Rules -> RulesScreen(app)
-                            Tab.More -> MoreScreen(app, gate)
+                        key(ui.homeTick) {
+                            when (tab) {
+                                Tab.Generator -> GeneratorScreen(app, onStartGame = { tab = Tab.Game })
+                                Tab.Game -> GameScreen(app, onOpenGenerator = { tab = Tab.Generator })
+                                Tab.Teams -> TeamsScreen(app)
+                                Tab.Rules -> RulesScreen(app)
+                                Tab.More -> MoreScreen(app, gate)
+                            }
                         }
                     }
                     NavigationBar(containerColor = Palette.Header) {
                         Tab.entries.forEach { t ->
                             NavigationBarItem(
-                                selected = t == tab, onClick = { ui.returnTab = null; tab = t },
+                                selected = t == tab, onClick = { ui.goHome(t); tab = t },
                                 icon = { Icon(painterResource(t.icon), contentDescription = t.label) },
                                 label = { Text(t.label) },
                                 colors = NavigationBarItemDefaults.colors(

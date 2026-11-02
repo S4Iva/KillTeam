@@ -2,6 +2,7 @@ package com.example.killteam.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -221,6 +222,12 @@ fun SectionCard(
             content()
         }
     }
+}
+
+/** Frames a card briefly after a link (search hit, favorite) led to it. */
+@Composable
+fun HitFrame(on: Boolean, content: @Composable () -> Unit) {
+    Box(if (on) Modifier.border(3.dp, Palette.Highlight, RoundedCornerShape(14.dp)) else Modifier) { content() }
 }
 
 @Composable

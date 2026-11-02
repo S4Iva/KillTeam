@@ -201,9 +201,13 @@ Die untere Navigationsleiste (`NavigationBar` in `App.kt`) zeigt bisher nur Text
 | TI-4 | **Label bleibt:** Die Textbeschriftung bleibt unter dem Icon sichtbar, damit die Tabs eindeutig bleiben. Der aktive Tab behält den Indikator (`0xFF3C3C3C`). | M |
 | TI-5 | **Plattformen:** Die Icons erscheinen unverändert auf Android, iOS und Desktop. Die Leiste bleibt in Hoch- und Querformat bedienbar (NF-4), Touch-Fläche mindestens 48 dp. | M |
 | TI-6 | **Motive:** Alle Icons haben einen achteckigen Rahmen (Oktagon) mit einem Symbol darin: Generator = Würfelaugen, Game = Play, Teams = drei Figuren, Rules = offenes Buch, More = drei Punkte. Die Icons sind einfarbig und eigenständig gezeichnet, nicht die Wahapedia-Grafiken (siehe Abschnitt 2, Rechtliches). | S |
-| TI-7 | **Abnahme:** Alle fünf Tabs zeigen auf Android und Desktop ein Icon in beiden Zuständen (aktiv/inaktiv), kein Icon ist abgeschnitten oder falsch eingefärbt. `./gradlew :shared:jvmTest` und `:androidApp:assembleDebug` laufen weiterhin fehlerfrei. | M |
+| TI-7 | **Zurück zum Start des Tabs:** Ein Tipp auf einen Tab in der Leiste bringt den Nutzer immer an den Anfang dieses Tabs, auch wenn der Tab schon aktiv ist. Ist er in einer Unterseite (z. B. Team-Details, Regelseite, Unterseite unter More, offene Suche), schließt die App sie und zeigt die Startansicht des Tabs (Teams: Teamliste, Rules: Regelübersicht, More: Hauptmenü, Generator und Game: Hauptansicht). Die Startansicht wird ganz nach oben gescrollt. | M |
+| TI-8 | **Daten bleiben erhalten:** Das Zurücksetzen betrifft nur Navigation und Scrollposition. Laufende Partie, Spielstand, Generator-Auswahl, Rosters, Favoriten und Notizen bleiben unverändert. Ein Tipp auf den aktiven Tab, der schon in der Startansicht oben steht, ändert nichts. | M |
+| TI-9 | **Abnahme:** Alle fünf Tabs zeigen auf Android und Desktop ein Icon in beiden Zuständen (aktiv/inaktiv), kein Icon ist abgeschnitten oder falsch eingefärbt. Der Tipp auf jeden Tab führt wie in TI-7 zur Startansicht, oben. `./gradlew :shared:jvmTest` und `:androidApp:assembleDebug` laufen weiterhin fehlerfrei. | M |
 
 Nicht Teil dieser Anforderung: Badges auf Tabs, Animationen beim Tabwechsel, ein Wechsel auf `material-icons-extended`.
+
+Status 2026-11-02: TI-1 bis TI-8 sind umgesetzt (`ui/UiState.kt` `goHome`, `App.kt`), TI-9 ist auf dem Gerät noch zu prüfen.
 
 ## 5. Nicht-funktionale Anforderungen
 
@@ -236,7 +240,7 @@ Nicht Teil dieser Anforderung: Badges auf Tabs, Animationen beim Tabwechsel, ein
 
 Priorität: **M** = Muss, **S** = Soll, **K** = Kann.
 
-Status 2026-11-02: AT-1 bis AT-14 sind umgesetzt (AT-13 wurde durch die Zugangscodes aus Abschnitt 4.12 ersetzt).
+Status 2026-11-02: AT-1 bis AT-16 sind umgesetzt (AT-13 wurde durch die Zugangscodes aus Abschnitt 4.12 ersetzt).
 
 | ID | Bereich | Anforderung | Prio |
 | --- | --- | --- | --- |
@@ -254,6 +258,8 @@ Status 2026-11-02: AT-1 bis AT-14 sind umgesetzt (AT-13 wurde durch die Zugangsc
 | AT-12 | Teams / Darstellung | Bei "Following Equipment" (Team-Detail) Einträge um eine Ebene weiter einrücken. | S |
 | AT-13 | Zugang | Passwortschutz für Alpha-Tests (Vorstufe, ersetzt durch die Zugangscodes aus Abschnitt 4.12; das Skript `set-access-password.ps1` entfällt): Die App fragt beim Start ein Passwort ab. Es gibt zwei Passwörter: (1) ein unbegrenztes Passwort ohne Ablauf; (2) ein Einmal-Passwort, das nach der ersten erfolgreichen Eingabe 7 Tage gültig ist und danach nicht mehr funktioniert (auch nicht erneut nach Neuinstallation oder Löschen der App-Daten, soweit offline möglich). Der Ablaufzeitpunkt wird bei der ersten Eingabe lokal gespeichert und gegen Zurückstellen der Systemuhr geprüft. Offline prüfbar (Passwörter nur gehasht im Build, Hilfsskript `tools/set-access-password.ps1`). | S |
 | AT-14 | Design | Design bewusst von Wahapedia abgrenzen (eigene Farben, Typografie, Komponenten, Icons), da nur die Inhalte, nicht das Layout übernommen werden. Betrifft Rechtliches (Abschnitt 2). | S |
+| AT-15 | Teams / Suche | Ein Treffer der Teams-Suche ist antippbar und führt direkt zur Fundstelle: Sucht man z. B. "Midnight Claw" und tippt auf den Treffer, öffnet die App das zugehörige Team (Operative, Regel, Ploy oder Equipment), scrollt zum gefundenen Eintrag und hebt ihn kurz hervor. Der Treffer zeigt dafür Team und Art des Eintrags (z. B. "Teamname, Equipment"). Zurück führt zur Trefferliste mit unverändertem Suchbegriff. Betrifft KB-1, KB-3, AT-11. | M |
+| AT-16 | More / Favoriten | Unter More, Favorites and notes, sind die Einträge (Favoriten und Notizen) antippbar und führen zum jeweiligen Bereich: ein Favorit "Kill team" öffnet das Team im Teams-Tab, "Crit op" und "Tac op" öffnen den Generator an der zugehörigen Karte (scrollt dorthin und hebt sie kurz hervor). Notizen führen zu dem Eintrag, zu dem sie gehören. Die Einträge sind als antippbar erkennbar (Farbe und Pfeil). Zurück führt wieder zu Favorites and notes. Betrifft KB-4, TI-7. | M |
 
 ## 8. Abgrenzung
 

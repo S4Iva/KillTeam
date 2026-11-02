@@ -1,6 +1,7 @@
 package com.example.killteam
 
 import com.example.killteam.data.TeamSearch
+import com.example.killteam.data.SearchKind
 import com.example.killteam.data.compositionLevels
 import com.example.killteam.data.parseKillTeamData
 import com.example.killteam.data.tacOpsFor
@@ -82,6 +83,9 @@ class KillTeamDataTest {
         val word = equipment.name.split(" ").first()
         assertTrue(TeamSearch.matches(team, word))
         assertTrue(TeamSearch.hits(team, equipment.name).any { it == "Equipment: ${equipment.name}" })
+        val hit = TeamSearch.hitEntries(team, equipment.name).first { it.label == "Equipment: ${equipment.name}" }
+        assertEquals(SearchKind.Equipment, hit.kind)
+        assertEquals(0, hit.index)
         assertTrue(!TeamSearch.matches(team, "zzzxqy"))
         assertTrue(TeamSearch.matches(team, "kas"))
     }

@@ -11,8 +11,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.mutableStateOf
@@ -76,7 +78,24 @@ fun GeneratorScreen(app: AppState, onStartGame: () -> Unit) {
     var showKey by remember { mutableStateOf(false) }
     var showContents by remember { mutableStateOf(false) }
     val listState = LocalUi.current.list("generator")
+    val ui = LocalUi.current
+    var highlighted by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
+    val target = ui.generatorTarget
+    LaunchedEffect(target) {
+        if (target != null) {
+            highlighted = target
+            val tacIndex = ApprovedOps.tacOps.indexOfFirst { "tac:${it.id}" == target }
+            listState.scrollToItem(if (target.startsWith("crit:")) 1 else TAC_OPS_FIRST_ITEM + tacIndex.coerceAtLeast(0))
+            ui.generatorTarget = null
+        }
+    }
+    LaunchedEffect(highlighted) {
+        if (highlighted != null) {
+            delay(3000)
+            highlighted = null
+        }
+    }
     if (showContents) {
         JumpDialog(
             "Contents",
@@ -86,7 +105,12 @@ fun GeneratorScreen(app: AppState, onStartGame: () -> Unit) {
         )
     }
 
-    Page("Mission Generator", listState = listState, onContents = { showContents = true }) {
+    Page(
+        "Mission Generator",
+        onBack = if (ui.favoritesBack(Tab.Generator)) ({ ui.leaveToFavorites() }) else null,
+        listState = listState,
+        onContents = { showContents = true },
+    ) {
         item {
             SectionCard("Approved Ops 2025") {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -100,12 +124,14 @@ fun GeneratorScreen(app: AppState, onStartGame: () -> Unit) {
         }
         item {
             val key = "crit:${state.critOp.index}"
-            SectionCard(
-                "CRIT OP  ${state.critOp.label}",
-                actions = { FavoriteButton(app.isFavorite(key)) { app.toggleFavorite(key) } },
-            ) {
-                OpSectionsView(state.critOp.sections)
-                NoteField(key, app.note(key)) { app.setNote(key, it) }
+            HitFrame(highlighted == key) {
+                SectionCard(
+                    "CRIT OP  ${state.critOp.label}",
+                    actions = { FavoriteButton(app.isFavorite(key)) { app.toggleFavorite(key) } },
+                ) {
+                    OpSectionsView(state.critOp.sections)
+                    NoteField(key, app.note(key)) { app.setNote(key, it) }
+                }
             }
         }
         item {
@@ -137,6 +163,9 @@ fun GeneratorScreen(app: AppState, onStartGame: () -> Unit) {
             }
         }
         val visible = ApprovedOps.tacOps.filter { filter == null || it.archetype == filter }
-        items(visible.size) { i -> TacOpCard(visible[i], app, false) }
+        items(visible.size) { i -> HitFrame(highlighted == "tac:${visible[i].id}") { TacOpCard(visible[i], app, false) } }
     }
 }
+
+/** Index of the first tac op card in the generator list: mission, crit op, map, kill op and the tac op heading come before it. */
+private const val TAC_OPS_FIRST_ITEM = 5

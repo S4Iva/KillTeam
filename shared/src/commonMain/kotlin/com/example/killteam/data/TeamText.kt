@@ -1,23 +1,26 @@
 package com.example.killteam.data
 
+/** Kind of a team part that can be found by the search; the index is the position in the matching list of the team. */
+enum class SearchKind { Team, Operative, FactionRule, StrategyPloy, FirefightPloy, Equipment }
+
 /** One searchable part of a kill team (an operative, a ploy, an equipment option, ...). */
-class SearchEntry(val label: String, val text: String)
+class SearchEntry(val label: String, val text: String, val kind: SearchKind = SearchKind.Team, val index: Int = -1)
 
 private fun NamedText.fullText() = (listOf(name, text) + paras.map { it.text }).joinToString(" ")
 
 internal fun buildSearchIndex(team: KillTeam): List<SearchEntry> = buildList {
     add(SearchEntry("Team: ${team.name}", listOf(team.name, team.description, team.archetypes.joinToString(" "), team.factionKeyword, team.composition.joinToString(" ")).joinToString(" ").lowercase()))
-    team.operatives.forEach { o ->
+    team.operatives.forEachIndexed { i, o ->
         val parts = listOf(o.name, o.keywords, o.flavor) +
             o.weapons.flatMap { listOf(it.name, it.wr) } + o.rules +
             o.blocks.flatMap { b -> listOf(b.name) + b.paras.map { it.text } }
-        add(SearchEntry("Operative: ${o.name}", parts.joinToString(" ").lowercase()))
+        add(SearchEntry("Operative: ${o.name}", parts.joinToString(" ").lowercase(), SearchKind.Operative, i))
     }
-    if (team.factionRuleItems.isEmpty() && team.factionRules.isNotBlank()) add(SearchEntry("Faction rules", team.factionRules.lowercase()))
-    team.factionRuleItems.forEach { add(SearchEntry("Faction rule: ${it.name}", it.fullText().lowercase())) }
-    team.strategyPloys.forEach { add(SearchEntry("Strategy ploy: ${it.name}", it.fullText().lowercase())) }
-    team.firefightPloys.forEach { add(SearchEntry("Firefight ploy: ${it.name}", it.fullText().lowercase())) }
-    team.equipment.forEach { add(SearchEntry("Equipment: ${it.name}", it.fullText().lowercase())) }
+    if (team.factionRuleItems.isEmpty() && team.factionRules.isNotBlank()) add(SearchEntry("Faction rules", team.factionRules.lowercase(), SearchKind.FactionRule, 0))
+    team.factionRuleItems.forEachIndexed { i, it -> add(SearchEntry("Faction rule: ${it.name}", it.fullText().lowercase(), SearchKind.FactionRule, i)) }
+    team.strategyPloys.forEachIndexed { i, it -> add(SearchEntry("Strategy ploy: ${it.name}", it.fullText().lowercase(), SearchKind.StrategyPloy, i)) }
+    team.firefightPloys.forEachIndexed { i, it -> add(SearchEntry("Firefight ploy: ${it.name}", it.fullText().lowercase(), SearchKind.FirefightPloy, i)) }
+    team.equipment.forEachIndexed { i, it -> add(SearchEntry("Equipment: ${it.name}", it.fullText().lowercase(), SearchKind.Equipment, i)) }
 }
 
 /** Word search in the Teams tab: every word of the query must occur (anywhere) in the team's texts. */
@@ -37,10 +40,13 @@ object TeamSearch {
     }
 
     /** Names of the parts of the team that contain all words, e.g. "Equipment: Grav-chute". */
-    fun hits(team: KillTeam, query: String): List<String> {
+    fun hits(team: KillTeam, query: String): List<String> = hitEntries(team, query).map { it.label }
+
+    /** The parts of the team that contain all words, with the position needed to jump to them. */
+    fun hitEntries(team: KillTeam, query: String): List<SearchEntry> {
         val words = words(query)
         if (query.trim().length < MIN_LENGTH || words.isEmpty()) return emptyList()
-        return team.searchIndex.filter { e -> words.all { it in e.text } }.map { it.label }
+        return team.searchIndex.filter { e -> words.all { it in e.text } }
     }
 }
 
