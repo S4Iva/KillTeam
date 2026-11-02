@@ -49,9 +49,6 @@ class UiState {
     /** Tab the app should switch to (set by pages that link into another tab); consumed by the app shell. */
     var requestedTab: Tab? by mutableStateOf(null)
 
-    /** Tab that was opened from Favorites and notes; Back there returns to More. */
-    var favoritesOrigin: Tab? by mutableStateOf(null)
-
     /** Favorite key ("crit:3", "tac:flank") the generator should scroll to and highlight once. */
     var generatorTarget: String? by mutableStateOf(null)
 
@@ -88,7 +85,6 @@ class UiState {
     /** Tab bar tap: closes sub pages and searches of the tab and starts it at the top. Saved data is not touched. */
     fun goHome(tab: Tab) {
         returnTab = null
-        favoritesOrigin = null
         generatorTarget = null
         lists.keys.filter { listTab(it) == tab }.forEach { lists.remove(it) }
         when (tab) {
@@ -115,16 +111,7 @@ class UiState {
         homeTick++
     }
 
-    /** True while the page opened from Favorites and notes is showing, so Back should return there. */
-    fun favoritesBack(tab: Tab): Boolean = favoritesOrigin == tab && (tab != Tab.Teams || teamsSelected != null)
-
-    fun leaveToFavorites() {
-        favoritesOrigin = null
-        teamsSelected = null
-        requestedTab = Tab.More
-    }
-
-    fun canGoBack(tab: Tab): Boolean = favoritesBack(tab) || when (tab) {
+    fun canGoBack(tab: Tab): Boolean = when (tab) {
         Tab.Teams -> rosterEditing != null || teamsSelected != null || teamsPage != TeamsPage.List
         Tab.Rules -> rulesPage != null || returnTab != null
         Tab.More -> tournamentOpen != null || morePage != null

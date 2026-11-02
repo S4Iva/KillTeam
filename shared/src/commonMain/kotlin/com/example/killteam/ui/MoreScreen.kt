@@ -337,13 +337,11 @@ private fun openKey(app: AppState, ui: UiState, key: String) {
             ui.teamTab = 0
             ui.teamHit = null
             ui.teamsSelected = id
-            ui.favoritesOrigin = Tab.Teams
             ui.requestedTab = Tab.Teams
         }
         "crit", "tac" -> {
             if (key.startsWith("crit:")) app.mission.update(app.mission.value.withCritOp(id.toInt()))
             ui.generatorTarget = key
-            ui.favoritesOrigin = Tab.Generator
             ui.requestedTab = Tab.Generator
         }
     }

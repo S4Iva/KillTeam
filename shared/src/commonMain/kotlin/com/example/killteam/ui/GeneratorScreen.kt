@@ -105,12 +105,7 @@ fun GeneratorScreen(app: AppState, onStartGame: () -> Unit) {
         )
     }
 
-    Page(
-        "Mission Generator",
-        onBack = if (ui.favoritesBack(Tab.Generator)) ({ ui.leaveToFavorites() }) else null,
-        listState = listState,
-        onContents = { showContents = true },
-    ) {
+    Page("Mission Generator", listState = listState, onContents = { showContents = true }) {
         item {
             SectionCard("Approved Ops 2025") {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {

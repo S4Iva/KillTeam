@@ -131,13 +131,11 @@ private fun KillTeamApp(gate: AccessGate) {
     var tab by remember { mutableStateOf(Tab.Generator) }
     LaunchedEffect(Unit) { app.load() }
     LaunchedEffect(ui.requestedTab) { ui.requestedTab?.let { tab = it; ui.requestedTab = null } }
-    LaunchedEffect(tab) { if (ui.favoritesOrigin != tab) ui.favoritesOrigin = null }
 
     // Back steps out of detail pages first, then returns to where a keyword arrow came from, then to the generator.
     BackHandler(enabled = tab != Tab.Generator || ui.canGoBack(tab)) {
         val returnTo = ui.returnTab
         when {
-            ui.favoritesBack(tab) -> ui.leaveToFavorites()
             tab == Tab.Rules && returnTo != null && ui.rulesPage != null -> {
                 ui.closeRulesPage()
                 ui.returnTab = null

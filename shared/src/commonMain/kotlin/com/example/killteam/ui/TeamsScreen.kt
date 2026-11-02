@@ -43,7 +43,7 @@ fun TeamsScreen(app: AppState) {
     val roster = app.rosters.value.firstOrNull { it.id == ui.rosterEditing }
     when {
         roster != null -> RosterEditor(app, roster) { ui.rosterEditing = null }
-        team != null -> TeamDetail(app, team, onBack = { if (ui.favoritesBack(Tab.Teams)) ui.leaveToFavorites() else ui.teamsSelected = null })
+        team != null -> TeamDetail(app, team, onBack = { ui.teamsSelected = null })
         ui.teamsPage == TeamsPage.Rosters -> RosterList(app, onBack = { ui.teamsPage = TeamsPage.List }, onEdit = { ui.rosterEditing = it.id })
         else -> TeamList(
             app,
