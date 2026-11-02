@@ -8,13 +8,15 @@ Regeltexte, Daten und Bilder stammen von [Wahapedia](https://wahapedia.ru/kill-t
 
 Die App hat fünf Tabs:
 
-- **Generator:** zufällige oder manuell gewählte Mission (Crit Op), Map und Killzone, Kill-Op-Regeln mit Kill-Grade-Tabelle, Tac Ops nach Archetyp filterbar. Auswahl und Mission bleiben nach dem Neustart erhalten.
-- **Game:** Assistent durch die fünf Schritte eines Approved-Ops-Spiels, mit Spielverlauf, Turnieren und Statistiken.
-- **Teams:** alle 48 Kill Teams mit Zusammensetzung (Pfeile, Optionen und Auswahllisten wie auf Wahapedia), Datacards, Fraktionsregeln, Ploys, Equipment und Markern. Dazu Favoriten, Notizen und Rosters.
+- **Generator:** zufällige oder manuell gewählte Mission (Crit Op), Map und Killzone, Kill-Op-Regeln mit Kill-Grade-Tabelle. Die Tac Ops sind nach Archetyp filterbar, ausgewählt werden sie aber erst im Spiel. Mission und Auswahl bleiben nach dem Neustart erhalten.
+- **Game:** Assistent durch die fünf Schritte eines Approved-Ops-Spiels mit Phasenübersicht, Score-Tabelle und Initiative-Verwaltung. Jede neue Phase beginnt oben im Bild. Bei der Teamwahl ergeben sich Teamgröße und wählbare Tac Ops aus den Team-Regeln. In "Select Operatives" wählt jeder Spieler geheim eine Tac Op (Karten wie im Generator) und bis zu 4 Ausrüstungen aus Team- und allgemeiner Ausrüstung. Die Zahl der Incapacitated ist auf die Teamgröße begrenzt. Dazu Spielverlauf, Turniere und Statistiken.
+- **Teams:** alle 48 Kill Teams alphabetisch, mit Wortsuche über Teams, Operatives, Regeln, Ploys und Ausrüstung. Zusammensetzung (Pfeile, Optionen und Auswahllisten, Ausrüstungsoptionen eingerückt), Datacards, Fraktionsregeln, Ploys, Equipment und Marker. Dazu Favoriten, Notizen und Rosters.
 - **Rules:** Regelseiten von Wahapedia mit Suche.
 - **More:** weitere Hilfen und Einstellungen.
 
 Schlüsselbegriffe in den Texten sind antippbar. Ein Popup zeigt die Definition und führt zur passenden Regel.
+
+Das Design ist bewusst eigenständig (petrolfarbenes Dunkel-Theme mit Teal-Akzent in `ui/Components.kt`, Objekt `Palette`) und übernimmt nur die Inhalte von Wahapedia, nicht deren Aussehen.
 
 ## Projektstruktur
 
@@ -42,11 +44,19 @@ Schlüsselbegriffe in den Texten sind antippbar. Ein Popup zeigt die Definition 
 
 ## Zugangspasswort
 
-Beim ersten Start nach der Installation fragt die App einmalig nach einem Passwort, danach nicht mehr. Das Passwort lässt sich beim Eingeben anzeigen. Es soll verhindern, dass die APK unbedacht weitergegeben wird.
+Beim Start fragt die App nach einem Passwort. Das Passwort lässt sich beim Eingeben anzeigen. Es soll verhindern, dass die APK unbedacht weitergegeben wird. Es gibt zwei Passwörter:
 
-- Setzen oder ändern: `powershell -ExecutionPolicy Bypass -File tools\set-access-password.ps1`, danach neu bauen. Das Skript schreibt nur Salt und Hash nach `logic/AccessGate.kt`. Ein leeres Passwort schaltet die Abfrage ab.
-- Ein geändertes Passwort wird auf allen Geräten erneut abgefragt.
-- Das ist kein Kopierschutz: Die Daten liegen unverschlüsselt in der APK, und das Passwort lässt sich weitergeben.
+- **Unbegrenzt:** wird einmalig abgefragt und gilt danach dauerhaft.
+- **Einmalig, 7 Tage:** startet bei der ersten Eingabe eine Frist von 7 Tagen. Danach ist es abgelaufen und lässt sich nicht erneut starten. Die Frist endet auch, wenn die Systemuhr zurückgestellt wird. Nach einer Neuinstallation oder dem Löschen der App-Daten beginnt sie von vorn, das ist offline nicht zu verhindern.
+
+Setzen oder ändern, danach jeweils neu bauen:
+
+- Unbegrenzt: `powershell -ExecutionPolicy Bypass -File tools\set-access-password.ps1`
+- 7 Tage: `powershell -ExecutionPolicy Bypass -File tools\set-access-password.ps1 -Temp`
+
+Das Skript schreibt nur Salt und Hash nach `logic/AccessGate.kt`. Ein leeres Passwort entfernt das jeweilige Passwort, sind beide leer, entfällt die Abfrage. Ein geändertes Passwort wird auf allen Geräten erneut abgefragt.
+
+Das ist kein Kopierschutz: Die Daten liegen unverschlüsselt in der APK, und das Passwort lässt sich weitergeben.
 
 ## Daten aktualisieren
 
@@ -59,7 +69,7 @@ Die Daten werden einmalig importiert und mit der App ausgeliefert. Wenn Wahapedi
 
 Die Skripte laden schonend und mit Wiederholungen. Ein Lauf dauert einige Minuten. Schlägt ein Team fehl, bricht `import-wahapedia.ps1` ab, ohne etwas zu schreiben.
 
-Kill-Grade-Tabelle, Tac Ops und weitere Approved-Ops-Daten stehen fest im Code in `data/ApprovedOpsData.kt`.
+Kill-Grade-Tabelle, Tac Ops, die Liste der allgemeinen Ausrüstung und weitere Approved-Ops-Daten stehen fest im Code in `data/ApprovedOpsData.kt`.
 
 ## Technik
 

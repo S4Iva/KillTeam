@@ -20,6 +20,7 @@ import com.example.killteam.logic.setIncapacitated
 import com.example.killteam.logic.toResult
 import com.example.killteam.logic.useModifier
 import com.example.killteam.logic.useReroll
+import com.example.killteam.logic.withEnemyStart
 import com.example.killteam.logic.withRoll
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -134,6 +135,13 @@ class GameFlowTest {
         assertEquals(0, back.players[1].kills)
         assertEquals(1, back.players[0].operatives[0].wounds)
         assertEquals(g.players[1].kills, back.setIncapacitated(0, 0, false).players[1].kills)
+    }
+
+    @Test
+    fun incapacitatedNeverExceedsTheTeamSize() {
+        val full = game().updatePlayer(0) { it.copy(enemyStartCount = 5, kills = 5) }
+        assertEquals(5, full.setIncapacitated(1, 0, true).players[0].kills)
+        assertEquals(5, game().updatePlayer(0) { it.copy(kills = 6) }.withEnemyStart(0, 5).players[0].kills)
     }
 
     @Test

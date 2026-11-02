@@ -8,14 +8,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -50,6 +53,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -59,21 +63,24 @@ import com.example.killteam.data.OpSection
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
-/** Colours taken from the Wahapedia stylesheet (dark theme). */
-object Waha {
-    val Orange = Color(0xFFF15C23)
-    val Black = Color(0xFF000000)
-    val Card = Color(0xFF302F2B)
-    val Background = Color(0xFF202020)
-    val Text = Color(0xFFDADADA)
-    val Link = Color(0xFF8080FF)
-    val Infiltration = Color(0xFF69707E)
-    val Recon = Color(0xFFE26633)
-    val Security = Color(0xFF3C4B80)
-    val SeekAndDestroy = Color(0xFFE44130)
-    val StrategyPloy = Color(0xFF6F7F76)
-    val FirefightPloy = Color(0xFF141011)
-    val Equipment = Color(0xFF4A4A4A)
+/** Own dark theme (petrol and teal), deliberately different from the Wahapedia look. */
+object Palette {
+    val Accent = Color(0xFF13A08F)
+    val Highlight = Color(0xFFE0A030)
+    val Header = Color(0xFF0D2B33)
+    val Card = Color(0xFF1B242B)
+    val Background = Color(0xFF12181D)
+    val Text = Color(0xFFE4EAEE)
+    val Link = Color(0xFF6FB6FF)
+    val Infiltration = Color(0xFF5E7C9A)
+    val Recon = Color(0xFFC98A2B)
+    val Security = Color(0xFF3F6FB5)
+    val SeekAndDestroy = Color(0xFFB5443B)
+    val StrategyPloy = Color(0xFF3F6F63)
+    val FirefightPloy = Color(0xFF2A2F4A)
+    val Equipment = Color(0xFF4A5562)
+    val Effect = Color(0xFF4CAF7A)
+    val Condition = Color(0xFFE5645A)
 
     fun archetype(a: Archetype) = when (a) {
         Archetype.Infiltration -> Infiltration
@@ -95,11 +102,11 @@ fun Page(
 ) {
     val scope = rememberCoroutineScope()
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier.fillMaxWidth().background(Waha.Black).padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().background(Palette.Header).padding(horizontal = 12.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
             if (onBack != null) TextButton(onBack) { Text("< Back") }
-            Text(title.uppercase(), style = MaterialTheme.typography.titleLarge, color = Color.White, modifier = Modifier.padding(start = 4.dp))
+            Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold, color = Color.White, modifier = Modifier.padding(start = 4.dp))
         }
-        HorizontalDivider(thickness = 3.dp, color = Waha.Orange)
+        HorizontalDivider(thickness = 2.dp, color = Palette.Accent.copy(alpha = 0.6f))
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             LazyColumn(
                 Modifier.widthIn(max = 900.dp).fillMaxSize().dragToScroll(listState),
@@ -110,9 +117,9 @@ fun Page(
             )
             ListScrollbar(listState, Modifier.align(Alignment.CenterEnd).fillMaxHeight())
             Column(Modifier.align(Alignment.BottomEnd).padding(start = 12.dp, top = 12.dp, bottom = 12.dp, end = if (isDesktop) 32.dp else 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                if (onContents != null) NavButton(navContentsIcon, onContents)
-                if (onList != null) NavButton(navListIcon, onList)
-                if (listState.canScrollBackward) NavButton(navTopIcon) { scope.launch { listState.animateScrollToItem(0) } }
+                if (onContents != null) NavButton("Index", onContents)
+                if (onList != null) NavButton("Cards", onList)
+                if (listState.canScrollBackward) NavButton("Top") { scope.launch { listState.animateScrollToItem(0) } }
             }
         }
     }
@@ -128,7 +135,7 @@ fun LoadStatus(app: AppState, what: String) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         if (app.loading) {
-            CircularProgressIndicator(color = Waha.Orange)
+            CircularProgressIndicator(color = Palette.Accent)
             Text("Loading $what...")
         } else {
             Text("Could not load $what: ${app.loadError ?: "unknown error"}", color = MaterialTheme.colorScheme.error)
@@ -137,10 +144,14 @@ fun LoadStatus(app: AppState, what: String) {
     }
 }
 
-/** Octagon button like the Wahapedia side buttons (contents, datacard list, back to top). */
+/** Small pill button floating over the page (index, card list, back to top). */
 @Composable
-fun NavButton(icon: DrawableResource, onClick: () -> Unit) {
-    Image(painterResource(icon), null, Modifier.size(52.dp).clickable(onClick = onClick))
+fun NavButton(label: String, onClick: () -> Unit) {
+    Text(
+        label,
+        Modifier.clip(RoundedCornerShape(50)).background(Palette.Header).clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 10.dp),
+        color = Palette.Accent, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge,
+    )
 }
 
 /** Asks before an action that cannot be undone. */
@@ -175,25 +186,28 @@ fun JumpDialog(title: String, entries: List<String>, onPick: (Int) -> Unit, onDi
 }
 
 
-/** Card with a coloured header bar like the Wahapedia cards; the default header is black. */
+/** Rounded card with a dark title bar and a coloured stripe on its left edge. */
 @Composable
 fun SectionCard(
     title: String,
     modifier: Modifier = Modifier,
-    headerColor: Color = Waha.Black,
+    headerColor: Color = Palette.Accent,
     icon: DrawableResource? = null,
     actions: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     Card(
         modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Waha.Card),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = Palette.Card),
     ) {
-        Row(Modifier.fillMaxWidth().background(headerColor).padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            if (icon != null) Image(painterResource(icon), null, Modifier.padding(end = 8.dp).size(36.dp))
-            Text(title.uppercase(), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.weight(1f))
-            actions?.invoke()
+        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min).background(Palette.Header), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.width(6.dp).fillMaxHeight().background(headerColor))
+            Row(Modifier.weight(1f).padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (icon != null) Image(painterResource(icon), null, Modifier.padding(end = 8.dp).size(36.dp))
+                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = Color.White, modifier = Modifier.weight(1f))
+                actions?.invoke()
+            }
         }
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             content()
@@ -208,14 +222,14 @@ fun OpSectionsView(sections: List<OpSection>) {
             if (s.title.startsWith("MISSION ACTION")) {
                 ActionBlock(s)
             } else {
-                Text(s.title, style = MaterialTheme.typography.labelLarge, color = Waha.Orange, fontWeight = FontWeight.Bold)
+                Text(s.title, style = MaterialTheme.typography.labelLarge, color = Palette.Accent, fontWeight = FontWeight.Bold)
                 s.lines.forEach { KeywordText(it, style = MaterialTheme.typography.bodyMedium) }
             }
         }
     }
 }
 
-/** Mission action like on Wahapedia: orange bar with name and AP, green arrow for the effect, red diamond for the conditions. */
+/** Mission action: accent bar with name and AP, green triangle for the effect, red diamond for the conditions. */
 @Composable
 private fun ActionBlock(s: OpSection) {
     val body = s.title.removePrefix("MISSION ACTION: ")
@@ -225,8 +239,8 @@ private fun ActionBlock(s: OpSection) {
         ActionBar(name, ap)
         s.lines.forEachIndexed { i, line ->
             when {
-                i == 0 -> BulletRow(effectIcon, line)
-                i == s.lines.lastIndex -> BulletRow(conditionIcon, line)
+                i == 0 -> BulletRow(true, line)
+                i == s.lines.lastIndex -> BulletRow(false, line)
                 else -> KeywordText(line, Modifier.padding(start = 26.dp), MaterialTheme.typography.bodyMedium)
             }
         }
@@ -235,16 +249,20 @@ private fun ActionBlock(s: OpSection) {
 
 @Composable
 fun ActionBar(name: String, ap: String) {
-    Row(Modifier.fillMaxWidth().background(Waha.Orange).padding(horizontal = 10.dp, vertical = 6.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(name.uppercase(), color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
-        Text(ap.uppercase(), color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).background(Palette.Accent).padding(horizontal = 12.dp, vertical = 6.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(name, color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(ap, color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
     }
 }
 
+/** Effect (green triangle) or condition (red diamond) line of an action or rule. */
 @Composable
-fun BulletRow(icon: DrawableResource, text: String) {
+fun BulletRow(effect: Boolean, text: String) {
     Row(verticalAlignment = Alignment.Top) {
-        Image(painterResource(icon), null, Modifier.padding(top = 3.dp, end = 8.dp).size(18.dp))
+        Text(
+            if (effect) "\u25B6" else "\u25C6", Modifier.width(26.dp),
+            color = if (effect) Palette.Effect else Palette.Condition, style = MaterialTheme.typography.bodyMedium,
+        )
         KeywordText(text, Modifier.weight(1f), MaterialTheme.typography.bodyMedium)
     }
 }
@@ -281,7 +299,7 @@ fun <T> ChipRow(options: List<T>, isSelected: (T) -> Boolean, text: (T) -> Strin
         options.forEach { o ->
             FilterChip(
                 isSelected(o), { onClick(o) }, { Text(text(o)) },
-                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Waha.Orange, selectedLabelColor = Color.White),
+                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Palette.Accent, selectedLabelColor = Color.White),
             )
         }
     }

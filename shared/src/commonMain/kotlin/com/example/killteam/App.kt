@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.killteam.logic.AccessGate
+import com.example.killteam.logic.AccessResult
 import com.example.killteam.logic.AppState
 import com.example.killteam.ui.GameScreen
 import com.example.killteam.ui.GeneratorScreen
@@ -48,20 +49,21 @@ import com.example.killteam.ui.RulesScreen
 import com.example.killteam.ui.Tab
 import com.example.killteam.ui.TeamsScreen
 import com.example.killteam.ui.UiState
-import com.example.killteam.ui.Waha
+import com.example.killteam.ui.Palette
 import com.example.killteam.ui.isDesktop
 import com.russhwolf.settings.Settings
+import kotlinx.coroutines.delay
 
 private val KillTeamColors = darkColorScheme(
-    primary = Waha.Orange,
+    primary = Palette.Accent,
     onPrimary = Color.White,
-    secondary = Waha.Link,
-    background = Waha.Background,
-    surface = Waha.Background,
-    surfaceVariant = Waha.Card,
-    onSurface = Waha.Text,
-    onSurfaceVariant = Waha.Text,
-    onBackground = Waha.Text,
+    secondary = Palette.Link,
+    background = Palette.Background,
+    surface = Palette.Background,
+    surfaceVariant = Palette.Card,
+    onSurface = Palette.Text,
+    onSurfaceVariant = Palette.Text,
+    onBackground = Palette.Text,
     error = Color(0xFFFF5252),
 )
 
@@ -70,12 +72,19 @@ private val KillTeamColors = darkColorScheme(
 fun App() {
     val gate = remember { AccessGate(Settings()) }
     var unlocked by remember { mutableStateOf(gate.isUnlocked()) }
+    // The temporary password can run out while the app stays open.
+    LaunchedEffect(unlocked) {
+        while (unlocked) {
+            delay(60_000)
+            if (!gate.isUnlocked()) unlocked = false
+        }
+    }
     if (unlocked) {
         KillTeamApp()
     } else {
         MaterialTheme(colorScheme = KillTeamColors) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                LockScreen { password -> gate.tryUnlock(password).also { if (it) unlocked = true } }
+                LockScreen(gate.isExpired()) { password -> gate.attempt(password).also { if (it == AccessResult.Unlocked) unlocked = true } }
             }
         }
     }
@@ -119,8 +128,8 @@ private fun KillTeamApp() {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                 Column(Modifier.fillMaxSize().imePadding()) {
                     // The status bar area gets the header colour; the navigation bar draws itself under the gesture bar.
-                    Spacer(Modifier.fillMaxWidth().background(Waha.Black).windowInsetsTopHeight(WindowInsets.statusBars))
-                    if (app.loading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = Waha.Orange)
+                    Spacer(Modifier.fillMaxWidth().background(Palette.Header).windowInsetsTopHeight(WindowInsets.statusBars))
+                    if (app.loading) LinearProgressIndicator(Modifier.fillMaxWidth(), color = Palette.Accent)
                     Column(Modifier.weight(1f).fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))) {
                         when (tab) {
                             Tab.Generator -> GeneratorScreen(app, onStartGame = { tab = Tab.Game })
@@ -130,13 +139,13 @@ private fun KillTeamApp() {
                             Tab.More -> MoreScreen(app)
                         }
                     }
-                    NavigationBar(containerColor = Waha.Black) {
+                    NavigationBar(containerColor = Palette.Header) {
                         Tab.entries.forEach { t ->
                             NavigationBarItem(
                                 selected = t == tab, onClick = { ui.returnTab = null; tab = t }, icon = {}, label = { Text(t.label) },
                                 colors = NavigationBarItemDefaults.colors(
-                                    selectedTextColor = Waha.Orange,
-                                    unselectedTextColor = Waha.Text,
+                                    selectedTextColor = Palette.Accent,
+                                    unselectedTextColor = Palette.Text,
                                     indicatorColor = Color(0xFF3C3C3C),
                                 ),
                             )

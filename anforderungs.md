@@ -1,6 +1,6 @@
 # Anforderungen: Kill Team Companion App
 
-Stand: 2026-10-27 | Status: Entwurf
+Stand: 2026-11-02 | Status: Entwurf
 
 ## 1. Ziel
 
@@ -64,7 +64,7 @@ Priorität: **M** = Muss, **S** = Soll, **K** = Kann.
 | MG-3 | Anzeige der Crit Op mit Mission Action, Victory Points und Map-Bild samt Universal Map Key. | M |
 | MG-4 | Anzeige der Kill-Op-Regeln inklusive Kill-Grade-Tabelle. | M |
 | MG-5 | Liste aller Tac Ops, filterbar nach Archetyp (Infiltration, Recon, Security, Seek & Destroy). | M |
-| MG-6 | Tac Op mit "Select" zur Liste "Selected Tac Ops" hinzufügen, mit "Remove" entfernen. Der Generator begrenzt auf maximal eine Tac Op (wie Wahapedia), die Regel "Select Tac Ops" entfällt, sodass jede Tac Op frei wählbar ist. | M |
+| MG-6 | Tac Ops werden nicht im Generator, sondern im Spiel (Schritt 2 "Select Operatives") geheim ausgewählt, mit "Select" / "Remove" an den Tac-Op-Karten; wählbar sind die Archetypen des Kill Teams. Der Generator zeigt die Tac Ops nur zum Nachlesen. | M |
 | MG-7 | Auswahl und generierte Mission bleiben nach App-Neustart erhalten (lokale Persistenz, Ersatz für die Cookies von Wahapedia). | M |
 | MG-8 | Crit-Op-Gruppen laut Tournament Companion für rundenweise Zufallsauswahl: (Secure, Loot, Transmission), (Orb, Energy Cells, Download), (Stake Claim, Data, Reboot). | S |
 
@@ -192,6 +192,29 @@ Führt durch die fünf Schritte des Approved-Ops-Spiels:
 - Genaue Kill-Grade-Tabelle liegt nur als Bild vor und muss für die Berechnung manuell in Daten überführt werden.
 - Prüfung, ob die Wahapedia-Nutzungsbedingungen den einmaligen Import ausdrücklich erlauben.
 - Umfang des Importes der Kill Teams (alle Seasons oder nur Auswahl).
+
+### 7.1 Offene Punkte aus dem Alpha-Test (Bedienung der App)
+
+Priorität: **M** = Muss, **S** = Soll, **K** = Kann.
+
+Status 2026-11-02: AT-1 bis AT-14 sind umgesetzt (Passwörter für Alpha-Tests werden mit `tools/set-access-password.ps1` bzw. `-Temp` gesetzt).
+
+| ID | Bereich | Anforderung | Prio |
+| --- | --- | --- | --- |
+| AT-1 | Generator / Game | "Select Tac Op" aus dem Generator entfernen und stattdessen in den Spielablauf (Game, Schritt 2 "Select Operatives") integrieren. Betrifft MG-5, MG-6, GA-1. | M |
+| AT-2 | Game / Score | Formatierung des Score-Bereichs überarbeiten: Zeilen je Spieler mit Crit, Kill, Tac, Primary und Summe (VP) sauber ausgerichtet, ohne Zeilenumbrüche mitten in den Werten (siehe Screenshot, Score-Karte). | M |
+| AT-3 | Game / Initiative | Formatierung "Initiative and Drop Zones" überarbeiten: Buttons "Player 1/2 has initiative" einheitlich in Größe und Textumbruch, Ergebnistext klar abgesetzt (siehe Screenshot). | M |
+| AT-4 | Teams | Team-Auswahl (Kill-Team-Liste, Dropdowns im Game) alphabetisch sortieren. | M |
+| AT-5 | Game | Bei jedem Phasenwechsel (Set up, Select Operatives, Set up Operatives, Play, End) und Turning-Point-Wechsel scrollt die Ansicht an den Seitenanfang. | M |
+| AT-6 | Game / Team | Bei der Team-Wahl im Game wird das Team gleich konfiguriert: Teamgröße (Operative-Anzahl laut Team-Regeln) und passende Tac Ops, nach Archetyp sortiert. Betrifft AS-5, RB-1, RB-3. | S |
+| AT-7 | Game / Tac Ops | Grafische Darstellung von "Select Tac Ops" wie im Generator (Karten mit Archetyp-Filter, Select/Remove). Betrifft MG-5, MG-6. | M |
+| AT-8 | Game / Equipment | Team-Ausrüstung und allgemeine (universelle) Ausrüstung in "Select Operatives" integrieren, maximal 4 Optionen pro Spieler (siehe Spielablauf Schritt 2). | M |
+| AT-9 | Game / Phase | Unter der Phasen-Überschrift die Phasen des Spiels kurz als Liste aufführen (Kurzbeschreibung je Schritt 1-5). Betrifft AS-1. | S |
+| AT-10 | Tracker | Anzahl der "Incapacitated"-Operatives auf die Operative-Anzahl des gewählten Teams begrenzen. Betrifft DT-1, VP-4. | M |
+| AT-11 | Teams | Suchleiste im Teams-Bereich mit Wortsuche (Volltext über Teamname, Operatives, Regeln, Equipment). Betrifft KB-1, KB-3. | S |
+| AT-12 | Teams / Darstellung | Bei "Following Equipment" (Team-Detail) Einträge um eine Ebene weiter einrücken. | S |
+| AT-13 | Zugang | Passwortschutz für Alpha-Tests: Die App fragt beim Start ein Passwort ab. Es gibt zwei Passwörter: (1) ein unbegrenztes Passwort ohne Ablauf; (2) ein Einmal-Passwort, das nach der ersten erfolgreichen Eingabe 7 Tage gültig ist und danach nicht mehr funktioniert (auch nicht erneut nach Neuinstallation oder Löschen der App-Daten, soweit offline möglich). Der Ablaufzeitpunkt wird bei der ersten Eingabe lokal gespeichert und gegen Zurückstellen der Systemuhr geprüft. Offline prüfbar (Passwörter nur gehasht im Build, Hilfsskript `tools/set-access-password.ps1`). | S |
+| AT-14 | Design | Design bewusst von Wahapedia abgrenzen (eigene Farben, Typografie, Komponenten, Icons), da nur die Inhalte, nicht das Layout übernommen werden. Betrifft Rechtliches (Abschnitt 2). | S |
 
 ## 8. Abgrenzung
 

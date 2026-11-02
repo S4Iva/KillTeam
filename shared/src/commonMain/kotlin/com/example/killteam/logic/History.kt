@@ -1,5 +1,6 @@
 package com.example.killteam.logic
 
+import com.example.killteam.data.KillOp
 import com.example.killteam.data.Killzone
 import com.example.killteam.data.KillTeam
 import kotlinx.serialization.Serializable
@@ -33,6 +34,12 @@ data class Roster(
 )
 
 object RosterRules {
+    /** Operatives a player brings to a game: the roster size, else the size from the team rules, else [default] (within the kill grade table). */
+    fun gameSize(team: KillTeam?, roster: Roster?, default: Int = 6): Int {
+        val size = roster?.operatives?.size?.takeIf { it > 0 } ?: team?.let { expectedSize(it) }?.takeIf { it > 0 } ?: default
+        return size.coerceIn(KillOp.minOperatives, KillOp.maxOperatives)
+    }
+
     /** Team size derived from composition lines such as "1 KASRKIN SERGEANT operative ..." and "9 KASRKIN operatives ...". */
     fun expectedSize(team: KillTeam): Int =
         team.composition.sumOf { line -> Regex("^(\\d+)\\s").find(line.trim())?.groupValues?.get(1)?.toInt() ?: 0 }

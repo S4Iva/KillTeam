@@ -14,8 +14,8 @@ actual val isDesktop: Boolean = true
 actual fun ListScrollbar(state: LazyListState, modifier: Modifier) {
     val style = LocalScrollbarStyle.current.copy(
         thickness = 16.dp,
-        unhoverColor = Waha.Orange.copy(alpha = 0.55f),
-        hoverColor = Waha.Orange,
+        unhoverColor = Palette.Accent.copy(alpha = 0.55f),
+        hoverColor = Palette.Accent,
     )
     VerticalScrollbar(rememberScrollbarAdapter(state), modifier, style = style)
 }

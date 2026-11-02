@@ -42,18 +42,18 @@ import killteam.shared.generated.resources.ds_wounds
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
-private val CardBackground = Color(0xFF262626)
-private val RowDark = Color(0xFF2E2E2E)
-private val RowLight = Color(0xFF3B3B3B)
-private val StatBackground = Color(0xFF1A1A1A)
-private val Muted = Color(0xFFCCCCCC)
+private val CardBackground = Color(0xFF161E24)
+private val RowDark = Color(0xFF1F2A32)
+private val RowLight = Color(0xFF27343E)
+private val StatBackground = Color(0xFF0B1115)
+private val Muted = Color(0xFFC3CDD4)
 
-/** Operative datacard in the style of the Wahapedia datacards. */
+/** Operative datacard in our own style (header with stats, weapon table, abilities, keywords). */
 @Composable
 fun OperativeDatacard(o: Operative) {
     Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(CardBackground)) {
         CardHeader(o)
-        HorizontalDivider(thickness = 2.dp, color = Waha.Orange)
+        HorizontalDivider(thickness = 2.dp, color = Palette.Accent)
         WeaponTable(o.weapons)
         if (o.blocks.isNotEmpty()) {
             Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -66,7 +66,7 @@ fun OperativeDatacard(o: Operative) {
 
 @Composable
 private fun CardHeader(o: Operative) {
-    BoxWithConstraints(Modifier.fillMaxWidth().background(Waha.Black)) {
+    BoxWithConstraints(Modifier.fillMaxWidth().background(Palette.Header)) {
         val wide = maxWidth >= 560.dp
         val stats: @Composable () -> Unit = {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -78,7 +78,7 @@ private fun CardHeader(o: Operative) {
         }
         val title: @Composable (Modifier) -> Unit = { m ->
             Column(m, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text(o.name.uppercase(), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(o.name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Color.White)
                 if (o.flavor.isNotBlank()) Text(o.flavor, style = MaterialTheme.typography.bodySmall, fontStyle = FontStyle.Italic, color = Muted)
             }
         }
@@ -125,7 +125,7 @@ private fun WeaponTable(weapons: List<Weapon>) {
                 HeaderCell("DMG", Modifier.width(numberWidth + 8.dp))
                 if (wide) HeaderCell("WR", Modifier.weight(1f).padding(start = 8.dp), TextAlign.Start)
             }
-            HorizontalDivider(thickness = 1.dp, color = Waha.Orange)
+            HorizontalDivider(thickness = 1.dp, color = Palette.Accent)
             weapons.forEachIndexed { i, w ->
                 Row(
                     Modifier.fillMaxWidth().background(if (i % 2 == 0) RowDark else RowLight).padding(horizontal = 8.dp, vertical = 6.dp),
@@ -150,7 +150,7 @@ private fun WeaponTable(weapons: List<Weapon>) {
                     }
                 }
             }
-            HorizontalDivider(thickness = 1.dp, color = Waha.Orange)
+            HorizontalDivider(thickness = 1.dp, color = Palette.Accent)
         }
     }
 }
@@ -175,8 +175,8 @@ private fun AbilityView(block: AbilityBlock) {
             ActionBar(block.name, block.ap)
             block.paras.forEach { p ->
                 when (p.kind) {
-                    "effect" -> BulletRow(effectIcon, p.text)
-                    "condition" -> BulletRow(conditionIcon, p.text)
+                    "effect" -> BulletRow(true, p.text)
+                    "condition" -> BulletRow(false, p.text)
                     "bullet" -> DotRow(p.text)
                     else -> KeywordText(p.text, Modifier.padding(start = 26.dp), MaterialTheme.typography.bodyMedium)
                 }
@@ -202,10 +202,10 @@ private fun AbilityView(block: AbilityBlock) {
 @Composable
 private fun CardFooter(o: Operative) {
     val keywords = o.keywords.split(",").map { it.trim() }.filter { it.isNotEmpty() }
-    Row(Modifier.fillMaxWidth().background(Waha.Black).padding(horizontal = 14.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().background(Palette.Header).padding(horizontal = 14.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
         FlowRow(Modifier.weight(1f)) {
             keywords.forEachIndexed { i, k ->
-                val color = if (i == 0) Waha.Orange else Color.White
+                val color = if (i == 0) Palette.Accent else Color.White
                 KeywordText(
                     k.uppercase() + if (i < keywords.lastIndex) ",  " else "",
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),

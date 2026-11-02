@@ -1,6 +1,7 @@
 package com.example.killteam
 
 import com.example.killteam.logic.AccessGate
+import com.example.killteam.logic.AccessResult
 import com.example.killteam.logic.Sha256
 import com.example.killteam.logic.toHex
 import com.russhwolf.settings.MapSettings
@@ -54,5 +55,55 @@ class AccessGateTest {
     @Test
     fun emptyConfigDisablesTheGate() {
         assertTrue(AccessGate(MapSettings(), "", "").isUnlocked())
+    }
+
+    private val tempSalt = "tmp"
+    private val tempHash = AccessGate.hash("trial", tempSalt)
+    private val day = 24L * 60 * 60 * 1000
+
+    private fun gate(settings: MapSettings, now: () -> Long) = AccessGate(settings, salt, hash, tempSalt, tempHash, now)
+
+    @Test
+    fun permanentPasswordNeverExpires() {
+        var now = 1_000_000L
+        val settings = MapSettings()
+        assertEquals(AccessResult.Unlocked, gate(settings) { now }.attempt("secret"))
+        now += 400 * day
+        assertTrue(gate(settings) { now }.isUnlocked())
+    }
+
+    @Test
+    fun temporaryPasswordWorksForSevenDays() {
+        var now = 1_000_000L
+        val settings = MapSettings()
+        assertEquals(AccessResult.Wrong, gate(settings) { now }.attempt("nope"))
+        assertEquals(AccessResult.Unlocked, gate(settings) { now }.attempt("trial"))
+        now += 6 * day
+        assertTrue(gate(settings) { now }.isUnlocked())
+        now += 2 * day
+        val expired = gate(settings) { now }
+        assertFalse(expired.isUnlocked())
+        assertTrue(expired.isExpired())
+    }
+
+    @Test
+    fun expiredTemporaryPasswordCannotBeStartedAgain() {
+        var now = 1_000_000L
+        val settings = MapSettings()
+        gate(settings) { now }.attempt("trial")
+        now += 8 * day
+        assertEquals(AccessResult.Expired, gate(settings) { now }.attempt("trial"))
+        assertEquals(AccessResult.Unlocked, gate(settings) { now }.attempt("secret"))
+    }
+
+    @Test
+    fun settingTheClockBackEndsTheTemporaryPeriod() {
+        var now = 1_000_000L
+        val settings = MapSettings()
+        gate(settings) { now }.attempt("trial")
+        now += 3 * day
+        assertTrue(gate(settings) { now }.isUnlocked())
+        now -= 2 * day
+        assertFalse(gate(settings) { now }.isUnlocked())
     }
 }

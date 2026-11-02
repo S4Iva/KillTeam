@@ -56,7 +56,7 @@ class RulesDataTest {
     @Test
     fun actionSectionsKeepEffectAndConditionParagraphs() {
         val rules = AppJson.decodeFromString(RulesData.serializer(), File(dir, "rules.json").readText())
-        val charge = rules.section("core-rules", "Charge")!!
+        val charge = rules.section("core-rules", "Charge-1AP")!!
         assertTrue(charge.paras.any { it.kind == "effect" })
         assertTrue(charge.paras.any { it.kind == "condition" })
         val teams = AppJson.decodeFromString(com.example.killteam.data.KillTeamData.serializer(), File(dir, "killteams.json").readText())

@@ -1,6 +1,9 @@
 package com.example.killteam
 
+import com.example.killteam.data.TeamSearch
+import com.example.killteam.data.compositionLevels
 import com.example.killteam.data.parseKillTeamData
+import com.example.killteam.data.tacOpsFor
 import com.example.killteam.logic.RosterRules
 import com.example.killteam.logic.Roster
 import java.io.File
@@ -48,5 +51,47 @@ class KillTeamDataTest {
         assertEquals(10, RosterRules.expectedSize(team))
         val roster = Roster(1, "r", team.slug, List(9) { "Kasrkin Trooper" })
         assertTrue(RosterRules.problems(team, roster).isNotEmpty())
+    }
+
+    @Test
+    fun gameSizeComesFromRosterThenTeamRulesThenDefault() {
+        val team = data.teams.first { it.slug == "kasrkin" }
+        assertEquals(10, RosterRules.gameSize(team, null))
+        assertEquals(7, RosterRules.gameSize(team, Roster(1, "r", team.slug, List(7) { "Kasrkin Trooper" })))
+        assertEquals(6, RosterRules.gameSize(null, null))
+    }
+
+    @Test
+    fun equipmentOptionsBelowAnOperativeAreIndentedOneLevelMore() {
+        val team = data.teams.first { it.slug == "novitiates" }
+        val levels = compositionLevels(team.compositionParas)
+        val paras = team.compositionParas
+        val militant = paras.indexOfFirst { it.text.startsWith("MILITANT") }
+        assertEquals(1, levels[militant])
+        assertEquals(2, levels[militant + 1])
+        assertEquals(2, levels[militant + 2])
+        assertEquals(1, levels[militant + 3])
+        // Options directly below an arrow stay at the first level.
+        assertEquals(1, levels[paras.indexOfFirst { it.text.startsWith("Plasma pistol") }])
+    }
+
+    @Test
+    fun wordSearchFindsRulesAndEquipmentTexts() {
+        val team = data.teams.first { it.slug == "kasrkin" }
+        val equipment = team.equipment.first()
+        val word = equipment.name.split(" ").first()
+        assertTrue(TeamSearch.matches(team, word))
+        assertTrue(TeamSearch.hits(team, equipment.name).any { it == "Equipment: ${equipment.name}" })
+        assertTrue(!TeamSearch.matches(team, "zzzxqy"))
+        assertTrue(TeamSearch.matches(team, "kas"))
+    }
+
+    @Test
+    fun tacOpsOfATeamFollowItsArchetypes() {
+        val team = data.teams.first { it.slug == "kasrkin" }
+        val ops = tacOpsFor(team)
+        assertTrue(ops.isNotEmpty() && ops.all { it.archetype in team.archetypeSet })
+        assertEquals(ops.size, ops.map { it.id }.toSet().size)
+        assertEquals(12, tacOpsFor(null).size)
     }
 }

@@ -23,23 +23,25 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.killteam.logic.AccessResult
 
 @Composable
-fun LockScreen(onSubmit: (String) -> Boolean) {
+fun LockScreen(expiredAtStart: Boolean, onSubmit: (String) -> AccessResult) {
     var password by remember { mutableStateOf("") }
-    var wrong by remember { mutableStateOf(false) }
+    var result by remember { mutableStateOf<AccessResult?>(if (expiredAtStart) AccessResult.Expired else null) }
     var visible by remember { mutableStateOf(false) }
-    val submit = { wrong = !onSubmit(password) }
+    val submit = { result = onSubmit(password) }
+    val wrong = result == AccessResult.Wrong
 
     Column(
         Modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("KILL TEAM", style = MaterialTheme.typography.headlineMedium, color = Waha.Orange)
-        Text("Enter the password to unlock the app. This is only asked once.")
+        Text("KILL TEAM", style = MaterialTheme.typography.headlineMedium, color = Palette.Accent)
+        Text("Enter the password to unlock the app.")
         OutlinedTextField(
-            password, { password = it; wrong = false },
+            password, { password = it; if (result == AccessResult.Wrong) result = null },
             Modifier.widthIn(max = 360.dp).fillMaxWidth(),
             label = { Text("Password") }, singleLine = true, isError = wrong,
             visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -47,6 +49,7 @@ fun LockScreen(onSubmit: (String) -> Boolean) {
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         )
         if (wrong) Text("Wrong password.", color = MaterialTheme.colorScheme.error)
+        if (result == AccessResult.Expired) Text("The test period of this password (7 days) is over.", color = MaterialTheme.colorScheme.error)
         Button(submit, enabled = password.isNotEmpty()) { Text("Unlock") }
     }
 }

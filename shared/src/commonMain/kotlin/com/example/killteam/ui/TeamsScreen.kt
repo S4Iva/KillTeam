@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.example.killteam.data.Archetype
 import com.example.killteam.data.KillTeam
 import com.example.killteam.data.Operative
+import com.example.killteam.data.TeamSearch
 import com.example.killteam.logic.AppState
 import com.example.killteam.logic.Roster
 import com.example.killteam.logic.RosterRules
@@ -52,7 +53,7 @@ private fun TeamList(app: AppState, onOpen: (KillTeam) -> Unit, onRosters: () ->
     val archetype = ui.teamArchetype
     val onlyFavorites = ui.teamFavoritesOnly
     val teams = app.teams.filter { t ->
-        (query.isBlank() || t.name.contains(query, ignoreCase = true) || t.operatives.any { it.name.contains(query, ignoreCase = true) }) &&
+        TeamSearch.matches(t, query) &&
             (archetype == null || archetype in t.archetypeSet) &&
             (!onlyFavorites || app.isFavorite("team:${t.slug}"))
     }
@@ -60,7 +61,11 @@ private fun TeamList(app: AppState, onOpen: (KillTeam) -> Unit, onRosters: () ->
     Page("Kill Teams", listState = ui.list("teams")) {
         item {
             SectionCard("Search") {
-                OutlinedTextField(query, { ui.teamQuery = it }, Modifier.fillMaxWidth(), label = { Text("Team or operative") }, singleLine = true)
+                OutlinedTextField(
+                    query, { ui.teamQuery = it }, Modifier.fillMaxWidth(),
+                    label = { Text("Search words in teams, operatives, rules, ploys, equipment (min. ${TeamSearch.MIN_LENGTH} letters)") },
+                    singleLine = true,
+                )
                 ChipRow(listOf<Archetype?>(null) + Archetype.entries, { it == archetype }, { it?.label ?: "All archetypes" }, { ui.teamArchetype = it })
                 ChipRow(listOf(true), { onlyFavorites }, { "Favorites only" }, { ui.teamFavoritesOnly = !onlyFavorites })
                 OutlinedButton(onRosters) { Text("Rosters (${app.rosters.value.size})") }
@@ -81,7 +86,10 @@ private fun TeamList(app: AppState, onOpen: (KillTeam) -> Unit, onRosters: () ->
                 actions = { FavoriteButton(app.isFavorite("team:${t.slug}")) { app.toggleFavorite("team:${t.slug}") } },
             ) {
                 Text(t.archetypes.joinToString(" / ").ifEmpty { "-" } + "  |  ${t.operatives.size} datacards", style = MaterialTheme.typography.bodySmall)
-                if (t.description.isNotBlank()) Text(t.description, maxLines = 3, style = MaterialTheme.typography.bodyMedium)
+                val hits = TeamSearch.hits(t, query)
+                if (hits.isNotEmpty()) {
+                    Text("Found in: " + hits.take(6).joinToString("; ") + if (hits.size > 6) "; +${hits.size - 6} more" else "", style = MaterialTheme.typography.bodySmall, color = Palette.Accent)
+                } else if (t.description.isNotBlank()) Text(t.description, maxLines = 3, style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
@@ -118,7 +126,7 @@ private fun TeamDetail(app: AppState, team: KillTeam, onBack: () -> Unit) {
             ) {
                 if (team.description.isNotBlank()) Text(team.description)
                 if (team.updated.isNotBlank()) {
-                    Text("Rules version: ${team.version} (${team.updated}), imported ${app.teamData?.importedAt}", style = MaterialTheme.typography.bodySmall, color = Waha.Orange)
+                    Text("Rules version: ${team.version} (${team.updated}), imported ${app.teamData?.importedAt}", style = MaterialTheme.typography.bodySmall, color = Palette.Accent)
                 }
                 CompositionList(team)
                 NoteField(key, app.note(key)) { app.setNote(key, it) }
@@ -129,15 +137,15 @@ private fun TeamDetail(app: AppState, team: KillTeam, onBack: () -> Unit) {
             DetailTab.Datacards -> items(team.operatives.size) { OperativeDatacard(team.operatives[it]) }
             DetailTab.Rules -> {
                 if (team.factionRuleItems.isEmpty()) item { SectionCard("Faction rules") { KeywordText(team.factionRules.ifBlank { "-" }) } }
-                items(team.factionRuleItems.size) { NamedTextCard(team.factionRuleItems[it], Waha.Black) }
+                items(team.factionRuleItems.size) { NamedTextCard(team.factionRuleItems[it], Palette.Accent) }
             }
             DetailTab.Ploys -> {
-                item { Text("STRATEGY PLOYS", style = MaterialTheme.typography.titleMedium, color = Waha.Orange) }
-                items(team.strategyPloys.size) { NamedTextCard(team.strategyPloys[it], Waha.StrategyPloy) }
-                item { Text("FIREFIGHT PLOYS", style = MaterialTheme.typography.titleMedium, color = Waha.Orange) }
-                items(team.firefightPloys.size) { NamedTextCard(team.firefightPloys[it], Waha.FirefightPloy) }
+                item { Text("STRATEGY PLOYS", style = MaterialTheme.typography.titleMedium, color = Palette.Accent) }
+                items(team.strategyPloys.size) { NamedTextCard(team.strategyPloys[it], Palette.StrategyPloy) }
+                item { Text("FIREFIGHT PLOYS", style = MaterialTheme.typography.titleMedium, color = Palette.Accent) }
+                items(team.firefightPloys.size) { NamedTextCard(team.firefightPloys[it], Palette.FirefightPloy) }
             }
-            DetailTab.Equipment -> items(team.equipment.size) { NamedTextCard(team.equipment[it], Waha.Equipment) }
+            DetailTab.Equipment -> items(team.equipment.size) { NamedTextCard(team.equipment[it], Palette.Equipment) }
             DetailTab.Tokens -> items(team.tokens.size) { i ->
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     TokenImage(team.tokens[i].image, 56.dp)

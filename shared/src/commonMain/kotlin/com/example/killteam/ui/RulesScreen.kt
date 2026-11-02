@@ -85,7 +85,7 @@ private fun RulesIndex(data: RulesData, onOpen: (String, String?) -> Unit) {
                 val s = results[i]
                 val pageTitle = data.pages.firstOrNull { it.id == s.page }?.title ?: s.page
                 SectionCard(s.title, Modifier.clickable { onOpen(s.page, s.id) }) {
-                    Text(pageTitle, style = MaterialTheme.typography.bodySmall, color = Waha.Orange)
+                    Text(pageTitle, style = MaterialTheme.typography.bodySmall, color = Palette.Accent)
                     Text(snippet(s, query), maxLines = 4, style = MaterialTheme.typography.bodyMedium)
                 }
             }
@@ -136,7 +136,7 @@ private fun RulePageView(
             SectionCard(
                 s.title,
                 Modifier.padding(start = ((s.level - 2).coerceAtLeast(0) * 12).dp),
-                headerColor = if (s.id.equals(highlight, ignoreCase = true)) Waha.Orange else Waha.Black,
+                headerColor = if (s.id.equals(highlight, ignoreCase = true)) Palette.Highlight else Palette.Accent,
             ) {
                 if (s.paras.isNotEmpty()) RichParas(s.paras)
                 else if (s.plain.isNotBlank()) KeywordText(s.plain, style = MaterialTheme.typography.bodyMedium)

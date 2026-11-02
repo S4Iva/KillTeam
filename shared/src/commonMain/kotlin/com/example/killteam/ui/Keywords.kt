@@ -48,7 +48,7 @@ private fun AnnotatedString.Builder.appendPlain(s: String, accent: String?) {
             withStyle(bold) { append(run) }
         } else {
             withStyle(bold) { append(run.substring(0, i)) }
-            withStyle(bold.copy(color = Waha.Orange)) { append(accent) }
+            withStyle(bold.copy(color = Palette.Accent)) { append(accent) }
             withStyle(bold) { append(run.substring(i + accent.length)) }
         }
         pos = m.range.last + 1
@@ -64,7 +64,7 @@ fun KeywordText(
     style: TextStyle = LocalTextStyle.current,
     color: Color = Color.Unspecified,
     boldPrefix: String = "",
-    linkColor: Color = Waha.Link,
+    linkColor: Color = Palette.Link,
     capsAccent: String? = null,
 ) {
     val ctx = LocalKeywords.current

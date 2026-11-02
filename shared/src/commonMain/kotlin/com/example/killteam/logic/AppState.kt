@@ -54,7 +54,7 @@ class AppState(settings: Settings = Settings()) {
                 val teams = async(Dispatchers.Default) { loadKillTeamData() }
                 val rulesData = async(Dispatchers.Default) { loadRulesData() }
                 val matcherData = async(Dispatchers.Default) { TermMatcher(loadLookupData().terms) }
-                teamData = teams.await()
+                teamData = teams.await().let { d -> KillTeamData(d.source, d.importedAt, d.teams.sortedBy { it.name.lowercase() }) }
                 rules = rulesData.await()
                 matcher = matcherData.await()
             }

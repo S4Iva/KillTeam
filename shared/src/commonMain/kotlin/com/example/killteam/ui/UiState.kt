@@ -40,6 +40,9 @@ class UiState {
     /** Tab to return to when the back button is pressed in the Rules tab (set when a keyword arrow opened it). */
     var returnTab: Tab? by mutableStateOf(null)
 
+    /** Phase and turning point the game list was last scrolled for; a change scrolls it back to the top. */
+    var gameScrollKey: String? = null
+
     private val lists = mutableMapOf<String, LazyListState>()
 
     fun list(key: String): LazyListState = lists.getOrPut(key) { LazyListState() }

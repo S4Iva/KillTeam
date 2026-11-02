@@ -2,31 +2,91 @@ package com.example.killteam.logic
 
 import com.russhwolf.settings.Settings
 
-/** Salt and hash of the access password; written by tools/set-access-password.ps1. An empty hash disables the gate. */
+/**
+ * Salt and hash of the access passwords; written by tools/set-access-password.ps1 (-Temp for the temporary one).
+ * SALT/HASH: password without expiry. SALT_TEMP/HASH_TEMP: password valid for 7 days after its first use.
+ * An empty hash means that password does not exist; if both are empty the gate is disabled.
+ */
 object AccessConfig {
     const val SALT = "697a389dca15d112918e4ad2bdc07ae6"
     const val HASH = "695fe6f737e9ab4c2cb5d07aa01b6a6f23f9df948cfebf40564f009269beb8f7"
+    const val SALT_TEMP = "8be221c1f9b980c531144c0f8bf9dee6"
+    const val HASH_TEMP = "a9475b32b36b0073f86332f033c91d6948567ac537cadb0d42cd21ac822c47af"
 }
 
-/** One-time password check after installation; the unlocked state is stored together with the hash it was unlocked for. */
+enum class AccessResult { Unlocked, Wrong, Expired }
+
+/**
+ * Password check after installation. The unlocked state of the permanent password is stored together with its hash.
+ * The temporary password starts a 7-day period on its first use (start and last seen time are stored locally);
+ * the period is over after 7 days or when the system clock was set back.
+ */
 class AccessGate(
     private val settings: Settings,
     private val salt: String = AccessConfig.SALT,
     private val expectedHash: String = AccessConfig.HASH,
+    private val tempSalt: String = AccessConfig.SALT_TEMP,
+    private val tempHash: String = AccessConfig.HASH_TEMP,
+    private val clock: () -> Long = ::nowMillis,
 ) {
-    val enabled get() = expectedHash.isNotEmpty()
+    private val permanentEnabled get() = expectedHash.isNotEmpty()
+    private val tempEnabled get() = tempHash.isNotEmpty()
+    val enabled get() = permanentEnabled || tempEnabled
 
-    fun isUnlocked(): Boolean = !enabled || settings.getStringOrNull(KEY) == expectedHash
-
-    fun tryUnlock(password: String): Boolean {
+    fun isUnlocked(): Boolean {
         if (!enabled) return true
-        if (!constantTimeEquals(hash(password, salt), expectedHash)) return false
-        settings.putString(KEY, expectedHash)
-        return true
+        if (permanentEnabled && settings.getStringOrNull(KEY) == expectedHash) return true
+        return tempState() == TempState.Valid
+    }
+
+    /** True when the temporary password was used and its 7 days are over. */
+    fun isExpired(): Boolean = tempState() == TempState.Expired
+
+    fun tryUnlock(password: String): Boolean = attempt(password) == AccessResult.Unlocked
+
+    fun attempt(password: String): AccessResult {
+        if (!enabled) return AccessResult.Unlocked
+        if (permanentEnabled && constantTimeEquals(hash(password, salt), expectedHash)) {
+            settings.putString(KEY, expectedHash)
+            return AccessResult.Unlocked
+        }
+        if (tempEnabled && constantTimeEquals(hash(password, tempSalt), tempHash)) {
+            return when (tempState()) {
+                TempState.Valid -> AccessResult.Unlocked
+                TempState.Expired -> AccessResult.Expired
+                TempState.Unused -> {
+                    val now = clock()
+                    settings.putString(KEY_TEMP, "$tempHash:$now")
+                    settings.putLong(KEY_SEEN, now)
+                    AccessResult.Unlocked
+                }
+            }
+        }
+        return AccessResult.Wrong
+    }
+
+    private enum class TempState { Unused, Valid, Expired }
+
+    private fun tempState(): TempState {
+        if (!tempEnabled) return TempState.Unused
+        val stored = settings.getStringOrNull(KEY_TEMP) ?: return TempState.Unused
+        val hash = stored.substringBefore(':')
+        val start = stored.substringAfter(':', "").toLongOrNull()
+        if (hash != tempHash || start == null) return TempState.Unused
+        val now = clock()
+        val seen = settings.getLong(KEY_SEEN, start)
+        if (now < seen - CLOCK_TOLERANCE_MILLIS || now - start >= TEMP_DURATION_MILLIS) return TempState.Expired
+        if (now > seen) settings.putLong(KEY_SEEN, now)
+        return TempState.Valid
     }
 
     companion object {
         private const val KEY = "access"
+        private const val KEY_TEMP = "access.temp"
+        private const val KEY_SEEN = "access.seen"
+
+        const val TEMP_DURATION_MILLIS = 7L * 24 * 60 * 60 * 1000
+        private const val CLOCK_TOLERANCE_MILLIS = 5L * 60 * 1000
 
         /** Must match tools/set-access-password.ps1. */
         const val ROUNDS = 20000

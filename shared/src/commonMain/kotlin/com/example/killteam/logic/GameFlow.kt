@@ -80,8 +80,12 @@ fun GameState.setIncapacitated(player: Int, operative: Int, incapacitated: Boole
     if (current.incapacitated == incapacitated) return this
     return changeOperative(player, operative) {
         it.copy(incapacitated = incapacitated, wounds = if (incapacitated) 0 else maxOf(it.wounds, 1))
-    }.updatePlayer(1 - player) { it.copy(kills = (it.kills + if (incapacitated) 1 else -1).coerceAtLeast(0)) }
+    }.updatePlayer(1 - player) { it.copy(kills = (it.kills + if (incapacitated) 1 else -1).coerceIn(0, it.enemyStartCount)) }
 }
+
+/** Sets the number of operatives of the opponent's team (row of the kill grade table); the incapacitated count never exceeds it. */
+fun GameState.withEnemyStart(player: Int, count: Int): GameState =
+    updatePlayer(player) { it.copy(enemyStartCount = count, kills = it.kills.coerceAtMost(count)) }
 
 /** End of the battle: primary ops are revealed (their bonus counts) and the kill op comparison applies. */
 fun GameState.finish(): GameState =

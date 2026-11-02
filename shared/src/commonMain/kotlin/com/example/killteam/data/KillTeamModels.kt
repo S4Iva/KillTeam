@@ -108,6 +108,10 @@ class KillTeam(
 ) {
     val archetypeSet: Set<Archetype>
         get() = archetypes.mapNotNull { a -> Archetype.entries.firstOrNull { it.label == a.trim() } }.toSet()
+
+    /** Lower-case texts per part of the team for the word search (built on first use). */
+    val searchIndex: List<SearchEntry> by lazy { buildSearchIndex(this) }
+    val searchText: String by lazy { searchIndex.joinToString(" ") { it.text } }
 }
 
 @Serializable

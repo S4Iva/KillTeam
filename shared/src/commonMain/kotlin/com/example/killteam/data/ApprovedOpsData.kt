@@ -75,6 +75,12 @@ object ApprovedOps {
     const val START_CP = 2
     const val MAX_EQUIPMENT = 4
 
+    /** Equipment options available to every kill team (Wahapedia: Universal Equipment). */
+    val universalEquipment = listOf(
+        "Ammo Cache", "Razor Wire", "Comms Device", "Mines", "Light Barricades", "Heavy Barricade",
+        "Ladders", "Portable Barricade", "Utility Grenades", "Explosive Grenades", "Breaching Charge",
+    )
+
     /** Crit-op groups recommended by the Tournament Companion (by crit op index). */
     val critOpGroups = listOf(listOf(0, 1, 2), listOf(3, 5, 6), listOf(4, 7, 8))
 

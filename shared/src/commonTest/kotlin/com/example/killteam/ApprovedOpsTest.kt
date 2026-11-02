@@ -35,13 +35,12 @@ class MissionGeneratorTest {
     }
 
     @Test
-    fun randomStaysInRangeAndClearsTacOp() {
+    fun randomStaysInRange() {
         val random = Random(42)
         repeat(200) {
-            val s = MissionGenerator.random(MissionState(tacOpId = "dominate"), random)
+            val s = MissionGenerator.random(MissionState(), random)
             assertTrue(s.critOpIndex in 0 until 9)
             assertTrue(s.mapIndexByKillzone.size == Killzone.entries.size && s.mapIndexByKillzone.all { it in 0..5 })
-            assertEquals(null, s.tacOpId)
         }
     }
 

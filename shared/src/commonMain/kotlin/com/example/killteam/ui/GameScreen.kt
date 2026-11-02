@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,6 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.killteam.data.ApprovedOps
 import com.example.killteam.data.KillOp
@@ -38,6 +42,7 @@ import com.example.killteam.logic.setIncapacitated
 import com.example.killteam.logic.toResult
 import com.example.killteam.logic.useModifier
 import com.example.killteam.logic.useReroll
+import com.example.killteam.logic.withEnemyStart
 import com.example.killteam.logic.withRoll
 
 @Composable
@@ -69,20 +74,44 @@ private val phaseChecklist = mapOf(
 
 private class PendingConfirm(val text: String, val label: String, val action: () -> Unit)
 
+private val phaseSummary = mapOf(
+    GamePhase.SetUpBattle to "Kill teams, killzone, crit op, initiative and drop zones.",
+    GamePhase.SelectOperatives to "Operatives, equipment (max. 4), 2 CP and the secret tac op.",
+    GamePhase.SetUpOperatives to "Set up equipment and a third of the team with Conceal orders.",
+    GamePhase.Play to "Four turning points: initiative, Ready step, activations.",
+    GamePhase.End to "Reveal the primary op, bonus VP and the winner.",
+)
+
 @Composable
 fun RunningGame(app: AppState, game: GameState) {
     val update: (GameState) -> Unit = { app.game.update(it) }
+    val ui = LocalUi.current
+    val listState = ui.list("game")
     var secretFor by remember { mutableStateOf<Int?>(null) }
+    var secretReady by remember { mutableStateOf(false) }
     var primaryFor by remember { mutableStateOf<Int?>(null) }
     var showMission by remember { mutableStateOf(false) }
     var showEquipment by remember(game.id, game.phase) { mutableStateOf(false) }
     var confirm by remember { mutableStateOf<PendingConfirm?>(null) }
 
-    secretFor?.let { SecretSelectionDialog(app, game, it) { secretFor = null } }
+    // Every new phase or turning point starts at the top of the screen (not when only switching back to this tab).
+    val position = "${game.id}:${game.phase}:${game.turningPoint}"
+    LaunchedEffect(position) {
+        if (ui.gameScrollKey != null && ui.gameScrollKey != position) listState.scrollToItem(0)
+        ui.gameScrollKey = position
+    }
+
+    secretFor?.let { index ->
+        if (secretReady) {
+            SecretSelectionPage(app, game, index) { secretFor = null; secretReady = false }
+            return
+        }
+        SecretHandover(game.players[index].name, { secretReady = true }, { secretFor = null })
+    }
     primaryFor?.let { PrimaryOpDialog(app, game, it) { primaryFor = null } }
     confirm?.let { c -> ConfirmDialog(c.text, c.label, c.action) { confirm = null } }
 
-    Page("Game - Turning Point ${game.turningPoint}/${ApprovedOps.TURNING_POINTS}", listState = LocalUi.current.list("game")) {
+    Page("Game - Turning Point ${game.turningPoint}/${ApprovedOps.TURNING_POINTS}", listState = listState) {
         item {
             SectionCard("Phase") {
                 ChipRow(GamePhase.entries, { it == game.phase }, { it.label }, { target ->
@@ -98,6 +127,17 @@ fun RunningGame(app: AppState, game: GameState) {
                 if (next != null && game.phase != GamePhase.Play) {
                     Button({ update(game.copy(phase = next)) }) { Text("Next: ${next.label}") }
                 }
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    GamePhase.entries.forEach { ph ->
+                        val current = ph == game.phase
+                        Text(
+                            "${ph.label}: ${phaseSummary.getValue(ph)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = if (current) FontWeight.Bold else FontWeight.Normal,
+                            color = if (current) Palette.Accent else Palette.Text,
+                        )
+                    }
+                }
             }
         }
         item { Scoreboard(game) }
@@ -111,12 +151,9 @@ fun RunningGame(app: AppState, game: GameState) {
                 item {
                     SectionCard("Initiative and drop zones") {
                         Text("Roll-off winner decides who has initiative:")
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            game.players.forEachIndexed { i, p ->
-                                Button({ update(game.chooseSetupInitiative(i)) }) { Text("${p.name} has initiative") }
-                            }
-                        }
-                        Text("Initiative: ${game.players[game.initiative].name}. ${game.players[1 - game.initiative].name} holds the Re-roll initiative card.")
+                        InitiativeButtons(game, game.initiative, true) { update(game.chooseSetupInitiative(it)) }
+                        Text("Initiative: ${game.players[game.initiative].name}", fontWeight = FontWeight.Bold)
+                        Text("${game.players[1 - game.initiative].name} holds the Re-roll initiative card.")
                     }
                 }
                 item { MissionCard(game, showMission) { showMission = it } }
@@ -126,7 +163,7 @@ fun RunningGame(app: AppState, game: GameState) {
                 game.players.forEachIndexed { i, p ->
                     item {
                         SectionCard(p.name) {
-                            Stepper("Kill team size", game.players[1 - i].enemyStartCount, { v -> update(game.updatePlayer(1 - i) { it.copy(enemyStartCount = v) }) }, KillOp.minOperatives, KillOp.maxOperatives)
+                            Stepper("Kill team size", game.players[1 - i].enemyStartCount, { v -> update(game.withEnemyStart(1 - i, v)) }, KillOp.minOperatives, KillOp.maxOperatives)
                             Text("(Sets the kill grade row of ${game.players[1 - i].name}.)")
                             Stepper("CP", p.cp, { v -> update(game.updatePlayer(i) { it.copy(cp = v) }) }, 0, 20)
                             Text(if (p.tacOpId != null) "Tac op selected (hidden), equipment ${p.equipment.size}/${ApprovedOps.MAX_EQUIPMENT}" else "No secret selection yet.")
@@ -220,12 +257,47 @@ fun RunningGame(app: AppState, game: GameState) {
 @Composable
 private fun Scoreboard(game: GameState) {
     SectionCard("Score") {
+        ScoreRow("", null, listOf("Crit", "Kill", "Tac", "Primary", "VP"), header = true)
+        HorizontalDivider(color = Palette.Accent.copy(alpha = 0.4f))
         game.players.forEachIndexed { i, p ->
             val s = Scoring.score(game, i)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(p.name + if (game.initiative == i) "  (initiative)" else "", fontWeight = FontWeight.Bold)
-                Text("Crit ${s.crit}  Kill ${s.kill}  Tac ${s.tac}  Primary +${s.primaryBonus}   =  ${s.total} VP")
-            }
+            ScoreRow(
+                p.name, if (game.initiative == i) "Initiative" else null,
+                listOf(s.crit.toString(), s.kill.toString(), s.tac.toString(), "+${s.primaryBonus}", s.total.toString()),
+                header = false,
+            )
+        }
+    }
+}
+
+/** One row of the score table: name column and five equally wide value columns, the last one is the total. */
+@Composable
+private fun ScoreRow(name: String, note: String?, values: List<String>, header: Boolean) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(2f)) {
+            Text(name, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            if (note != null) Text(note, style = MaterialTheme.typography.labelSmall, color = Palette.Highlight)
+        }
+        values.forEachIndexed { i, v ->
+            val total = i == values.lastIndex
+            Text(
+                v, Modifier.weight(1f), textAlign = TextAlign.Center, maxLines = 1,
+                style = if (header) MaterialTheme.typography.labelMedium else MaterialTheme.typography.titleMedium,
+                fontWeight = if (total || header) FontWeight.Bold else FontWeight.Normal,
+                color = if (header) Palette.Accent else if (total) Palette.Accent else Palette.Text,
+            )
+        }
+    }
+}
+
+/** Equally wide buttons to choose the player with initiative; the current one is filled. */
+@Composable
+private fun InitiativeButtons(game: GameState, selected: Int?, enabled: Boolean, onPick: (Int) -> Unit) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        game.players.forEachIndexed { i, p ->
+            val label: @Composable () -> Unit = { Text("${p.name} has initiative", textAlign = TextAlign.Center) }
+            if (selected == i) Button({ onPick(i) }, Modifier.weight(1f), enabled = enabled, content = { label() })
+            else OutlinedButton({ onPick(i) }, Modifier.weight(1f), enabled = enabled, content = { label() })
         }
     }
 }
@@ -280,13 +352,7 @@ private fun InitiativePanel(game: GameState, update: (GameState) -> Unit) {
                 game.gainedCard?.let { "${game.players[1 - winner].name} gains the ${cardLabel(it)} initiative card." }
                     ?: "No initiative card is gained in the fourth turning point.",
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                game.players.forEachIndexed { i, p ->
-                    val label = "${p.name} has initiative"
-                    if (game.initiativeChosen && game.initiative == i) Button({ }, enabled = !game.readyDone) { Text(label) }
-                    else OutlinedButton({ update(game.chooseInitiative(i)) }, enabled = !game.readyDone) { Text(label) }
-                }
-            }
+            InitiativeButtons(game, if (game.initiativeChosen) game.initiative else null, !game.readyDone) { update(game.chooseInitiative(it)) }
             if (!game.readyDone) OutlinedButton({ update(game.reopenRollOff()) }) { Text("Redo roll-off") }
         }
         Text(if (game.initiativeChosen || game.turningPoint == 1) "Initiative: ${game.players[game.initiative].name}" else "Initiative: decide after the roll-off")
@@ -322,8 +388,8 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
     SectionCard("${p.name}${team?.let { " - ${it.name}" } ?: ""}  |  ${score.total} VP") {
         Stepper("Crit op VP", p.critVp, { v -> update(game.updatePlayer(index) { it.copy(critVp = v) }) }, 0, ApprovedOps.MAX_VP_PER_OP)
         Text("Kill op: grade ${p.killGrade}/5 = ${score.kill} VP (+1 VP at the end if higher than the opponent's grade)")
-        Stepper("Enemy start", p.enemyStartCount, { v -> update(game.updatePlayer(index) { it.copy(enemyStartCount = v) }) }, KillOp.minOperatives, KillOp.maxOperatives)
-        Stepper("Incapacitated", p.kills, { v -> update(game.updatePlayer(index) { it.copy(kills = v) }) }, 0, 20)
+        Stepper("Enemy start", p.enemyStartCount, { v -> update(game.withEnemyStart(index, v)) }, KillOp.minOperatives, KillOp.maxOperatives)
+        Stepper("Incapacitated", p.kills, { v -> update(game.updatePlayer(index) { it.copy(kills = v) }) }, 0, p.enemyStartCount)
         Text("Grade thresholds: ${KillOp.thresholds(p.enemyStartCount).joinToString(" / ")}")
         Stepper("Tac op VP", p.tacVp, { v -> update(game.updatePlayer(index) { it.copy(tacVp = v) }) }, 0, ApprovedOps.MAX_VP_PER_OP)
         if (tac != null) {

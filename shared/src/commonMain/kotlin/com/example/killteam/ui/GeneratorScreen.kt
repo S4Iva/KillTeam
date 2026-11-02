@@ -43,7 +43,7 @@ fun TacOpCard(
     val key = "tac:${op.id}"
     SectionCard(
         op.name,
-        headerColor = Waha.archetype(op.archetype),
+        headerColor = Palette.archetype(op.archetype),
         icon = tacOpIcon(op.archetype),
         actions = {
             if (selected && onRemove != null) {
@@ -54,11 +54,11 @@ fun TacOpCard(
         },
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("TAC OP  |  ${op.archetype.label}", color = Waha.archetype(op.archetype), fontWeight = FontWeight.Bold)
+            Text("TAC OP  |  ${op.archetype.label}", color = Palette.archetype(op.archetype), fontWeight = FontWeight.Bold)
             FavoriteButton(app.isFavorite(key)) { app.toggleFavorite(key) }
         }
         Row {
-            Text("REVEAL  ", color = Waha.Orange, fontWeight = FontWeight.Bold)
+            Text("REVEAL  ", color = Palette.Accent, fontWeight = FontWeight.Bold)
             KeywordText(op.reveal)
         }
         OpSectionsView(op.sections)
@@ -80,7 +80,7 @@ fun GeneratorScreen(app: AppState, onStartGame: () -> Unit) {
     if (showContents) {
         JumpDialog(
             "Contents",
-            listOf("Mission", "Crit op", "Map", "Kill op", "Selected tac op", "Archetype tac ops"),
+            listOf("Mission", "Crit op", "Map", "Kill op", "Tac ops"),
             { scope.launch { listState.scrollToItem(it) } },
             { showContents = false },
         )
@@ -131,21 +131,12 @@ fun GeneratorScreen(app: AppState, onStartGame: () -> Unit) {
             }
         }
         item {
-            SectionCard("SELECTED TAC OP") {
-                val selected = state.tacOp
-                if (selected == null) Text("No tac op selected. Select one below.")
-                else TacOpCard(selected, app, true, onRemove = { app.mission.update(state.withTacOp(null)) })
-            }
-        }
-        item {
-            SectionCard("ARCHETYPE TAC OPS") {
+            SectionCard("TAC OPS") {
+                Text("Tac ops are selected secretly in the game (2. Select Operatives).")
                 ChipRow(listOf<Archetype?>(null) + Archetype.entries, { it == filter }, { it?.label ?: "No filter" }, { filter = it })
             }
         }
-        val visible = ApprovedOps.tacOps.filter { (filter == null || it.archetype == filter) && it.id != state.tacOpId }
-        items(visible.size) { i ->
-            val op = visible[i]
-            TacOpCard(op, app, false, onSelect = { app.mission.update(state.withTacOp(op.id)) })
-        }
+        val visible = ApprovedOps.tacOps.filter { filter == null || it.archetype == filter }
+        items(visible.size) { i -> TacOpCard(visible[i], app, false) }
     }
 }
