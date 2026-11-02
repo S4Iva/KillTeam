@@ -2,6 +2,8 @@ package com.example.killteam
 
 import com.example.killteam.logic.AccessGate
 import com.example.killteam.logic.AccessResult
+import com.example.killteam.logic.AccessStatus
+import com.example.killteam.logic.formatRemaining
 import com.example.killteam.logic.Sha256
 import com.example.killteam.logic.toHex
 import com.russhwolf.settings.MapSettings
@@ -54,7 +56,7 @@ class AccessGateTest {
 
     @Test
     fun emptyConfigDisablesTheGate() {
-        assertTrue(AccessGate(MapSettings(), "", "").isUnlocked())
+        assertTrue(AccessGate(MapSettings(), "", "", "", "").isUnlocked())
     }
 
     private val tempSalt = "tmp"
@@ -94,6 +96,29 @@ class AccessGateTest {
         now += 8 * day
         assertEquals(AccessResult.Expired, gate(settings) { now }.attempt("trial"))
         assertEquals(AccessResult.Unlocked, gate(settings) { now }.attempt("secret"))
+    }
+
+    @Test
+    fun statusShowsUnlimitedOrTheRemainingTime() {
+        var now = 1_000_000L
+        val settings = MapSettings()
+        assertEquals(AccessStatus.Locked, gate(settings) { now }.status())
+        gate(settings) { now }.attempt("trial")
+        now += 2 * day + 3 * 60 * 60 * 1000
+        val status = gate(settings) { now }.status() as AccessStatus.Temporary
+        assertEquals(5 * day - 3 * 60 * 60 * 1000, status.remainingMillis)
+        assertEquals(1_000_000L + 7 * day, status.expiresAt)
+        gate(settings) { now }.attempt("secret")
+        assertEquals(AccessStatus.Unlimited, gate(settings) { now }.status())
+        assertEquals(AccessStatus.Disabled, AccessGate(MapSettings(), "", "", "", "").status())
+    }
+
+    @Test
+    fun remainingTimeIsFormattedCompactly() {
+        assertEquals("6 d 23 h", formatRemaining(7 * day - 30 * 60 * 1000))
+        assertEquals("4 h 12 min", formatRemaining((4 * 60 + 12) * 60 * 1000L))
+        assertEquals("7 min", formatRemaining(7 * 60 * 1000L))
+        assertEquals("0 min", formatRemaining(-5))
     }
 
     @Test

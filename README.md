@@ -49,6 +49,8 @@ Beim Start fragt die App nach einem Passwort. Das Passwort lässt sich beim Eing
 - **Unbegrenzt:** wird einmalig abgefragt und gilt danach dauerhaft.
 - **Einmalig, 7 Tage:** startet bei der ersten Eingabe eine Frist von 7 Tagen. Danach ist es abgelaufen und lässt sich nicht erneut starten. Die Frist endet auch, wenn die Systemuhr zurückgestellt wird. Nach einer Neuinstallation oder dem Löschen der App-Daten beginnt sie von vorn, das ist offline nicht zu verhindern.
 
+Nach der Eingabe des 7-Tage-Passworts zeigt die App einmal die verbleibende Zeit an. Unter **More** steht dauerhaft, ob der Zugang unbegrenzt ist oder wie lange die App noch nutzbar ist.
+
 Setzen oder ändern, danach jeweils neu bauen:
 
 - Unbegrenzt: `powershell -ExecutionPolicy Bypass -File tools\set-access-password.ps1`

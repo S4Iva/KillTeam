@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.killteam.data.ApprovedOps
+import com.example.killteam.logic.AccessGate
+import com.example.killteam.logic.AccessStatus
 import com.example.killteam.logic.AppState
 import com.example.killteam.logic.DamageCalc
 import com.example.killteam.logic.GameResult
@@ -31,15 +33,17 @@ import com.example.killteam.logic.TRound
 import com.example.killteam.logic.Tournament
 import com.example.killteam.logic.TournamentLogic
 import com.example.killteam.logic.formatDate
+import com.example.killteam.logic.formatRemaining
 import com.example.killteam.logic.nowMillis
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun MoreScreen(app: AppState) {
+fun MoreScreen(app: AppState, gate: AccessGate) {
     val ui = LocalUi.current
     val back = { ui.morePage = null }
     when (ui.morePage) {
         null -> Page("More", listState = ui.list("more")) {
+            item { AccessCard(gate) }
             MorePage.entries.forEach { p ->
                 item { OutlinedButton({ ui.morePage = p }, Modifier.fillMaxWidth()) { Text(p.label) } }
             }
@@ -49,6 +53,23 @@ fun MoreScreen(app: AppState) {
         MorePage.Dice -> DicePage(back)
         MorePage.Favorites -> FavoritesPage(app, back)
         MorePage.About -> AboutPage(app, back)
+    }
+}
+
+@Composable
+private fun AccessCard(gate: AccessGate) {
+    val status = gate.status()
+    SectionCard("App access") {
+        when (status) {
+            AccessStatus.Unlimited -> Text("Unlimited access (permanent password).")
+            is AccessStatus.Temporary -> {
+                Text("Test access with the 7-day password.")
+                Text("Remaining: ${formatRemaining(status.remainingMillis)}", fontWeight = FontWeight.Bold)
+                Text("Valid until ${formatDate(status.expiresAt)} (UTC).", style = MaterialTheme.typography.bodySmall)
+            }
+            AccessStatus.Disabled -> Text("No password is set, the app is not locked.")
+            AccessStatus.Locked -> Text("Access is locked.")
+        }
     }
 }
 

@@ -16,6 +16,27 @@ object AccessConfig {
 
 enum class AccessResult { Unlocked, Wrong, Expired }
 
+/** How the app is currently unlocked. */
+sealed interface AccessStatus {
+    data object Disabled : AccessStatus
+    data object Unlimited : AccessStatus
+    data object Locked : AccessStatus
+    data class Temporary(val expiresAt: Long, val remainingMillis: Long) : AccessStatus
+}
+
+/** Remaining time as "5 d 3 h", "4 h 12 min" or "7 min". */
+fun formatRemaining(millis: Long): String {
+    val minutes = millis.coerceAtLeast(0) / 60_000
+    val days = minutes / (24 * 60)
+    val hours = minutes % (24 * 60) / 60
+    val min = minutes % 60
+    return when {
+        days > 0 -> "$days d $hours h"
+        hours > 0 -> "$hours h $min min"
+        else -> "$min min"
+    }
+}
+
 /**
  * Password check after installation. The unlocked state of the permanent password is stored together with its hash.
  * The temporary password starts a 7-day period on its first use (start and last seen time are stored locally);
@@ -42,6 +63,14 @@ class AccessGate(
     /** True when the temporary password was used and its 7 days are over. */
     fun isExpired(): Boolean = tempState() == TempState.Expired
 
+    fun status(): AccessStatus {
+        if (!enabled) return AccessStatus.Disabled
+        if (permanentEnabled && settings.getStringOrNull(KEY) == expectedHash) return AccessStatus.Unlimited
+        if (tempState() != TempState.Valid) return AccessStatus.Locked
+        val end = (tempStart() ?: return AccessStatus.Locked) + TEMP_DURATION_MILLIS
+        return AccessStatus.Temporary(end, (end - clock()).coerceAtLeast(0))
+    }
+
     fun tryUnlock(password: String): Boolean = attempt(password) == AccessResult.Unlocked
 
     fun attempt(password: String): AccessResult {
@@ -67,12 +96,15 @@ class AccessGate(
 
     private enum class TempState { Unused, Valid, Expired }
 
+    private fun tempStart(): Long? {
+        val stored = settings.getStringOrNull(KEY_TEMP) ?: return null
+        if (stored.substringBefore(':') != tempHash) return null
+        return stored.substringAfter(':', "").toLongOrNull()
+    }
+
     private fun tempState(): TempState {
         if (!tempEnabled) return TempState.Unused
-        val stored = settings.getStringOrNull(KEY_TEMP) ?: return TempState.Unused
-        val hash = stored.substringBefore(':')
-        val start = stored.substringAfter(':', "").toLongOrNull()
-        if (hash != tempHash || start == null) return TempState.Unused
+        val start = tempStart() ?: return TempState.Unused
         val now = clock()
         val seen = settings.getLong(KEY_SEEN, start)
         if (now < seen - CLOCK_TOLERANCE_MILLIS || now - start >= TEMP_DURATION_MILLIS) return TempState.Expired

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +22,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -37,6 +39,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.killteam.logic.AccessGate
 import com.example.killteam.logic.AccessResult
+import com.example.killteam.logic.AccessStatus
+import com.example.killteam.logic.formatDate
+import com.example.killteam.logic.formatRemaining
 import com.example.killteam.logic.AppState
 import com.example.killteam.ui.GameScreen
 import com.example.killteam.ui.GeneratorScreen
@@ -72,6 +77,7 @@ private val KillTeamColors = darkColorScheme(
 fun App() {
     val gate = remember { AccessGate(Settings()) }
     var unlocked by remember { mutableStateOf(gate.isUnlocked()) }
+    var notice by remember { mutableStateOf<AccessStatus.Temporary?>(null) }
     // The temporary password can run out while the app stays open.
     LaunchedEffect(unlocked) {
         while (unlocked) {
@@ -80,11 +86,33 @@ fun App() {
         }
     }
     if (unlocked) {
-        KillTeamApp()
+        KillTeamApp(gate)
+        notice?.let { n ->
+            MaterialTheme(colorScheme = KillTeamColors) {
+                AlertDialog(
+                    onDismissRequest = { notice = null },
+                    title = { Text("Test access") },
+                    text = {
+                        Text(
+                            "You unlocked the app with the 7-day password. It can be used for ${formatRemaining(n.remainingMillis)} " +
+                                "(until ${formatDate(n.expiresAt)} UTC). The remaining time is shown under More.",
+                        )
+                    },
+                    confirmButton = { TextButton({ notice = null }) { Text("OK") } },
+                )
+            }
+        }
     } else {
         MaterialTheme(colorScheme = KillTeamColors) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                LockScreen(gate.isExpired()) { password -> gate.attempt(password).also { if (it == AccessResult.Unlocked) unlocked = true } }
+                LockScreen(gate.isExpired()) { password ->
+                    gate.attempt(password).also {
+                        if (it == AccessResult.Unlocked) {
+                            notice = gate.status() as? AccessStatus.Temporary
+                            unlocked = true
+                        }
+                    }
+                }
             }
         }
     }
@@ -92,7 +120,7 @@ fun App() {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun KillTeamApp() {
+private fun KillTeamApp(gate: AccessGate) {
     val app = remember { AppState() }
     val ui = remember { UiState() }
     var tab by remember { mutableStateOf(Tab.Generator) }
@@ -136,7 +164,7 @@ private fun KillTeamApp() {
                             Tab.Game -> GameScreen(app, onOpenGenerator = { tab = Tab.Generator })
                             Tab.Teams -> TeamsScreen(app)
                             Tab.Rules -> RulesScreen(app)
-                            Tab.More -> MoreScreen(app)
+                            Tab.More -> MoreScreen(app, gate)
                         }
                     }
                     NavigationBar(containerColor = Palette.Header) {
