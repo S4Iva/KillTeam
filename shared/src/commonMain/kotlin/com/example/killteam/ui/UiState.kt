@@ -6,8 +6,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.example.killteam.data.Archetype
+import killteam.shared.generated.resources.Res
+import killteam.shared.generated.resources.ic_game
+import killteam.shared.generated.resources.ic_generator
+import killteam.shared.generated.resources.ic_more
+import killteam.shared.generated.resources.ic_rules
+import killteam.shared.generated.resources.ic_teams
+import org.jetbrains.compose.resources.DrawableResource
 
-enum class Tab(val label: String) { Generator("Generator"), Game("Game"), Teams("Teams"), Rules("Rules"), More("More") }
+enum class Tab(val label: String, val icon: DrawableResource) {
+    Generator("Generator", Res.drawable.ic_generator),
+    Game("Game", Res.drawable.ic_game),
+    Teams("Teams", Res.drawable.ic_teams),
+    Rules("Rules", Res.drawable.ic_rules),
+    More("More", Res.drawable.ic_more),
+}
 
 enum class TeamsPage { List, Rosters }
 

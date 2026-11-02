@@ -189,6 +189,22 @@ Entscheidung: Die zwei festen Passwörter (`tools/set-access-password.ps1`, `HAS
 
 Status 2026-11-02: ZC-1 bis ZC-10 sind umgesetzt (`tools/generate-access-code.ps1`, `logic/AccessGate.kt`).
 
+### 4.13 Icons in der Tab-Leiste
+
+Die untere Navigationsleiste (`NavigationBar` in `App.kt`) zeigt bisher nur Text. Jeder Tab (Generator, Game, Teams, Rules, More) bekommt ein Icon über ein eigenes Vektor-Drawable als Compose-Resource, ohne neue Abhängigkeit (kein `material-icons-extended`).
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| TI-1 | **Ressourcen:** Pro Tab liegt ein Icon unter `shared/src/commonMain/composeResources/drawable/` (`ic_generator`, `ic_game`, `ic_teams`, `ic_rules`, `ic_more`). Format: Android-Vektor-Drawable (XML) mit 24x24 dp, einfarbig, aus Material Symbols (Apache-2.0) oder selbst gezeichnet. Die Quelle der Icons steht in der README. | M |
+| TI-2 | **Zuordnung:** Das Enum `Tab` (`ui/UiState.kt`) trägt zusätzlich ein `icon: DrawableResource`. `App.kt` setzt es im `NavigationBarItem` über `Icon(painterResource(t.icon), contentDescription = t.label)`. Neue Tabs müssen ein Icon angeben, sonst kompiliert der Code nicht. | M |
+| TI-3 | **Farben:** Das aktive Icon nutzt `Palette.Accent`, inaktive `Palette.Text`, analog zu den Beschriftungen (`selectedIconColor`, `unselectedIconColor`). Die Icons sind dafür einfarbig und werden vom Theme eingefärbt. | M |
+| TI-4 | **Label bleibt:** Die Textbeschriftung bleibt unter dem Icon sichtbar, damit die Tabs eindeutig bleiben. Der aktive Tab behält den Indikator (`0xFF3C3C3C`). | M |
+| TI-5 | **Plattformen:** Die Icons erscheinen unverändert auf Android, iOS und Desktop. Die Leiste bleibt in Hoch- und Querformat bedienbar (NF-4), Touch-Fläche mindestens 48 dp. | M |
+| TI-6 | **Motive:** Generator = Würfel oder Zufall, Game = Spielfigur oder Play, Teams = Gruppe, Rules = Buch, More = drei Punkte oder Menü. Die Motive sind frei wählbar, solange sie sich klar unterscheiden. | S |
+| TI-7 | **Abnahme:** Alle fünf Tabs zeigen auf Android und Desktop ein Icon in beiden Zuständen (aktiv/inaktiv), kein Icon ist abgeschnitten oder falsch eingefärbt. `./gradlew :shared:jvmTest` und `:androidApp:assembleDebug` laufen weiterhin fehlerfrei. | M |
+
+Nicht Teil dieser Anforderung: Badges auf Tabs, Animationen beim Tabwechsel, ein Wechsel auf `material-icons-extended`.
+
 ## 5. Nicht-funktionale Anforderungen
 
 | ID | Anforderung |

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
@@ -58,6 +59,7 @@ import com.example.killteam.ui.Palette
 import com.example.killteam.ui.isDesktop
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.painterResource
 
 private val KillTeamColors = darkColorScheme(
     primary = Palette.Accent,
@@ -172,8 +174,12 @@ private fun KillTeamApp(gate: AccessGate) {
                     NavigationBar(containerColor = Palette.Header) {
                         Tab.entries.forEach { t ->
                             NavigationBarItem(
-                                selected = t == tab, onClick = { ui.returnTab = null; tab = t }, icon = {}, label = { Text(t.label) },
+                                selected = t == tab, onClick = { ui.returnTab = null; tab = t },
+                                icon = { Icon(painterResource(t.icon), contentDescription = t.label) },
+                                label = { Text(t.label) },
                                 colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = Palette.Accent,
+                                    unselectedIconColor = Palette.Text,
                                     selectedTextColor = Palette.Accent,
                                     unselectedTextColor = Palette.Text,
                                     indicatorColor = Color(0xFF3C3C3C),
