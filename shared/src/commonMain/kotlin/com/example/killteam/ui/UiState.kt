@@ -31,6 +31,7 @@ enum class MorePage(val label: String) {
     Dice("Dice and damage calculator"),
     Favorites("Favorites and notes"),
     About("Data sources"),
+    Terms("Terms of use"),
     Measure("Measure distances (camera)"),
 }
 

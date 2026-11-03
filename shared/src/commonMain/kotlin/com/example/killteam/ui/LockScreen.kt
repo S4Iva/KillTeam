@@ -74,7 +74,7 @@ fun LockScreen(startReason: AccessResult?, onSubmit: (String) -> AccessResult) {
     }
 }
 
-private val termsOfUse = listOf(
+internal val termsOfUse = listOf(
     "Purpose" to "This is a private, non-commercial test version, provided for trying out and for feedback.",
     "No sharing" to "Do not pass on, upload or publish the app, the installer, the APK or the access code, and do not share screenshots or videos that show larger parts of the content. Use the app only on your own devices.",
     "Access code" to "The code is for you only and may be time-limited. After it expires the app locks until you get a new code. Do not bypass the check (for example by setting the system clock back or by taking the app apart) and do not create your own codes.",

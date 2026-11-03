@@ -55,8 +55,19 @@ fun MoreScreen(app: AppState, gate: AccessGate) {
         MorePage.Tournament -> TournamentPage(app, back)
         MorePage.Dice -> DicePage(back)
         MorePage.Favorites -> FavoritesPage(app, back)
-        MorePage.About -> AboutPage(app, back)
         MorePage.Measure -> MeasureScreen(app, back)
+        MorePage.About -> AboutPage(app, back)
+        MorePage.Terms -> TermsPage(back)
+    }
+}
+
+@Composable
+private fun TermsPage(onBack: () -> Unit) {
+    Page("Terms of use", onBack) {
+        items(termsOfUse.size) { i ->
+            val (title, text) = termsOfUse[i]
+            SectionCard(title) { Text(text) }
+        }
     }
 }
 
