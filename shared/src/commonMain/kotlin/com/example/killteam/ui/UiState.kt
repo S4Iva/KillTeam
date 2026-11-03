@@ -31,6 +31,7 @@ enum class MorePage(val label: String) {
     Dice("Dice and damage calculator"),
     Favorites("Favorites and notes"),
     About("Data sources"),
+    Measure("Measure distances (camera)"),
 }
 
 /** Navigation, search and scroll state that must survive switching tabs and is used by the back button. */

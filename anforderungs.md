@@ -210,6 +210,36 @@ Nicht Teil dieser Anforderung: Badges auf Tabs, Animationen beim Tabwechsel, ein
 
 Status 2026-11-02: TI-1 bis TI-8 sind umgesetzt (`ui/UiState.kt` `goHome`, `App.kt`), TI-9 ist auf dem Gerät noch zu prüfen.
 
+### 4.14 Kamera-Messfunktion (Distanzen am Spieltisch)
+
+Die App misst Abstände auf dem Spieltisch über die Kamera, z. B. zwischen zwei Operatives, einem Operative und einem Objective Marker oder entlang eines Bewegungswegs. Die Messpunkte wählt der Nutzer frei im Kamerabild. Der Ersatz für Maßband und Mess-Schablonen (Kreis, Dreieck, Quadrat, Fünfeck) ist eine Hilfe und kein Regelschiedsrichter.
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| KM-1 | **Zugang:** Die Messfunktion ist ausschließlich über More (Eintrag "Measure") erreichbar, nicht über andere Tabs oder den Spielablauf. Der Eintrag öffnet die Kamera im Vollbild. Beim ersten Aufruf fragt die App die Kamera-Berechtigung mit kurzer Erklärung ab. Wird sie verweigert, zeigt die App einen Hinweis mit Weg in die Einstellungen; der Rest der App bleibt nutzbar. | M |
+| KM-2 | **Freie Punktwahl:** Ein Tipp ins Kamerabild setzt einen Messpunkt an beliebiger Stelle. Es sind mindestens zwei und beliebig viele Punkte (mindestens 10) möglich. Die Punkte sind nummeriert (1, 2, 3, ...) und über Linien verbunden. | M |
+| KM-3 | **Anzeige:** Für jede Strecke zwischen zwei aufeinanderfolgenden Punkten zeigt die App die Länge direkt an der Linie, zusätzlich die Gesamtlänge des Linienzugs. Die Werte aktualisieren sich sofort bei jeder Änderung. | M |
+| KM-4 | **Punkte bearbeiten:** Ein gesetzter Punkt lässt sich per Ziehen verschieben (Fadenkreuz am Punkt zur genauen Platzierung), einzeln löschen und über "Undo" und "Clear all" zurücknehmen bzw. komplett entfernen. Die Touch-Fläche pro Punkt beträgt mindestens 48 dp. | M |
+| KM-5 | **Messmodi:** (a) "Path": Linienzug über alle Punkte in Reihenfolge, Gesamtlänge; (b) "Between points": Abstand zwischen zwei frei gewählten Punkten (Tipp auf Punkt A, dann Punkt B), ohne dass die Reihenfolge der Punkte eine Rolle spielt. Der Nutzer kann jederzeit zwischen den Modi wechseln, ohne die Punkte zu verlieren. | M |
+| KM-6 | **Kalibrierung:** Da die Kamera allein keine Entfernungen kennt, kalibriert der Nutzer den Maßstab einmalig pro Messung: Er markiert zwei Punkte einer bekannten Länge und gibt diese ein (z. B. Lineal, bekannte Basegröße 25/28,5/32/40 mm, Spielfeldkante, Objective Marker mit 40 mm). Es gibt Voreinstellungen für die gängigen Base-Größen und Objective Marker. Kalibrierung und Messung gelten für die Ebene des Spieltischs. | M |
+| KM-7 | **Perspektive:** Die Kalibrierung berücksichtigt die Tischebene. Optional markiert der Nutzer vier Ecken eines bekannten Rechtecks (z. B. Killzone-Kante, Spielfeld 30" x 22" bzw. 60 x 60 cm) und die App rechnet das Bild per Homographie auf eine Draufsicht um, damit auch Schrägaufnahmen brauchbare Werte liefern. Ohne diese Entzerrung weist die App darauf hin, dass die Kamera möglichst senkrecht über dem Tisch gehalten werden soll. | S |
+| KM-8 | **Einheiten:** Anzeige wahlweise in Zoll (Standard, Kill-Team-Regel), Zentimeter und Millimeter. Die Einheit ist umschaltbar und wird gespeichert. | M |
+| KM-9 | **Kill-Team-Distanzen:** Zusätzlich zur Zahl zeigt die App für jede Strecke, ob sie innerhalb der Regel-Distanzen liegt: Kreis (1"), Dreieck (2"), Quadrat (3"), Fünfeck (6") (siehe Core Rules). Eine Strecke wird farblich markiert, wenn sie innerhalb der gewählten Distanz liegt ("within X"). Die Referenzdistanz ist wählbar. | S |
+| KM-10 | **Standbild:** Mit "Freeze" friert die App das Kamerabild ein, damit der Nutzer Punkte ohne Handzittern setzen kann; "Live" kehrt zur Live-Ansicht zurück. Gesetzte Punkte bleiben an ihrer Bildschirmposition und folgen einer Kamerabewegung nicht (kein AR-Tracking in der Basisversion); nach einer Bewegung ist neu zu kalibrieren oder ein Standbild zu verwenden. | M |
+| KM-11 | **Zoom:** Pinch-Zoom und Verschieben im Kamerabild, um Punkte präzise zu setzen. Zoom verändert den Maßstab der Messung nicht (Werte bleiben gleich). | S |
+| KM-12 | **Optionale AR-Messung:** Auf Geräten mit ARCore (Android) bzw. ARKit (iOS) kann alternativ die Entfernung über Tiefenerkennung gemessen werden. Die Punkte haften dann an der Tischfläche und folgen der Kamerabewegung. Ohne AR-Unterstützung fällt die App auf die Kalibrierung aus KM-6 zurück. | K |
+| KM-13 | **Genauigkeit:** Die App weist beim ersten Aufruf und in der Hilfe auf die Genauigkeit hin (typisch ± 2-3 mm bei sorgfältiger Kalibrierung und senkrechter Aufnahme) und darauf, dass bei Streitfällen das Maßband gilt. Optional zeigt sie eine Warnung, wenn Kalibrierlänge sehr kurz ist (< 5 % der Bildbreite) oder die Aufnahme stark schräg ist. | S |
+| KM-14 | **Ergebnisse übernehmen:** Eine Messung lässt sich als Notiz am aktuellen Spiel speichern (z. B. "Operative A to Objective: 4.5\""). Optional wird sie als Bild mit eingeblendeten Punkten und Werten in die Galerie gespeichert oder geteilt. Standardmäßig werden keine Kamerabilder gespeichert. | K |
+| KM-15 | **Plattformen:** Android (CameraX) und iOS (AVFoundation) nutzen die Gerätekamera über `expect/actual` in `shared`. Der Desktop (JVM) nutzt eine angeschlossene Webcam oder bietet alternativ den Import eines Fotos; ist beides nicht möglich, ist die Funktion ausgeblendet. Die Mess- und Rechenlogik (Kalibrierung, Homographie, Einheiten, Distanzprüfung) liegt plattformunabhängig in `commonMain`. | M |
+| KM-16 | **Datenschutz:** Das Kamerabild wird nur lokal verarbeitet, nicht gespeichert und nicht übertragen (NF-1, NF-7). Die Kamera ist nur aktiv, solange die Messansicht sichtbar ist, und wird beim Verlassen oder Ausblenden der App freigegeben. | M |
+| KM-17 | **Bedienung:** Die Messansicht funktioniert im Hoch- und Querformat (NF-4) und im Dunkelmodus (NF-5). Eine kurze Einblendung erklärt die Schritte (1. Kalibrieren, 2. Punkte setzen, 3. Ergebnis lesen). Der Bildschirm bleibt wach. | S |
+| KM-18 | **Tests:** Unit-Tests in `commonTest` für die Umrechnung Pixel zu Zoll/cm/mm, Kalibrierung mit zwei Punkten, Homographie mit bekanntem Rechteck, Länge von Linienzügen mit mehreren Punkten, Abstand zwischen beliebigen Punkten und Distanzprüfung (Kreis, Dreieck, Quadrat, Fünfeck, inklusive Grenzwerten). | M |
+| KM-19 | **Abnahme:** Auf Android und Desktop lassen sich nach Kalibrierung mindestens drei frei gewählte Punkte setzen, verschieben und löschen; die angezeigten Strecken weichen bei senkrechter Aufnahme eines 30"-Referenzmaßes um höchstens 3 mm je 10 cm ab; Zugang über More (KM-1) und Berechtigungsablauf sind geprüft. | M |
+
+Nicht Teil dieser Anforderung (Basisversion): automatische Erkennung von Operatives oder Terrain per Bilderkennung, Sichtlinien- und Deckungsprüfung, Aufzeichnung von Videos, Cloud-Auswertung.
+
+Status 2026-11-03: KM-1 bis KM-11, KM-13, KM-15 bis KM-18 sind umgesetzt (`logic/Measure.kt`, `ui/MeasureScreen.kt`, `ui/CameraSource*.kt`, Tests in `MeasureTest`). Offen: KM-12 und KM-14 (Prio K), iOS-Kamera (der Eintrag ist dort ausgeblendet, braucht macOS zum Bauen und Prüfen), Desktop-Webcam (dort nur Foto-Import), KM-19 (Abnahme auf dem Gerät).
+
 ## 5. Nicht-funktionale Anforderungen
 
 | ID | Anforderung |

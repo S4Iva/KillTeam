@@ -30,6 +30,7 @@ class AppState(settings: Settings = Settings()) {
     val game = Persisted(settings, "game", GameState.serializer().nullable, null)
     val history = Persisted(settings, "history", ListSerializer(GameResult.serializer()), emptyList())
     val tournaments = Persisted(settings, "tournaments", ListSerializer(Tournament.serializer()), emptyList())
+    val measure = Persisted(settings, "measure", MeasureSettings.serializer(), MeasureSettings())
 
     var teamData: KillTeamData? by mutableStateOf(null)
         private set

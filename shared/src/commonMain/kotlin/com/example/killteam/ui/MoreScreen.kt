@@ -47,7 +47,7 @@ fun MoreScreen(app: AppState, gate: AccessGate) {
     when (ui.morePage) {
         null -> Page("More", listState = ui.list("more")) {
             item { AccessCard(gate) }
-            MorePage.entries.forEach { p ->
+            MorePage.entries.filter { it != MorePage.Measure || cameraAvailable }.forEach { p ->
                 item { OutlinedButton({ ui.morePage = p }, Modifier.fillMaxWidth()) { Text(p.label) } }
             }
         }
@@ -56,6 +56,7 @@ fun MoreScreen(app: AppState, gate: AccessGate) {
         MorePage.Dice -> DicePage(back)
         MorePage.Favorites -> FavoritesPage(app, back)
         MorePage.About -> AboutPage(app, back)
+        MorePage.Measure -> MeasureScreen(app, back)
     }
 }
 
