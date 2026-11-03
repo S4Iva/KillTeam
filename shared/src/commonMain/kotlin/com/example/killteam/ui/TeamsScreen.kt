@@ -83,7 +83,7 @@ private fun TeamList(app: AppState, onOpen: (KillTeam) -> Unit, onOpenHit: (Kill
             item { LoadStatus(app, "kill team data") }
         } else {
             item {
-                Text("${teams.size} teams  |  data imported ${app.teamData?.importedAt} from ${app.teamData?.source}", style = MaterialTheme.typography.bodySmall)
+                Text("${teams.size} teams", style = MaterialTheme.typography.bodySmall)
             }
         }
         items(teams.size) { i ->
@@ -173,7 +173,7 @@ private fun TeamDetail(app: AppState, team: KillTeam, onBack: () -> Unit) {
             ) {
                 if (team.description.isNotBlank()) Text(team.description)
                 if (team.updated.isNotBlank()) {
-                    Text("Rules version: ${team.version} (${team.updated}), imported ${app.teamData?.importedAt}", style = MaterialTheme.typography.bodySmall, color = Palette.Accent)
+                    Text("Rules version: ${team.version} (${team.updated})", style = MaterialTheme.typography.bodySmall, color = Palette.Accent)
                 }
                 CompositionList(team)
                 NoteField(key, app.note(key)) { app.setNote(key, it) }
