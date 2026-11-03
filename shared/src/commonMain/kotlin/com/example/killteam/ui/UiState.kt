@@ -27,12 +27,12 @@ enum class TeamsPage { List, Rosters }
 
 enum class MorePage(val label: String) {
     History("Game history and statistics"),
+    Favorites("Favorites and notes"),
     Tournament("Tournament mode"),
     Dice("Dice and damage calculator"),
-    Favorites("Favorites and notes"),
+    Measure("Measure distances (camera)"),
     About("Data sources"),
     Terms("Terms of use"),
-    Measure("Measure distances (camera)"),
 }
 
 /** Navigation, search and scroll state that must survive switching tabs and is used by the back button. */
