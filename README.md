@@ -2,7 +2,7 @@
 
 Private Companion-App für Kill Team (3rd Edition) mit dem Mission Generator aus Approved Ops 2025 als Kernfunktion. Läuft auf Android, iOS und Desktop (JVM), vollständig offline.
 
-Regeltexte, Daten und Bilder stammen von [Wahapedia](https://wahapedia.ru/kill-team3/) und gehören Games Workshop bzw. Wahapedia (© Vyacheslav Maltsev). Die App ist nur für den privaten, nicht kommerziellen Gebrauch gedacht und wird nicht weitergegeben. Die Anforderungen stehen in [anforderungs.md](anforderungs.md).
+Regeltexte, Daten und Bilder stammen von [Wahapedia](https://wahapedia.ru/kill-team3/) und gehören Games Workshop. Die App ist nur für den privaten, nicht kommerziellen Gebrauch gedacht und wird nicht weitergegeben. Die Anforderungen stehen in [anforderungs.md](anforderungs.md).
 
 ## Funktionen
 
@@ -16,7 +16,7 @@ Die App hat fünf Tabs:
 
 Schlüsselbegriffe in den Texten sind antippbar. Ein Popup zeigt die Definition und führt zur passenden Regel.
 
-Das Design ist bewusst eigenständig (petrolfarbenes Dunkel-Theme mit Teal-Akzent in `ui/Components.kt`, Objekt `Palette`) und übernimmt nur die Inhalte von Wahapedia, nicht deren Aussehen.
+Das Design ist bewusst eigenständig (petrolfarbenes Dunkel-Theme mit Teal-Akzent in `ui/Components.kt`, Objekt `Palette`).
 
 ## Projektstruktur
 
