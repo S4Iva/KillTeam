@@ -101,8 +101,8 @@ Führt durch die fünf Schritte des Approved-Ops-Spiels:
 
 | ID | Anforderung | Prio |
 | --- | --- | --- |
-| GA-1 | Verdeckte Eingabe von Tac Op, Primary Op und Equipment je Spieler auf einem Gerät mit Sichtschutz-Bildschirm zwischen den Spielern. | M |
-| GA-2 | Gleichzeitiges Aufdecken der Auswahl. | M |
+| GA-1 | Verdeckte Eingabe von Tac Op und Primary Op je Spieler auf einem Gerät mit Sichtschutz-Bildschirm zwischen den Spielern. Das Equipment ist nicht mehr verdeckt (siehe RW-13, RW-14). | M |
+| GA-2 | Gleichzeitiges Aufdecken der Auswahl (Tac Op, Primary Op). | M |
 | GA-3 | Reveal-Bedingungen der Tac Op als Erinnerung (z. B. "first time a friendly operative performs the Scout action"). | S |
 
 ### 4.5 Kill-Team-Browser und Regel-Nachschlagewerk
@@ -127,7 +127,7 @@ Führt durch die fünf Schritte des Approved-Ops-Spiels:
 
 | ID | Anforderung | Prio |
 | --- | --- | --- |
-| DT-1 | Pro Operative: aktuelle Wounds, Order (Engage/Conceal), Aktivierungsstatus (ready/expended), Incapacitated. | M |
+| DT-1 | Pro Operative: aktuelle Wounds, Aktivierungsstatus (ready/expended), Incapacitated. Die Anzeige und die Buttons für die Order (Engage/Conceal) entfallen (2026-11-04); ein vorhandenes Feld in gespeicherten Spielständen bleibt erhalten, wird aber nicht mehr angezeigt. | M |
 | DT-2 | Tokens und Marker pro Operative (z. B. Dominate, Intelligence-Marker). | S |
 | DT-3 | Ausschaltungen fließen automatisch in die Kill-Grade-Berechnung ein. | S |
 
@@ -365,6 +365,49 @@ Vereinheitlicht die vorhandenen Buttons zu festen Arten, Größen und Regeln (Ko
 
 Status 2026-11-04: BT-1 bis BT-9 sind umgesetzt (`ui/Buttons.kt`; alle Tabs, Dialoge und die Messfunktion nutzen `AppButton`). Ausnahmen: die Kamera-Toolbar der Messfunktion (eigene Farben auf dem Kamerabild, KM-20) und die Einträge der Index-Dialoge, die als Listenzeilen statt als Buttons gezeichnet sind. "Favorite" ist jetzt ein Stern-Icon, "Open rule" hat keinen Pfeil mehr.
 
+### 4.22 Roster mit Waffenwahl, Equipment und Datenkarten im Spiel
+
+Erweitert den Roster-Builder (4.6) und den Datenblatt-Tracker (4.7). Konzept K in [konzept.md](konzept.md). Betrifft RB-1, RB-4, DT-1, AT-8, GA-1, GA-2.
+
+**Roster**
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| RW-1 | **Datenmodell:** Ein Roster speichert pro Eintrag der Operative-Liste die gewählte Waffenoption (`Roster.options`, parallel zu `operatives`, Label der Option aus dem Optionstext). Zusätzlich speichert es eine Equipment-Liste. Alte Rosters (nur Datenkartennamen) laden unverändert weiter, ohne Waffenwahl und ohne Equipment. Die neuen Felder haben Standardwerte, damit gespeicherte Daten nicht verloren gehen. | M |
+| RW-2 | **Equipment im Roster:** Der Roster-Editor hat den Abschnitt "Equipment (n/4)" mit "Faction equipment" (aus der Teamliste) und "Universal equipment" (`ApprovedOps.universalEquipment`) als Choice-Chips sowie dem Feld "Other equipment". Höchstens 4 verschiedene Einträge (`ApprovedOps.MAX_EQUIPMENT`), jeder nur einmal. | M |
+| RW-3 | **Optionen aus den Optionstexten:** Die Waffenoptionen kommen ausschließlich aus den Optionstexten der Zusammensetzung (`compositionParas`), z. B. "1 KASRKIN SERGEANT operative with one of the following options:" mit "Bolt pistol; power weapon". Die Aufzählungen werden an `;` und " and " zerlegt und auf die Waffennamen der Datenkarte abgebildet (ohne Groß-/Kleinschreibung; "(standard)" und "(supercharge)" gehören zur selben Waffe). | M |
+| RW-4 | **Waffenwahl im Editor (geändert 2026-11-04, nach Test):** Die Waffenwahl steht nicht mehr unter jedem Operative, sondern in einem eigenen Abschnitt "Weapons" **nach der Operative-Liste**. Der Nutzer wählt zuerst den Typ in der Operative-Liste (Zähler `-` / `+`). Danach listet der Abschnitt "Weapons" jeden gewählten Operative, der Optionen hat, als eigene Zeile (Typ mit laufender Nummer, z. B. "Nemesis Claw Gunner 2") und daneben eine Auswahl der gelisteten Waffenkombinationen, genau in der Schreibweise des Optionstextes (z. B. "Bolt pistol; flamer; fists"). Die Reihenfolge entspricht der Operative-Liste. Die gewählte Kombination setzt die Waffen. Hat ein Typ keinen Optionstext oder lässt sich der Text nicht abbilden, erscheint er nicht im Abschnitt, und es gibt keine freie Auswahl einzelner Waffenprofile. Ist kein Operative mit Optionen gewählt, entfällt der Abschnitt. | M |
+| RW-5 | **Prüfung:** Zusätzlich zu den bisherigen Meldungen (Anzahl je Zusammensetzungszeile, Unknown operative) zeigt der Editor die Warnung "Weapon option not selected" (nur dort, wo es Optionen gibt) und "More than 4 equipment". Warnungen sperren das Speichern nicht. | S |
+| RW-6 | **Parser-Bericht:** Ein Test oder Hilfsskript listet alle Teams, bei denen der Optionstext nicht (vollständig) abgebildet werden kann. Für diese Teams gilt die normale Datenkarte (RW-12). | S |
+| RW-7 | **Export:** Das Teilen als Text (RB-4) enthält Waffenwahl und Equipment. | K |
+
+**Im Spiel**
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| RW-8 | **Vorbelegung:** Beim Spielstart bekommt jeder Operative (`OperativeTrack`) den Namen seiner Datenkarte und die Waffen aus dem Roster. `PlayerState.equipment` wird aus `Roster.equipment` vorbelegt. Ohne Roster wird die Datenkarte über den Namen des Operatives zugeordnet, soweit er bekannt ist. | M |
+| RW-9 | **Aufklappbare Zeile:** In der Spielerkarte (Liste "Operatives") hat jede Operative-Zeile den Button "Show datacard" / "Hide datacard" zum Auf- und Zuklappen (statt eines Pfeils, BT-5). Zugeklappt zeigt sie Name, Wounds, Status und die Aktionsbuttons -1 W, +1 W, Ready/Expended und Out/Revive. **Die Buttons Engage/Conceal entfallen** (siehe DT-1). Die Aufklapp-Zustände gelten nur für die laufende Ansicht und ändern keine Spieldaten. | M |
+| RW-10 | **Datenkarte wie im Teams-Tab:** Aufgeklappt erscheint dieselbe Datenkarte wie unter Teams. Die vorhandene Komponente `OperativeDatacard` wird unverändert wiederverwendet (Wertekopf, Waffentabelle, Fähigkeiten und Aktionen, antippbare Schlüsselbegriffe), es gibt keine eigene Variante. Mit Waffenwahl bekommt sie nur die gewählten Waffen. Der Button "Show all weapons" unter der Karte zeigt die vollständige Datenkarte. | M |
+| RW-11 | ~~Unit rules als zweite Aufklapp-Ebene~~ **Entfällt (2026-11-04):** Die Datenkarte aus dem Teams-Tab zeigt ihre Regeln direkt (RW-10), eine zusätzliche Ebene gibt es nicht. | - |
+| RW-12 | **Ohne Waffenwahl:** Ohne Roster, ohne Optionstext oder bei nicht abbildbarem Text zeigt die aufgeklappte Karte die normale Datenkarte mit allen Waffen, und "Show all weapons" entfällt. | M |
+| RW-13 | **Equipment im Spiel (geändert 2026-11-04, nach Test):** Das Equipment erscheint im Spiel nur, wenn es aus dem Roster kommt, und wird wie die Operatives ein- und ausgeklappt. In der Spielerkarte steht der Button "Equipment (n)" bzw. "Hide equipment" (standardmäßig zugeklappt, wie bei "Operatives"). Aufgeklappt erscheinen die Ausrüstungen des Rosters als dieselben Karten wie im Teams-Tab (Name, Kosten, Text; Komponente `NamedTextCard`). Fraktions-Equipment kommt aus den Teamdaten. Für allgemeine Ausrüstung (nur Namen in `ApprovedOps.universalEquipment`) zeigt die Karte den Namen mit Link zur Regelseite "Universal equipment", sofern vorhanden. Wurde das Spiel ohne Roster oder mit einem Roster ohne Equipment gestartet, gibt es den Button und den Abschnitt nicht. Equipment, das in der geheimen Auswahl ("Secret selection") von Hand gewählt oder geändert wird, erscheint nicht als Karten, es zählt nur in der Anzeige "equipment n/4" dort (AT-8). In Schritt 2 ("Select Operatives") steht dieselbe Ein-/Ausklappen-Anzeige je Spieler anstelle der früheren Karte "Reveal equipment". | M |
+| RW-17 | **Optionstexte mit "equipped with":** Der Parser (RW-3) liest auch Zusammensetzungszeilen mit "equipped with" statt "with", sowohl als Pfeilzeile ("1 NEMESIS CLAW VISIONARY equipped with one of the following options:") als auch als Listenzeile ("GUNNER equipped with one of the following options:", "HEAVY GUNNER equipped with ...", "WARRIOR equipped with ..."). Aufzählungen wie "Bolt pistol; flamer; fists" werden wie bisher auf die Waffen der Datenkarte abgebildet. Der Bericht (RW-6) listet zusätzlich alle Teams, in deren Zusammensetzung Zeilen mit "one of the following" stehen, für die kein Optionstext erkannt wurde, damit solche Teams nicht unbemerkt ohne Optionen bleiben. | M |
+| RW-18 | **Herkunft des Equipments:** Der Spielzustand merkt sich, welche Ausrüstungen aus dem Roster stammen (`PlayerState.rosterEquipment`, wird beim Spielstart aus `Roster.equipment` gefüllt, Standard leer, alte Spielstände laden unverändert). Nur diese Liste speist RW-13. `PlayerState.equipment` bleibt die Liste der geheimen Auswahl. | M |
+| RW-14 | **Sichtbarkeit:** Roster, Waffen, Equipment und Datenkarten sind für beide Spieler jederzeit sichtbar. Nur die Tac Op (und die Primary Op bis zum Aufdecken) bleiben verdeckt. | M |
+
+**Qualität**
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| RW-15 | **Tests (`commonTest`/`jvmTest`):** Laden alter Rosters ohne neue Felder, Parser mit mindestens Kasrkin (Optionsliste), einem Team mit Gunner-Liste und einem Team ohne Optionen, Zuordnung "(standard)/(supercharge)", Prüfung von mehr als 4 Equipment und die Vorbelegung von `OperativeTrack` und `PlayerState.equipment`. | M |
+| RW-16 | **Abnahme:** Auf Android und Desktop lässt sich ein Kasrkin-Roster mit gewählter Sergeant-Option und Equipment speichern. Im Spiel klappt die Karte des Sergeants auf und zeigt dieselbe Datenkarte wie im Teams-Tab, nur mit den gewählten Waffen. "Show all weapons" lässt sich aufklappen, das Equipment steht als Karten wie im Teams-Tab in der Spielerkarte und es gibt keine Engage/Conceal-Buttons mehr. Ein Operative ohne Optionstext zeigt alle Waffen. Nach der Änderung vom 2026-11-04 gilt zusätzlich: Im Roster eines Nemesis-Claw-Teams steht der Abschnitt "Weapons" nach der Operative-Liste und bietet für Gunner und Heavy Gunner die gelisteten Kombinationen an. Im Spiel erscheint das Equipment nur bei einem Roster mit Equipment und lässt sich mit "Equipment (n)" ein- und ausklappen. | M |
+
+**Umsetzung in Etappen:** (1) Datenmodell und Migration (RW-1, RW-8, Tests), (2) Parser und Bericht (RW-3, RW-6), (3) Roster-Editor mit Waffenwahl und Equipment (RW-2, RW-4, RW-5), (4) aufklappbare Karte im Spiel (RW-9 bis RW-14). Jede Etappe baut und besteht `:shared:jvmTest` und `:androidApp:assembleDebug`.
+
+Status 2026-11-04: RW-1 bis RW-6 und RW-8 bis RW-15 sind umgesetzt (`data/WeaponOptions.kt`, `logic/History.kt`, `ui/TeamsScreen.kt` Roster-Editor, `ui/GameScreen.kt`, Tests in `WeaponOptionsTest`). Der Parser bildet bei 29 von 48 Teams Optionen ab (RW-6, Bericht im Testlauf). Nicht vollständig abgebildet werden u. a. Teams mit Gunner-Einträgen in anderer Schreibweise (z. B. Hunter Clade Warriors, Death Korps, Legionary, Wyrmblade); dort gilt die normale Datenkarte. RW-7 (Export) ist offen, RW-16 (Abnahme auf dem Gerät) ist noch zu prüfen.
+
+Änderungen nach dem Test am 2026-11-04: RW-4, RW-13, RW-17 und RW-18 sind umgesetzt (Abschnitt "Weapons" nach der Operative-Liste im Roster-Editor, Equipment im Spiel nur aus dem Roster mit "Equipment (n)" / "Hide equipment", Parser liest "equipped with" und weitere Kopfzeilen, `PlayerState.rosterEquipment`). Der Parser bildet jetzt bei 31 von 48 Teams Optionen ab, und der Testlauf meldet keine nicht erkannten Optionszeilen mehr. Die Teams mit nur teilweise abbildbaren Texten (z. B. Hunter Clade Warriors, Death Korps, Angels of Death) zeigen die normale Datenkarte.
+
 ## 5. Nicht-funktionale Anforderungen
 
 | ID | Anforderung |
@@ -398,7 +441,7 @@ Status 2026-11-04: BT-1 bis BT-9 sind umgesetzt (`ui/Buttons.kt`; alle Tabs, Dia
 
 Entschieden für 1.4.0.a: Alpha und Beta sind nicht parallel installierbar (VR-4). Favoriten gelten für Regelseiten, Teams, Crit Ops und Tac Ops (RF-4). Die Referenz mit Missionspaketen wurde verworfen, RG-1 ist pausiert.
 
-Reihenfolge der Umsetzung 1.4.0.a: Kameramessung ausblenden (KM-20), Versionsanzeige (VR-2), Rechtliches (RC), Mock-ups (DS-4), Orange-Theme (DS), Rules-Tab mit Favoriten-Schalter (RF), Game Wizard (GW), Button-System (BT), inkrementelle Updates und PDF-Reader (UP), Beta-Release mit Schlüsselrotation (ZC-12). Regeln zusammenführen (RG-1) ist pausiert.
+Reihenfolge der Umsetzung 1.4.0.a: Kameramessung ausblenden (KM-20), Versionsanzeige (VR-2), Rechtliches (RC), Mock-ups (DS-4), Orange-Theme (DS), Rules-Tab mit Favoriten-Schalter (RF), Game Wizard (GW), Button-System (BT), Roster mit Waffenwahl und Datenkarten im Spiel (RW), inkrementelle Updates und PDF-Reader (UP), Beta-Release mit Schlüsselrotation (ZC-12). Regeln zusammenführen (RG-1) ist pausiert.
 
 ### 7.1 Offene Punkte aus dem Alpha-Test (Bedienung der App)
 

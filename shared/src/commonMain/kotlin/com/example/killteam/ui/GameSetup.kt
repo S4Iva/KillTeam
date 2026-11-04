@@ -37,11 +37,14 @@ fun rosterToTracks(team: KillTeam?, roster: Roster?): List<OperativeTrack> {
     if (team == null || roster == null) return emptyList()
     val totals = roster.operatives.groupingBy { it }.eachCount()
     val seen = mutableMapOf<String, Int>()
-    return roster.operatives.map { name ->
+    return roster.operatives.mapIndexed { index, name ->
         val n = (seen[name] ?: 0) + 1
         seen[name] = n
         val wounds = team.operatives.firstOrNull { it.name == name }?.woundsValue ?: 0
-        OperativeTrack(if ((totals[name] ?: 0) > 1) "$name $n" else name, wounds)
+        OperativeTrack(
+            if ((totals[name] ?: 0) > 1) "$name $n" else name, wounds,
+            card = name, weapons = RosterRules.weaponsOf(team, name, roster.optionAt(index)),
+        )
     }
 }
 
@@ -92,6 +95,8 @@ fun NewGameScreen(app: AppState, onOpenGenerator: () -> Unit) {
                         teamSlug = teams[i]?.slug,
                         enemyStartCount = sizes[1 - i],
                         operatives = rosterToTracks(teams[i], rosters[i]),
+                        equipment = rosters[i]?.equipment.orEmpty(),
+                        rosterEquipment = rosters[i]?.equipment.orEmpty(),
                     )
                 }
                 val now = nowMillis()

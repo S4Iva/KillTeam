@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.ui.draw.clip
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.killteam.data.ApprovedOps
 import com.example.killteam.data.KillOp
+import com.example.killteam.data.KillTeam
 import com.example.killteam.logic.AppState
 import com.example.killteam.logic.GamePhase
 import com.example.killteam.logic.GameState
@@ -102,8 +104,8 @@ fun RunningGame(app: AppState, game: GameState) {
     var secretReady by remember { mutableStateOf(false) }
     var primaryFor by remember { mutableStateOf<Int?>(null) }
     var showMission by remember { mutableStateOf(false) }
-    var showEquipment by remember(game.id, game.phase) { mutableStateOf(false) }
     var confirm by remember { mutableStateOf<PendingConfirm?>(null) }
+    var equipmentOpen by remember(game.id) { mutableStateOf(setOf<Int>()) }
 
     // Every new phase or turning point starts at the top of the screen (not when only switching back to this tab).
     val position = "${game.id}:${game.phase}:${game.turningPoint}"
@@ -179,11 +181,20 @@ fun RunningGame(app: AppState, game: GameState) {
                         }
                     }
                 }
-                item {
-                    SectionCard("Reveal equipment") {
-                        AppButton(if (showEquipment) "Hide" else "Reveal simultaneously", { showEquipment = !showEquipment }, kind = ButtonKind.Secondary, fullWidth = true)
-                        if (showEquipment) game.players.forEach { p ->
-                            Text("${p.name}: ${p.equipment.joinToString().ifEmpty { "-" }}")
+                if (game.players.any { it.rosterEquipment.isNotEmpty() }) {
+                    item {
+                        SectionCard("Equipment") {
+                            game.players.forEachIndexed { pi, p ->
+                                if (p.rosterEquipment.isNotEmpty()) {
+                                    val open = pi in equipmentOpen
+                                    AppButton(
+                                        if (open) "Hide equipment: ${p.name}" else "Equipment (${p.rosterEquipment.size}): ${p.name}",
+                                        { equipmentOpen = if (open) equipmentOpen - pi else equipmentOpen + pi },
+                                        kind = ButtonKind.Secondary, fullWidth = true,
+                                    )
+                                    if (open) EquipmentCards(app, app.team(p.teamSlug), p.rosterEquipment)
+                                }
+                            }
                         }
                     }
                 }
@@ -442,6 +453,30 @@ private fun ReadyStepPanel(game: GameState, update: (GameState) -> Unit) {
     }
 }
 
+/** Equipment as the same cards as in the Teams tab; universal equipment (names only) links to its rules section when there is one. */
+@Composable
+private fun EquipmentCards(app: AppState, team: KillTeam?, names: List<String>) {
+    val ui = LocalUi.current
+    if (names.isEmpty()) {
+        Text("No equipment selected.", style = MaterialTheme.typography.bodySmall)
+        return
+    }
+    names.forEach { e ->
+        val item = team?.equipment?.firstOrNull { it.name.equals(e, ignoreCase = true) }
+        if (item != null) {
+            NamedTextCard(item, Palette.Equipment)
+        } else {
+            val section = app.rules?.sections?.firstOrNull { it.page == "universal-equipment" && it.title.equals(e, ignoreCase = true) }
+            if (section != null) {
+                Text(
+                    "$e  >", Modifier.fillMaxWidth().clickable { openKey(app, ui, "section:universal-equipment/${section.id}") }.padding(vertical = 6.dp),
+                    color = Palette.Accent, fontWeight = FontWeight.SemiBold,
+                )
+            } else Text(e, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
@@ -450,7 +485,10 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
     val update: (GameState) -> Unit = { app.game.update(it) }
     val score = Scoring.score(game, index)
     var showOperatives by remember(game.id, index) { mutableStateOf(false) }
+    var showEquipment by remember(game.id, index) { mutableStateOf(false) }
     var showTac by remember(game.id, index) { mutableStateOf(false) }
+    var openCards by remember(game.id, index) { mutableStateOf(setOf<Int>()) }
+    var allWeapons by remember(game.id, index) { mutableStateOf(setOf<Int>()) }
     val tac = p.tacOpId?.let { id -> ApprovedOps.tacOps.firstOrNull { it.id == id } }
     val team = app.team(p.teamSlug)
 
@@ -476,6 +514,13 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
             p.primaryRevealed -> p.primary.label
             else -> "selected (hidden)"
         })
+        if (p.rosterEquipment.isNotEmpty()) {
+            AppButton(
+                if (showEquipment) "Hide equipment" else "Equipment (${p.rosterEquipment.size})",
+                { showEquipment = !showEquipment }, kind = ButtonKind.Secondary, fullWidth = true,
+            )
+            if (showEquipment) EquipmentCards(app, team, p.rosterEquipment)
+        }
 
         if (p.operatives.isNotEmpty()) {
             AppButton(
@@ -493,12 +538,29 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
                             val s = ButtonSize.S
                             AppButton("-1 W", { update(game.changeOperative(index, oi) { it.copy(wounds = (it.wounds - 1).coerceAtLeast(0)) }) }, kind = ButtonKind.Secondary, size = s)
                             AppButton("+1 W", { update(game.changeOperative(index, oi) { it.copy(wounds = (it.wounds + 1).coerceAtMost(it.maxWounds)) }) }, kind = ButtonKind.Secondary, size = s)
-                            AppButton(if (o.engage) "Engage" else "Conceal", { update(game.changeOperative(index, oi) { it.copy(engage = !it.engage) }) }, kind = ButtonKind.Secondary, size = s)
                             AppButton(if (o.expended) "Expended" else "Ready", { update(game.changeOperative(index, oi) { it.copy(expended = !it.expended) }) }, kind = ButtonKind.Secondary, size = s)
                             AppButton(
                                 if (o.incapacitated) "Revive" else "Out", { update(game.setIncapacitated(index, oi, !o.incapacitated)) },
                                 kind = if (o.incapacitated) ButtonKind.Secondary else ButtonKind.Danger, size = s,
                             )
+                        }
+                        val datacard = team?.operatives?.firstOrNull { it.name == o.card }
+                        if (datacard != null) {
+                            val open = oi in openCards
+                            AppButton(
+                                if (open) "Hide datacard" else "Show datacard", { openCards = if (open) openCards - oi else openCards + oi },
+                                kind = ButtonKind.Secondary, size = ButtonSize.S, fullWidth = true,
+                            )
+                            if (open) {
+                                val showAll = o.weapons.isEmpty() || oi in allWeapons
+                                OperativeDatacard(if (showAll) datacard else datacard.withWeapons(o.weapons))
+                                if (o.weapons.isNotEmpty()) {
+                                    AppButton(
+                                        if (showAll) "Show chosen weapons" else "Show all weapons", { allWeapons = if (showAll) allWeapons - oi else allWeapons + oi },
+                                        kind = ButtonKind.Secondary, size = ButtonSize.S, fullWidth = true,
+                                    )
+                                }
+                            }
                         }
                     }
                 }

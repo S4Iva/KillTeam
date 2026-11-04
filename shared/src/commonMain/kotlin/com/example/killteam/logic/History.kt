@@ -1,5 +1,6 @@
 package com.example.killteam.logic
 
+import com.example.killteam.data.ApprovedOps
 import com.example.killteam.data.KillOp
 import com.example.killteam.data.Killzone
 import com.example.killteam.data.KillTeam
@@ -31,9 +32,46 @@ data class Roster(
     val teamSlug: String,
     /** Datacard names; the same name may occur several times. */
     val operatives: List<String> = emptyList(),
-)
+    /** Chosen weapon option per entry of [operatives] (label of a [com.example.killteam.data.WeaponOption], blank = none). May be shorter than [operatives]. */
+    val options: List<String> = emptyList(),
+    /** Equipment of the roster, at most [ApprovedOps.MAX_EQUIPMENT] different entries. */
+    val equipment: List<String> = emptyList(),
+) {
+    fun optionAt(index: Int): String = options.getOrNull(index).orEmpty()
+
+    private fun paddedOptions() = List(operatives.size) { optionAt(it) }
+
+    fun withAdded(name: String) = copy(operatives = operatives + name, options = paddedOptions() + "")
+
+    /** Removes the last entry with this datacard name together with its chosen option. */
+    fun withRemovedLast(name: String): Roster {
+        val index = operatives.indexOfLast { it == name }
+        if (index < 0) return this
+        return copy(
+            operatives = operatives.toMutableList().also { it.removeAt(index) },
+            options = paddedOptions().toMutableList().also { it.removeAt(index) },
+        )
+    }
+
+    fun withOption(index: Int, option: String): Roster {
+        if (index !in operatives.indices) return this
+        return copy(options = paddedOptions().toMutableList().also { it[index] = option })
+    }
+}
 
 object RosterRules {
+    /** Datacard weapons of the chosen option of an operative; empty means all weapons of the datacard (no option or not chosen). */
+    fun weaponsOf(team: KillTeam?, operative: String, option: String): List<String> =
+        if (option.isBlank()) emptyList() else team?.weaponOptions?.get(operative)?.firstOrNull { it.label == option }?.weapons.orEmpty()
+
+    /** Notes that do not block saving: options not chosen and too much equipment. */
+    fun warnings(team: KillTeam, roster: Roster): List<String> = buildList {
+        roster.operatives.forEachIndexed { i, name ->
+            if (team.weaponOptions[name] != null && roster.optionAt(i).isBlank()) add("Weapon option not selected: $name")
+        }
+        if (roster.equipment.distinct().size > ApprovedOps.MAX_EQUIPMENT) add("More than ${ApprovedOps.MAX_EQUIPMENT} equipment.")
+    }
+
     /** Operatives a player brings to a game: the roster size, else the size from the team rules, else [default] (within the kill grade table). */
     fun gameSize(team: KillTeam?, roster: Roster?, default: Int = 6): Int {
         val size = roster?.operatives?.size?.takeIf { it > 0 } ?: team?.let { expectedSize(it) }?.takeIf { it > 0 } ?: default

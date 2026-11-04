@@ -36,6 +36,10 @@ data class OperativeTrack(
     val engage: Boolean = false,
     val expended: Boolean = false,
     val incapacitated: Boolean = false,
+    /** Name of the datacard in the team (set from the roster). */
+    val card: String? = null,
+    /** Datacard weapons of the chosen option; empty means all weapons. */
+    val weapons: List<String> = emptyList(),
 ) {
     val wounded get() = wounds < maxWounds
     val injured get() = wounds * 2 < maxWounds
@@ -55,6 +59,8 @@ data class PlayerState(
     val tacOpId: String? = null,
     val tacRevealed: Boolean = false,
     val equipment: List<String> = emptyList(),
+    /** Equipment that came from the roster at the start of the game; only this list is shown as cards. */
+    val rosterEquipment: List<String> = emptyList(),
     val primary: OpKind? = null,
     val primaryRevealed: Boolean = false,
     val cards: List<InitiativeCard> = emptyList(),

@@ -82,6 +82,9 @@ class Operative(
     @Serializable(with = LenientBlockList::class) val blocks: List<AbilityBlock> = emptyList(),
 ) {
     val woundsValue get() = wounds.filter { it.isDigit() }.toIntOrNull() ?: 0
+
+    /** The same datacard with only the named weapons (all profiles of a weapon share its name prefix, so names are matched exactly). */
+    fun withWeapons(names: List<String>) = Operative(name, apl, move, save, wounds, weapons.filter { it.name in names }, rules, keywords, flavor, baseSize, blocks)
 }
 
 @Serializable
@@ -112,6 +115,10 @@ class KillTeam(
     /** Lower-case texts per part of the team for the word search (built on first use). */
     val searchIndex: List<SearchEntry> by lazy { buildSearchIndex(this) }
     val searchText: String by lazy { searchIndex.joinToString(" ") { it.text } }
+
+    /** Weapon options per datacard name, read from the composition text (see [WeaponOptions]); operatives without options are missing. */
+    val weaponOptionReport: WeaponOptionReport by lazy { WeaponOptions.parse(this) }
+    val weaponOptions: Map<String, List<WeaponOption>> get() = weaponOptionReport.options
 }
 
 @Serializable

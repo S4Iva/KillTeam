@@ -66,7 +66,7 @@ fun compositionLevels(paras: List<AbilityPara>): List<Int> {
 }
 
 /** Operative entries start with an upper-case name; equipment options start with a normal word such as "Plasma pistol". */
-private fun isOption(text: String): Boolean {
+internal fun isOption(text: String): Boolean {
     val first = text.trim().takeWhile { !it.isWhitespace() }
     return first.any { it.isLowerCase() }
 }

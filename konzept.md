@@ -34,6 +34,7 @@ Anzeige: ganz unten unter **More**, nach dem letzten Feld, als Text `v1.3.0.b - 
 | H | Schlüsselrotation pro Feature | niedrig | Release-Prozess |
 | I | Kameramessung ausblenden | niedrig | keine |
 | J | Button-System | mittel | A (Palette) |
+| K | Roster mit Waffenwahl, Datenkarten im Spiel | hoch | keine |
 
 Empfohlene Reihenfolge: I, E, F, C -> A (Mock-ups) -> J -> D -> B -> G -> H beim Release.
 
@@ -233,6 +234,105 @@ Touch-Fläche ist immer mindestens 48 dp, auch bei S (die Fläche ragt über die
 
 - Karten-Titelleisten und Tabs der unteren Navigation sind keine Buttons dieses Systems.
 - Die Kamera-Toolbar der Messfunktion nutzt vorerst weiter eigene Farben auf Kamerabild.
+
+### K. Roster mit Waffenwahl, Equipment und aufklappbaren Datenkarten im Spiel
+
+Status: Entwurf, Entscheidungen vom 2026-11-04 eingearbeitet (Optionstexte, Equipment im Roster, nichts verborgen). Umgesetzt (siehe `RW-1` bis `RW-16` in anforderungs.md, Abschnitt 4.22). Abweichung vom Entwurf: Statt `RosterSlot` speichert das Roster die gewählte Option als Liste `options` parallel zu `operatives`, und die Datenkarte wird über den Button "Show datacard" aufgeklappt.
+
+**Ausgangslage**
+
+- Ein `Roster` speichert nur Teamname und die Namen der Datenkarten (`operatives: List<String>`). Die Waffenwahl fehlt.
+- Die Zusammensetzung steht als Text in `compositionParas`: eine Zeile wie "1 KASRKIN SERGEANT operative with one of the following options:" mit Aufzählungen wie "Bolt pistol; power weapon" oder "GUNNER with plasma gun and gun butt*".
+- Die Datenkarte eines Operatives listet alle Waffenprofile zusammen (Sergeant: 8 Profile, davon "Plasma pistol (standard)" und "(supercharge)" als zwei Profile einer Waffe).
+- Im Spiel gibt es pro Operative nur eine Zeile `OperativeTrack` (Wounds, Engage/Conceal, Ready, Out), keine Werte und keine Waffen.
+
+**1. Daten**
+
+- `Roster.operatives` wird um Auswahl erweitert, rückwärtskompatibel (Standardwerte, alte Rosters laden weiter):
+  - `slots: List<RosterSlot>` mit `RosterSlot(operative: String, weapons: List<String>)`.
+  - `weapons` enthält die gewählten Waffennamen der Datenkarte. Leer heißt: keine Waffenwahl (kein Optionstext), es gelten alle Profile.
+  - Beim Laden wird `operatives` (alt) in `slots` überführt, ohne Waffenwahl.
+  - `equipment: List<String>` mit den gewählten Ausrüstungen des Rosters (höchstens `ApprovedOps.MAX_EQUIPMENT` = 4, jede nur einmal), aus Team-Equipment und allgemeiner Ausrüstung (`ApprovedOps.universalEquipment`). Standard: leer.
+- `OperativeTrack` bekommt `card: String?` (Name der Datenkarte) und `weapons: List<String>` aus dem Roster. `rosterToTracks` füllt beides. Ohne Roster bleibt `card` der Teamdatenkarte zugeordnet, soweit der Name bekannt ist, sonst leer.
+- `PlayerState.equipment` wird beim Spielstart aus `Roster.equipment` vorbelegt.
+
+**2. Waffenwahl im Roster**
+
+- Pro Operative im Roster steht unter dem Namen die Waffenwahl.
+- Quelle der Optionen: **nur die Optionstexte** der Zusammensetzung.
+  1. **Optionen aus der Zusammensetzung:** Die Aufzählungen unter einer Zeile "... one of the following options" werden in Auswahlpunkte zerlegt (Trennung an `;` und " and "). Jeder Teil wird auf die Waffennamen der Datenkarte abgebildet (ohne Groß-/Kleinschreibung, Zusatz "(standard)" / "(supercharge)" gehört zur selben Waffe). Beispiel Sergeant: vier Optionen als Auswahlliste, die gewählte Option setzt `weapons`.
+  2. **Ohne Optionstext:** Gibt es für einen Operative keinen Optionstext (z. B. Combat Medic) oder lässt sich der Text nicht auf Waffen der Datenkarte abbilden, gibt es keine Waffenwahl. Im Roster steht dann kein Auswahlfeld, im Spiel zeigt die aufgeklappte Karte die normale Datenkarte mit allen Waffen. Eine freie Auswahl einzelner Waffenprofile ist nicht vorgesehen.
+- Prüfung wie `RosterRules.problems`: Anzahl je Zusammensetzungszeile, Unknown operative, neu "Weapon option not selected" (Warnung, kein Fehler) nur dort, wo es Optionen gibt, und "More than 4 equipment" bei zu viel Ausrüstung.
+- **Equipment im Roster:** Der Editor hat einen Abschnitt "Equipment (n/4)" mit zwei Chip-Gruppen "Faction equipment" (aus der Teamliste) und "Universal equipment" (wie in der geheimen Auswahl im Spiel). Eigene Einträge ("Other equipment") sind wie dort möglich.
+- Teilen/Export (RB-4) nimmt Waffen und Equipment mit auf.
+
+**3. Wireframe Roster-Editor**
+
+```
+Kasrkin roster                         valid
+--------------------------------------------
+KASRKIN SERGEANT (1)
+  Option:  ( ) Bolt pistol; power weapon
+           (x) Hot-shot lasgun; gun butt
+           ( ) Hot-shot laspistol; power weapon
+           ( ) Plasma pistol; chainsword
+KASRKIN GUNNER (up to 2)
+  [-] 1 [+]   Weapon: [Plasma gun v]
+  [-] 1 [+]   Weapon: [Meltagun v]
+COMBAT MEDIC            [-] 1 [+]   (no options)
+
+Equipment (2/4)
+  Faction equipment:    [Frag grenades] [Smoke grenades] ...
+  Universal equipment:  [Ammo cache] [Barricades] ...
+```
+
+**4. Aufklappbare Datenkarte im Spiel**
+
+- Ort: Spielerkarte, Liste "Operatives" (bisher nur Wounds und Status-Buttons).
+- Jede Operative-Zeile bekommt rechts einen Pfeil zum Auf- und Zuklappen (Zustand nur während der Partie).
+- Zugeklappt: Name, Wounds, Status (wounded, injured, incapacitated) und die Aktionsbuttons -1 W, +1 W, Ready/Expended und Out/Revive. **Engage/Conceal entfällt** aus der Zeile.
+- Aufgeklappt erscheint **dieselbe Datenkarte wie im Teams-Tab**: die vorhandene Komponente `OperativeDatacard` wird unverändert wiederverwendet (gleiche Optik mit Wertekopf, Waffentabelle, Fähigkeiten und Aktionen, Schlüsselbegriffe antippbar). Es wird keine eigene Variante gebaut.
+  - Einziger Unterschied: Mit Waffenwahl bekommt die Komponente nur die **gewählten Waffen** der Datenkarte. Ein Button "Show all weapons" unter der Karte zeigt die vollständige Datenkarte.
+  - Die zuvor geplante zweite Ebene "Unit rules" entfällt, weil die Datenkarte ihre Regeln wie im Teams-Tab direkt zeigt.
+- Die Aufklapp-Zustände gelten nur für die laufende Ansicht und ändern keine Spieldaten.
+- Ohne Roster oder ohne Waffenwahl (kein Optionstext) zeigt die aufgeklappte Karte alle Waffen der Datenkarte, und der Button "Show all weapons" entfällt.
+- **Equipment im Spiel:** Die gewählten Ausrüstungen des Spielers erscheinen in seiner Spielerkarte als **dieselben Karten wie im Teams-Tab** (Name, Kosten, Text; Komponente `NamedTextCard` aus dem Teams-Bildschirm, dafür öffentlich gemacht). Fraktions-Equipment kommt aus den Teamdaten. Für allgemeine Ausrüstung (`ApprovedOps.universalEquipment`, nur Namen) zeigt die Karte den Namen mit Link zur Regelseite "Universal equipment", sofern vorhanden.
+
+```
+Player 1 - Kasrkin  | 3 VP
+  Operatives (6/10)
+  v Kasrkin Sergeant   10/10 W      [-1 W][+1 W][Ready][Out]
+    +-- Datenkarte wie im Teams-Tab -----------------+
+    |  Kasrkin Sergeant      APL 3 MOVE 6" SAVE 4+ W 10|
+    |  Hot-shot lasgun  4  3+  3/4  ...  (gewählt)     |
+    |  Gun butt         3  4+  3/4  -                  |
+    |  Fähigkeiten und Aktionen wie im Teams-Tab ...    |
+    +--------------------------------------------------+
+    [Show all weapons]
+  > Kasrkin Combat Medic  8/8 W
+  Equipment
+    [Frag grenades  1CP]  Karte wie im Teams-Tab
+```
+
+**5. Sichtbarkeit**
+
+Entschieden: Roster, Waffen, Equipment und Datenkarten bleiben **nicht verborgen**, beide Spieler sehen alles jederzeit (wie am Tisch). Folgen:
+
+- Die Karte "Reveal equipment" in Schritt 2 ("Reveal simultaneously") entfällt. Das Equipment steht stattdessen sichtbar in der Spielerkarte.
+- Die geheime Auswahl im Spiel ("Secret selection") bleibt für die Tac Op, deren Geheimhaltung die Regeln verlangen. Das Equipment dort ist mit dem Roster vorbelegt und weiter änderbar. Soll die geheime Auswahl nur noch die Tac Op enthalten, ist das eine eigene Entscheidung.
+
+**6. Umsetzung in Etappen**
+
+1. Datenmodell (`RosterSlot`, `OperativeTrack.card`/`weapons`, Migration, Tests für alte Rosters).
+2. Parser für Optionen aus `compositionParas` mit Testfällen für mehrere Teams (Kasrkin, ein Team mit Gunner-Liste, ein Team ohne Optionen) und ein Bericht, bei welchen Teams er nicht greift (dort gilt die normale Datenkarte).
+3. Roster-Editor mit Waffenwahl und Equipment.
+4. Aufklappbare Datenkarte im Spiel, Equipment aus dem Roster in der Spielerkarte, "Reveal equipment" entfernen.
+
+**7. Abgrenzung**
+
+- Keine Regelprüfung für Waffenkombinationen jenseits der Zusammensetzung des Teams.
+- Keine freie Auswahl von Waffenprofilen.
+- Kein Austausch von Rosters zwischen Geräten.
 
 ## 4. Roadmap
 

@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.killteam.data.ApprovedOps
 import com.example.killteam.data.Archetype
 import com.example.killteam.data.KillTeam
 import com.example.killteam.data.Operative
@@ -204,7 +205,7 @@ private fun TeamDetail(app: AppState, team: KillTeam, onBack: () -> Unit) {
 }
 
 @Composable
-private fun NamedTextCard(item: NamedText, headerColor: Color) {
+internal fun NamedTextCard(item: NamedText, headerColor: Color) {
     SectionCard(
         item.name,
         headerColor = headerColor,
@@ -253,6 +254,7 @@ private fun RosterEditor(app: AppState, initial: Roster, onBack: () -> Unit) {
     val roster = app.rosters.value.firstOrNull { it.id == initial.id } ?: initial
     val team = app.team(roster.teamSlug)
     val save: (Roster) -> Unit = { r -> app.rosters.update(app.rosters.value.map { if (it.id == r.id) r else it }) }
+    var custom by remember { mutableStateOf("") }
 
     Page(roster.name, onBack) {
         item {
@@ -263,6 +265,7 @@ private fun RosterEditor(app: AppState, initial: Roster, onBack: () -> Unit) {
                 val problems = team?.let { RosterRules.problems(it, roster) }.orEmpty()
                 if (problems.isEmpty()) Text("Roster size is valid. Check the selection limits in the text above.", color = MaterialTheme.colorScheme.primary)
                 problems.forEach { Text(it, color = MaterialTheme.colorScheme.error) }
+                team?.let { RosterRules.warnings(it, roster) }.orEmpty().forEach { Text(it, color = Palette.Highlight) }
                 AppButton("Delete roster", {
                     app.rosters.update(app.rosters.value.filter { it.id != roster.id })
                     onBack()
@@ -275,12 +278,53 @@ private fun RosterEditor(app: AppState, initial: Roster, onBack: () -> Unit) {
             val count = roster.operatives.count { it == name }
             Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(name, Modifier.weight(1f))
-                AppButton("-", {
-                    val idx = roster.operatives.indexOfLast { it == name }
-                    if (idx >= 0) save(roster.copy(operatives = roster.operatives.toMutableList().also { it.removeAt(idx) }))
-                }, Modifier.widthIn(min = 48.dp), ButtonKind.Secondary, ButtonSize.S, enabled = count > 0)
+                AppButton("-", { save(roster.withRemovedLast(name)) }, Modifier.widthIn(min = 48.dp), ButtonKind.Secondary, ButtonSize.S, enabled = count > 0)
                 Text(count.toString(), Modifier.padding(horizontal = 12.dp))
-                AppButton("+", { save(roster.copy(operatives = roster.operatives + name)) }, Modifier.widthIn(min = 48.dp), ButtonKind.Secondary, ButtonSize.S)
+                AppButton("+", { save(roster.withAdded(name)) }, Modifier.widthIn(min = 48.dp), ButtonKind.Secondary, ButtonSize.S)
+            }
+        }
+        val weaponSlots = roster.operatives.indices.filter { team?.weaponOptions?.get(roster.operatives[it]) != null }
+        if (team != null && weaponSlots.isNotEmpty()) {
+            item {
+                SectionCard("Weapons") {
+                    Text("Choose the listed weapon combination of each operative.", style = MaterialTheme.typography.bodySmall)
+                    weaponSlots.forEach { slot ->
+                        val name = roster.operatives[slot]
+                        val same = roster.operatives.count { it == name }
+                        val number = roster.operatives.take(slot + 1).count { it == name }
+                        val choices = team.weaponOptions.getValue(name)
+                        Dropdown(
+                            if (same > 1) "$name $number" else name, listOf("") + choices.map { it.label }, roster.optionAt(slot),
+                            { it.ifBlank { "not selected" } }, { save(roster.withOption(slot, it)) },
+                        )
+                    }
+                }
+            }
+        }
+        item {
+            val teamEquipment = team?.equipment?.map { it.name }?.sorted().orEmpty()
+            val max = ApprovedOps.MAX_EQUIPMENT
+            val toggle: (String) -> Unit = { e ->
+                save(roster.copy(equipment = if (e in roster.equipment) roster.equipment - e else if (roster.equipment.size < max) roster.equipment + e else roster.equipment))
+            }
+            SectionCard("Equipment (${roster.equipment.size}/$max)") {
+                Text("Select up to $max options, each option only once. The equipment is shown in the game under the player's card.")
+                if (teamEquipment.isNotEmpty()) {
+                    Text("Faction equipment", fontWeight = FontWeight.Bold, color = Palette.Accent)
+                    ChipRow(teamEquipment, { it in roster.equipment }, { it }, toggle)
+                }
+                Text("Universal equipment", fontWeight = FontWeight.Bold, color = Palette.Accent)
+                ChipRow(ApprovedOps.universalEquipment, { it in roster.equipment }, { it }, toggle)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedTextField(custom, { custom = it }, Modifier.weight(1f), label = { Text("Other equipment") }, singleLine = true)
+                    AppButton("Add", {
+                        val c = custom.trim()
+                        if (c.isNotEmpty() && c !in roster.equipment && roster.equipment.size < max) { save(roster.copy(equipment = roster.equipment + c)); custom = "" }
+                    }, kind = ButtonKind.Secondary)
+                }
+                roster.equipment.filter { it !in teamEquipment && it !in ApprovedOps.universalEquipment }.forEach { e ->
+                    AppButton("Remove: $e", { save(roster.copy(equipment = roster.equipment - e)) }, kind = ButtonKind.Text)
+                }
             }
         }
     }
