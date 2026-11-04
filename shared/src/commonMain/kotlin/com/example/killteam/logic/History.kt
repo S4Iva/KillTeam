@@ -36,20 +36,52 @@ data class Roster(
     val options: List<String> = emptyList(),
     /** Equipment of the roster, at most [ApprovedOps.MAX_EQUIPMENT] different entries. */
     val equipment: List<String> = emptyList(),
+    /** Index into [operatives] of the one operative carrying an equipment entry; equipment without an owner is not assigned yet. */
+    val equipmentOwners: Map<String, Int> = emptyMap(),
 ) {
     fun optionAt(index: Int): String = options.getOrNull(index).orEmpty()
+
+    /** Datacard name, numbered when the roster has the same datacard several times. */
+    fun slotLabel(slot: Int): String {
+        val name = operatives[slot]
+        return if (operatives.count { it == name } > 1) "$name ${operatives.take(slot + 1).count { it == name }}" else name
+    }
+
+    fun ownerOf(equipmentName: String): Int? = equipmentOwners[equipmentName]?.takeIf { it in operatives.indices }
+
+    fun equipmentOf(operativeIndex: Int): List<String> = equipment.filter { ownerOf(it) == operativeIndex }
+
+    val unassignedEquipment: List<String> get() = equipment.filter { ownerOf(it) == null }
+
+    fun withEquipmentOwner(equipmentName: String, owner: Int?) =
+        copy(equipmentOwners = if (owner == null) equipmentOwners - equipmentName else equipmentOwners + (equipmentName to owner))
+
+    fun withoutEquipment(equipmentName: String) = copy(equipment = equipment - equipmentName, equipmentOwners = equipmentOwners - equipmentName)
+
+    /** Gives the equipment to one operative; it joins the roster's equipment unless that is already full, and leaves its previous operative. */
+    fun withEquipmentOn(slot: Int, equipmentName: String): Roster {
+        if (slot !in operatives.indices) return this
+        if (equipmentName !in equipment && equipment.size >= ApprovedOps.MAX_EQUIPMENT) return this
+        val list = if (equipmentName in equipment) equipment else equipment + equipmentName
+        return copy(equipment = list, equipmentOwners = equipmentOwners + (equipmentName to slot))
+    }
 
     private fun paddedOptions() = List(operatives.size) { optionAt(it) }
 
     fun withAdded(name: String) = copy(operatives = operatives + name, options = paddedOptions() + "")
 
     /** Removes the last entry with this datacard name together with its chosen option. */
-    fun withRemovedLast(name: String): Roster {
-        val index = operatives.indexOfLast { it == name }
-        if (index < 0) return this
+    fun withRemovedLast(name: String): Roster = withRemovedAt(operatives.indexOfLast { it == name })
+
+    /** Removes one entry with its option; its equipment leaves the roster, later operatives keep theirs. */
+    fun withRemovedAt(index: Int): Roster {
+        if (index !in operatives.indices) return this
+        val dropped = equipmentOwners.filterValues { it == index }.keys
         return copy(
             operatives = operatives.toMutableList().also { it.removeAt(index) },
             options = paddedOptions().toMutableList().also { it.removeAt(index) },
+            equipment = equipment - dropped,
+            equipmentOwners = equipmentOwners.mapNotNull { (e, o) -> if (o == index) null else e to if (o > index) o - 1 else o }.toMap(),
         )
     }
 
@@ -70,6 +102,7 @@ object RosterRules {
             if (team.weaponOptions[name] != null && roster.optionAt(i).isBlank()) add("Weapon option not selected: $name")
         }
         if (roster.equipment.distinct().size > ApprovedOps.MAX_EQUIPMENT) add("More than ${ApprovedOps.MAX_EQUIPMENT} equipment.")
+        roster.unassignedEquipment.forEach { add("Equipment not given to an operative: $it") }
     }
 
     /** Operatives a player brings to a game: the roster size, else the size from the team rules, else [default] (within the kill grade table). */

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kill Team Companion - Mock-up Roster</title>
+<style>
+  :root {
+    --bg: #121212; --surface: #1e1e1e; --surface2: #2a2a2a; --line: #3a3a3a;
+    --orange: #e8650a; --text: #f2f2f2; --muted: #a0a0a0; --ok: #4caf7a; --warn: #f2c14e; --danger: #e5645a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #000; color: var(--text); font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.hint { color: var(--muted); margin: 0 0 24px; font-size: 14px; max-width: 900px; line-height: 1.45; }
+  .row { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
+  .col h2 { font-size: 14px; color: var(--orange); margin: 0 0 8px; text-transform: uppercase; letter-spacing: .08em; }
+  .col small { display: block; color: var(--muted); font-size: 12px; margin: -4px 0 10px; max-width: 360px; }
+
+  .phone { width: 360px; height: 720px; background: var(--bg); border: 8px solid #333; border-radius: 32px; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+  .topbar { background: var(--surface); border-bottom: 2px solid var(--orange); padding: 10px 14px; }
+  .topbar .title { font-weight: 700; font-size: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .topbar .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .content { flex: 1; overflow-y: auto; padding: 12px 14px 80px; scrollbar-width: thin; }
+
+  /* Budget bar: stays visible at the top of both screens */
+  .budget { display: flex; gap: 8px; margin-top: 10px; }
+  .budget .cell { flex: 1; background: var(--surface2); border-radius: 8px; padding: 6px 8px; font-size: 11px; color: var(--muted); }
+  .budget .cell b { display: block; font-size: 15px; color: var(--text); }
+  .pips { display: flex; gap: 4px; margin-top: 4px; }
+  .pips i { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+  .pips i.on { background: var(--orange); }
+  .cell.full b { color: var(--ok); }
+  .cell.over b { color: var(--danger); }
+
+  .unit { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; cursor: pointer; position: relative; }
+  .unit.sel { border-color: var(--orange); }
+  .unit .nm { font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+  .unit .wp { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .unit .wp.miss { color: var(--warn); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+  .chip { font-size: 11px; padding: 3px 8px; border-radius: 12px; background: #4a5562; color: #fff; }
+  .chip.univ { background: #3a3a3a; }
+  .chip.none { background: transparent; border: 1px dashed var(--line); color: var(--muted); }
+  .x { color: var(--muted); font-size: 18px; line-height: 1; padding: 0 4px; }
+
+  .btn { display: block; width: 100%; padding: 12px; border-radius: 8px; border: 2px solid var(--orange); background: var(--orange); color: #000; font-weight: 700; font-size: 14px; text-align: center; cursor: pointer; margin-bottom: 10px; }
+  .btn.sec { background: transparent; color: var(--orange); }
+
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 14px 0 6px; }
+
+  /* Option rows (weapons / equipment) */
+  .opt { display: flex; gap: 10px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; }
+  .opt .mark { width: 20px; height: 20px; border: 2px solid var(--orange); flex: none; margin-top: 1px; }
+  .opt.radio .mark { border-radius: 50%; }
+  .opt.check .mark { border-radius: 5px; }
+  .opt.on { border-color: var(--orange); background: #2a1f17; }
+  .opt.on .mark { background: var(--orange); box-shadow: inset 0 0 0 3px #2a1f17; }
+  .opt .t { font-size: 13px; font-weight: 600; }
+  .opt .d { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.35; }
+  .opt.taken { opacity: .75; }
+  .opt.taken .mark { border-color: var(--line); }
+  .opt.locked { opacity: .4; cursor: not-allowed; }
+  .opt .tag { margin-left: auto; font-size: 10px; color: var(--warn); white-space: nowrap; padding-left: 6px; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .tabs div { flex: 1; text-align: center; padding: 7px 0; font-size: 12px; border-radius: 16px; border: 1px solid var(--line); color: var(--muted); cursor: pointer; }
+  .tabs div.act { background: var(--orange); color: #000; border-color: var(--orange); font-weight: 700; }
+
+  .sheet-bg { position: absolute; inset: 0; background: rgba(0,0,0,.55); display: none; z-index: 5; }
+  .sheet-bg.show { display: block; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; top: 90px; background: var(--bg); border-top: 2px solid var(--orange); border-radius: 18px 18px 0 0; padding: 14px; z-index: 6; display: none; overflow-y: auto; }
+  .sheet.show { display: block; }
+  .sheet h3 { margin: 0 0 10px; font-size: 15px; display: flex; justify-content: space-between; }
+  .step { display: flex; align-items: center; gap: 8px; }
+  .step button { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--orange); background: transparent; color: var(--orange); font-size: 18px; cursor: pointer; }
+  .step button:disabled { border-color: var(--line); color: var(--line); cursor: not-allowed; }
+  .step span { min-width: 18px; text-align: center; font-weight: 700; }
+  .addrow { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; margin-bottom: 8px; }
+  .addrow .t { font-size: 13px; font-weight: 600; }
+  .addrow .d { font-size: 11px; color: var(--muted); }
+
+  .fab-row { position: absolute; left: 14px; right: 14px; bottom: 14px; display: flex; gap: 10px; }
+  .fab-row .btn { margin: 0; }
+
+  .legend { max-width: 360px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .legend b { color: var(--text); }
+</style>
+</head>
+<body>
+<h1>Roster-Konzept: Einheit &rarr; Waffen &rarr; Equipment</h1>
+<p class="hint">
+  Der Roster ist eine Liste von Einheiten-Karten. Jede Karte zeigt auf einen Blick die gew&auml;hlte Waffenkombination und das Equipment dieser Einheit.
+  Oben stehen immer zwei Budgets: Operatives (z. B. 10/10) und Equipment (max. 4). Die Equipment-Auswahl geschieht direkt an der Einheit, es gibt keinen separaten Pool.
+  Bedienen: Karte antippen &ouml;ffnet den Editor (Screen 2), &bdquo;+ Operative hinzuf&uuml;gen&ldquo; &ouml;ffnet die Auswahl als Overlay.
+</p>
+
+<div class="row">
+  <div class="col">
+    <h2>1 &middot; Roster</h2>
+    <small>Sofort sichtbar: welche Einheit, welche Waffen, welches Equipment. Gelb = Waffe noch offen.</small>
+    <div class="phone" id="p1">
+      <div class="topbar">
+        <div class="title"><span>Kasrkin Strike Team</span><span class="x">&#8942;</span></div>
+        <div class="sub">Kasrkin</div>
+        <div class="budget" id="budget1"></div>
+      </div>
+      <div class="content" id="list"></div>
+      <div class="fab-row"><div class="btn" id="addBtn">+ Operative hinzuf&uuml;gen</div></div>
+
+      <div class="sheet-bg" id="bg"></div>
+      <div class="sheet" id="sheet">
+        <h3><span>Operative hinzuf&uuml;gen</span><span class="x" id="closeSheet">&#10005;</span></h3>
+        <div id="addList"></div>
+        <div class="btn" id="doneSheet" style="margin-top:10px">Fertig</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2>2 &middot; Einheit bearbeiten</h2>
+    <small>Waffen als Auswahl (eine Kombination), Equipment als Haken. Ist ein Equipment schon bei einer anderen Einheit, steht dort wer es hat; Antippen verschiebt es hierher.</small>
+    <div class="phone" id="p2">
+      <div class="topbar">
+        <div class="title"><span id="edName">-</span><span class="x">&larr;</span></div>
+        <div class="sub" id="edSub"></div>
+        <div class="budget" id="budget2"></div>
+      </div>
+      <div class="content" id="editor"></div>
+      <div class="fab-row"><div class="btn sec" id="removeUnit" style="color:var(--danger);border-color:var(--danger)">Entfernen</div><div class="btn" id="backBtn">Fertig</div></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2>Ablauf</h2>
+    <div class="legend">
+      <p><b>1.</b> Operative hinzuf&uuml;gen: Auswahlliste mit +/- pro Datacard. Gleiche Datacards sind mehrfach m&ouml;glich (z. B. 3x Trooper). Grenzen aus der Team-Zusammenstellung werden gepr&uuml;ft (z. B. nur 1 Sergeant).</p>
+      <p><b>2.</b> Jede neue Einheit erscheint als Karte. Hat die Datacard mehrere Waffenkombinationen, ist die Karte gelb markiert, bis eine gew&auml;hlt ist.</p>
+      <p><b>3.</b> Karte antippen: Waffen w&auml;hlen, dann bis zu 4 Equipment aus Fraktion und Universal verteilen. Ein Equipment geh&ouml;rt immer genau einer Einheit.</p>
+      <p><b>4.</b> Im Game erscheinen Waffen und Equipment genau so bei der Einheit.</p>
+      <p><b>Warum so?</b> Alles, was zusammengeh&ouml;rt, liegt auf einer Karte. Du musst nicht mehr zwischen &bdquo;Equipment w&auml;hlen&ldquo; und &bdquo;Equipment zuweisen&ldquo; hin- und herscrollen.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const MAX_EQ = 4, MAX_OPS = 10;
+  // name, limit, weapon options (empty = single fixed loadout)
+  const DATACARDS = [
+    { n: 'Kasrkin Sergeant', max: 1, w: ['Hot-shot laspistol; Chainsword', 'Plasma pistol; Chainsword', 'Bolt pistol; Power weapon', 'Hot-shot lasgun; Gun butt'] },
+    { n: 'Kasrkin Gunner', max: 2, w: ['Flamer; Gun butt', 'Grenade launcher; Gun butt', 'Meltagun; Gun butt', 'Plasma gun; Gun butt', 'Hot-shot volley gun; Gun butt'] },
+    { n: 'Kasrkin Combat Medic', max: 1, w: [] },
+    { n: 'Kasrkin Demo-Trooper', max: 1, w: [] },
+    { n: 'Kasrkin Recon-Trooper', max: 1, w: [] },
+    { n: 'Kasrkin Sharpshooter', max: 1, w: [] },
+    { n: 'Kasrkin Vox-Trooper', max: 1, w: [] },
+    { n: 'Kasrkin Trooper', max: 9, w: [] },
+  ];
+  const EQUIP = {
+    Faction: [
+      ['FOREGRIP', 'Accurate 1 auf Fernkampfwaffen innerhalb 3"'],
+      ['RELICS OF CADIA', 'Einmal pro Turning Point: Fehlwurf in Treffer umwandeln'],
+      ['LONG-RANGE SCOPE', 'Hot-shot Waffen haben Saturate &uuml;ber 6"'],
+      ['COMBAT DAGGERS', 'Zus&auml;tzliche Nahkampfwaffe'],
+    ],
+    Universal: [
+      ['Ammo Cache', 'Marker, wird vor der Schlacht aufgestellt'],
+      ['Mines', 'Marker, wird vor der Schlacht aufgestellt'],
+      ['Utility Grenades', '2 Smoke / Stun Aktionen'],
+      ['Explosive Grenades', '2 Frag / Krak Fernkampfwaffen'],
+      ['Portable Barricade', 'Mobile Deckung'],
+      ['Breaching Charge', 'Breach Aktion f&uuml;r 1 AP weniger'],
+    ],
+  };
+  const univNames = new Set(EQUIP.Universal.map(e => e[0]));
+  const NAMES_ALL = [...EQUIP.Faction, ...EQUIP.Universal];
+
+  let nextId = 1;
+  const mk = (n, w = '') => ({ id: nextId++, n, w, eq: [] });
+  let units = [mk('Kasrkin Sergeant', 'Plasma pistol; Chainsword'), mk('Kasrkin Gunner'), mk('Kasrkin Trooper'), mk('Kasrkin Trooper'), mk('Kasrkin Vox-Trooper')];
+  units[0].eq = ['RELICS OF CADIA'];
+  units[2].eq = ['Ammo Cache'];
+  let selected = units[1].id;
+  let eqTab = 'Faction';
+
+  const card = n => DATACARDS.find(d => d.n === n);
+  const eqUsed = () => units.reduce((s, u) => s + u.eq.length, 0);
+  const label = u => {
+    const same = units.filter(x => x.n === u.n);
+    return same.length > 1 ? `${u.n} ${same.indexOf(u) + 1}` : u.n;
+  };
+  const ownerOf = name => units.find(u => u.eq.includes(name));
+  const $ = id => document.getElementById(id);
+
+  function budget() {
+    const ops = units.length, eq = eqUsed();
+    const pips = Array.from({ length: MAX_EQ }, (_, i) => `<i class="${i < eq ? 'on' : ''}"></i>`).join('');
+    const html = `
+      <div class="cell ${ops === MAX_OPS ? 'full' : ops > MAX_OPS ? 'over' : ''}"><b>${ops}/${MAX_OPS}</b>Operatives</div>
+      <div class="cell ${eq === MAX_EQ ? 'full' : ''}"><b>${eq}/${MAX_EQ}</b>Equipment<div class="pips">${pips}</div></div>`;
+    $('budget1').innerHTML = html;
+    $('budget2').innerHTML = html;
+  }
+
+  function renderList() {
+    $('list').innerHTML = units.map(u => {
+      const hasOpts = card(u.n).w.length > 0;
+      const miss = hasOpts && !u.w;
+      const chips = u.eq.length
+        ? u.eq.map(e => `<span class="chip ${univNames.has(e) ? 'univ' : ''}">${e}</span>`).join('')
+        : '<span class="chip none">kein Equipment</span>';
+      return `<div class="unit ${u.id === selected ? 'sel' : ''}" data-id="${u.id}">
+        <div class="nm"><span>${label(u)}</span><span class="x">&rsaquo;</span></div>
+        <div class="wp ${miss ? 'miss' : ''}">${hasOpts ? (u.w || 'Waffen w&auml;hlen') : 'Feste Ausr&uuml;stung'}</div>
+        <div class="chips">${chips}</div></div>`;
+    }).join('') || '<p style="color:var(--muted);font-size:13px">Noch keine Operatives.</p>';
+    document.querySelectorAll('#list .unit').forEach(el => el.onclick = () => { selected = +el.dataset.id; renderAll(); });
+  }
+
+  function renderEditor() {
+    const u = units.find(x => x.id === selected);
+    if (!u) { $('edName').textContent = '-'; $('edSub').textContent = ''; $('editor').innerHTML = '<p style="color:var(--muted);font-size:13px">Keine Einheit gew&auml;hlt.</p>'; return; }
+    const c = card(u.n);
+    $('edName').textContent = label(u);
+    $('edSub').textContent = c.w.length ? 'Waffen: ' + (u.w || 'nicht gew\u00e4hlt') : 'Feste Ausr\u00fcstung';
+    let h = '';
+    if (c.w.length) {
+      h += '<div class="label" style="margin-top:2px">Waffen (eine Kombination)</div>';
+      h += c.w.map((w, i) => `<div class="opt radio ${u.w === w ? 'on' : ''}" data-w="${i}"><div class="mark"></div><div class="t">${w}</div></div>`).join('');
+    } else {
+      h += '<div class="label" style="margin-top:2px">Waffen</div><div class="opt radio on" style="cursor:default"><div class="mark"></div><div><div class="t">Alle Waffen der Datacard</div><div class="d">Keine Auswahl n&ouml;tig.</div></div></div>';
+    }
+    h += `<div class="label">Equipment (${u.eq.length} hier &middot; ${eqUsed()}/${MAX_EQ} gesamt)</div>`;
+    h += `<div class="tabs">${['Faction', 'Universal'].map(t => `<div class="${t === eqTab ? 'act' : ''}" data-tab="${t}">${t === 'Faction' ? 'Fraktion' : 'Universal'}</div>`).join('')}</div>`;
+    h += EQUIP[eqTab].map(([name, desc], i) => {
+      const owner = ownerOf(name);
+      const mine = owner === u;
+      const other = owner && !mine;
+      const full = !owner && eqUsed() >= MAX_EQ;
+      const cls = mine ? 'on' : other ? 'taken' : full ? 'locked' : '';
+      const tag = other ? `<span class="tag">bei ${label(owner)}</span>` : full ? '<span class="tag">Limit erreicht</span>' : '';
+      return `<div class="opt check ${cls}" data-eq="${i}"><div class="mark"></div><div><div class="t">${name}</div><div class="d">${desc}</div></div>${tag}</div>`;
+    }).join('');
+    $('editor').innerHTML = h;
+
+    $('editor').querySelectorAll('[data-w]').forEach(el => el.onclick = () => { u.w = c.w[+el.dataset.w]; renderAll(); });
+    $('editor').querySelectorAll('[data-tab]').forEach(el => el.onclick = () => { eqTab = el.dataset.tab; renderEditor(); });
+    $('editor').querySelectorAll('[data-eq]').forEach(el => el.onclick = () => {
+      const name = EQUIP[eqTab][+el.dataset.eq][0];
+      const owner = ownerOf(name);
+      if (owner === u) u.eq = u.eq.filter(e => e !== name);
+      else if (owner) { owner.eq = owner.eq.filter(e => e !== name); u.eq.push(name); }
+      else if (eqUsed() < MAX_EQ) u.eq.push(name);
+      renderAll();
+    });
+  }
+
+  function renderAdd() {
+    $('addList').innerHTML = DATACARDS.map((d, i) => {
+      const count = units.filter(u => u.n === d.n).length;
+      return `<div class="addrow"><div><div class="t">${d.n}</div><div class="d">max. ${d.max}${d.w.length ? ' &middot; ' + d.w.length + ' Waffenkombinationen' : ''}</div></div>
+        <div class="step"><button data-m="${i}" ${count === 0 ? 'disabled' : ''}>&minus;</button><span>${count}</span><button data-p="${i}" ${count >= d.max || units.length >= MAX_OPS ? 'disabled' : ''}>+</button></div></div>`;
+    }).join('');
+    $('addList').querySelectorAll('[data-p]').forEach(b => b.onclick = () => { const u = mk(DATACARDS[+b.dataset.p].n); units.push(u); selected = u.id; renderAll(); });
+    $('addList').querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
+      const n = DATACARDS[+b.dataset.m].n;
+      const last = [...units].reverse().find(u => u.n === n);
+      units = units.filter(u => u !== last);
+      if (selected === last.id) selected = units.length ? units[0].id : null;
+      renderAll();
+    });
+  }
+
+  function renderAll() { budget(); renderList(); renderEditor(); renderAdd(); }
+  const sheet = on => { $('sheet').classList.toggle('show', on); $('bg').classList.toggle('show', on); };
+  $('addBtn').onclick = () => sheet(true);
+  $('closeSheet').onclick = () => sheet(false);
+  $('doneSheet').onclick = () => sheet(false);
+  $('bg').onclick = () => sheet(false);
+  $('removeUnit').onclick = () => { units = units.filter(u => u.id !== selected); selected = units.length ? units[0].id : null; renderAll(); };
+  $('backBtn').onclick = () => $('list').scrollIntoView({ behavior: 'smooth' });
+  renderAll();
+</script>
+</body>
+</html>

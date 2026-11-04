@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.example.killteam.data.ApprovedOps
 import com.example.killteam.data.KillOp
 import com.example.killteam.data.KillTeam
+import com.example.killteam.data.UniversalEquipment
 import com.example.killteam.logic.AppState
 import com.example.killteam.logic.GamePhase
 import com.example.killteam.logic.GameState
@@ -86,6 +87,11 @@ private val phaseChecklist = mapOf(
 )
 
 private class PendingConfirm(val text: String, val label: String, val danger: Boolean = false, val action: () -> Unit)
+
+/** Reference views of a player's card; operatives come first. */
+private enum class PlayerView(val label: String) {
+    Operatives("Operatives"), Strategy("Strategy ploys"), Firefight("Firefight ploys"), FactionRule("Faction rules"), TeamEquipment("Other equipment"),
+}
 
 private val phaseSummary = mapOf(
     GamePhase.SetUpBattle to "Kill teams, killzone, crit op, initiative and drop zones.",
@@ -181,18 +187,19 @@ fun RunningGame(app: AppState, game: GameState) {
                         }
                     }
                 }
-                if (game.players.any { it.rosterEquipment.isNotEmpty() }) {
+                if (game.players.any { it.rosterEquipment.isNotEmpty() || it.operatives.any { o -> o.equipment.isNotEmpty() } }) {
                     item {
                         SectionCard("Equipment") {
                             game.players.forEachIndexed { pi, p ->
-                                if (p.rosterEquipment.isNotEmpty()) {
+                                val gear = p.rosterEquipment + p.operatives.flatMap { it.equipment }
+                                if (gear.isNotEmpty()) {
                                     val open = pi in equipmentOpen
                                     AppButton(
-                                        if (open) "Hide equipment: ${p.name}" else "Equipment (${p.rosterEquipment.size}): ${p.name}",
+                                        if (open) "Hide equipment: ${p.name}" else "Equipment (${gear.size}): ${p.name}",
                                         { equipmentOpen = if (open) equipmentOpen - pi else equipmentOpen + pi },
                                         kind = ButtonKind.Secondary, fullWidth = true,
                                     )
-                                    if (open) EquipmentCards(app, app.team(p.teamSlug), p.rosterEquipment)
+                                    if (open) EquipmentCards(app, app.team(p.teamSlug), gear)
                                 }
                             }
                         }
@@ -453,27 +460,16 @@ private fun ReadyStepPanel(game: GameState, update: (GameState) -> Unit) {
     }
 }
 
-/** Equipment as the same cards as in the Teams tab; universal equipment (names only) links to its rules section when there is one. */
+/** Equipment as the same cards as in the Teams tab; universal equipment shows its rules from [UniversalEquipment]. */
 @Composable
 private fun EquipmentCards(app: AppState, team: KillTeam?, names: List<String>) {
-    val ui = LocalUi.current
     if (names.isEmpty()) {
         Text("No equipment selected.", style = MaterialTheme.typography.bodySmall)
         return
     }
     names.forEach { e ->
-        val item = team?.equipment?.firstOrNull { it.name.equals(e, ignoreCase = true) }
-        if (item != null) {
-            NamedTextCard(item, Palette.Equipment)
-        } else {
-            val section = app.rules?.sections?.firstOrNull { it.page == "universal-equipment" && it.title.equals(e, ignoreCase = true) }
-            if (section != null) {
-                Text(
-                    "$e  >", Modifier.fillMaxWidth().clickable { openKey(app, ui, "section:universal-equipment/${section.id}") }.padding(vertical = 6.dp),
-                    color = Palette.Accent, fontWeight = FontWeight.SemiBold,
-                )
-            } else Text(e, fontWeight = FontWeight.Bold)
-        }
+        val item = team?.equipment?.firstOrNull { it.name.equals(e, ignoreCase = true) } ?: UniversalEquipment.card(e)
+        if (item != null) NamedTextCard(item, Palette.Equipment) else Text(e, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -484,8 +480,8 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
     val opponent = game.players[1 - index]
     val update: (GameState) -> Unit = { app.game.update(it) }
     val score = Scoring.score(game, index)
-    var showOperatives by remember(game.id, index) { mutableStateOf(false) }
-    var showEquipment by remember(game.id, index) { mutableStateOf(false) }
+    var openGear by remember(game.id, index) { mutableStateOf(setOf<Int>()) }
+    var view by remember(game.id, index) { mutableStateOf<PlayerView?>(null) }
     var showTac by remember(game.id, index) { mutableStateOf(false) }
     var openCards by remember(game.id, index) { mutableStateOf(setOf<Int>()) }
     var allWeapons by remember(game.id, index) { mutableStateOf(setOf<Int>()) }
@@ -514,20 +510,30 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
             p.primaryRevealed -> p.primary.label
             else -> "selected (hidden)"
         })
-        if (p.rosterEquipment.isNotEmpty()) {
-            AppButton(
-                if (showEquipment) "Hide equipment" else "Equipment (${p.rosterEquipment.size})",
-                { showEquipment = !showEquipment }, kind = ButtonKind.Secondary, fullWidth = true,
-            )
-            if (showEquipment) EquipmentCards(app, team, p.rosterEquipment)
+        val views = PlayerView.entries.filter { it != PlayerView.TeamEquipment || p.rosterEquipment.isNotEmpty() }
+        ChipRow(views, { it == view }, { v ->
+            when (v) {
+                PlayerView.Operatives -> "Operatives (${p.operatives.count { !it.incapacitated }}/${p.operatives.size})"
+                PlayerView.TeamEquipment -> "Other equipment (${p.rosterEquipment.size})"
+                else -> v.label
+            }
+        }, { view = if (view == it) null else it })
+
+        when (view) {
+            PlayerView.Strategy -> if (team == null || team.strategyPloys.isEmpty()) Text("-") else team.strategyPloys.forEach { NamedTextCard(it, Palette.StrategyPloy) }
+            PlayerView.Firefight -> if (team == null || team.firefightPloys.isEmpty()) Text("-") else team.firefightPloys.forEach { NamedTextCard(it, Palette.FirefightPloy) }
+            PlayerView.FactionRule -> when {
+                team == null -> Text("-")
+                team.factionRuleItems.isNotEmpty() -> team.factionRuleItems.forEach { NamedTextCard(it, Palette.Accent) }
+                else -> SectionCard("Faction rules") { KeywordText(team.factionRules.ifBlank { "-" }) }
+            }
+            PlayerView.TeamEquipment -> EquipmentCards(app, team, p.rosterEquipment)
+            else -> Unit
         }
 
-        if (p.operatives.isNotEmpty()) {
-            AppButton(
-                if (showOperatives) "Hide operatives" else "Operatives (${p.operatives.count { !it.incapacitated }}/${p.operatives.size})",
-                { showOperatives = !showOperatives }, kind = ButtonKind.Secondary, fullWidth = true,
-            )
-            if (showOperatives) {
+        if (view == PlayerView.Operatives) {
+            if (p.operatives.isEmpty()) Text("No operatives: the game was started without a roster.")
+            else {
                 p.operatives.forEachIndexed { oi, o ->
                     Column(Modifier.fillMaxWidth()) {
                         Text(
@@ -543,6 +549,14 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
                                 if (o.incapacitated) "Revive" else "Out", { update(game.setIncapacitated(index, oi, !o.incapacitated)) },
                                 kind = if (o.incapacitated) ButtonKind.Secondary else ButtonKind.Danger, size = s,
                             )
+                        }
+                        if (o.equipment.isNotEmpty()) {
+                            val open = oi in openGear
+                            AppButton(
+                                (if (open) "Hide equipment: " else "Equipment: ") + o.equipment.joinToString(), { openGear = if (open) openGear - oi else openGear + oi },
+                                kind = ButtonKind.Secondary, size = ButtonSize.S, fullWidth = true,
+                            )
+                            if (open) EquipmentCards(app, team, o.equipment)
                         }
                         val datacard = team?.operatives?.firstOrNull { it.name == o.card }
                         if (datacard != null) {
