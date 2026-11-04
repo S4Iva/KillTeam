@@ -43,13 +43,14 @@ fun RulesScreen(app: AppState) {
     val open = ui.rulesPage
     when {
         data == null -> Page("Rules") { item { LoadStatus(app, "rules") } }
-        open != null -> RulePageView(data, open, ui.rulesTarget, ui.rulesHighlight, onScrolled = { ui.rulesTarget = null }) { ui.closeRulesPage() }
-        else -> RulesIndex(data) { p, anchor -> ui.rulesPage = p; ui.rulesTarget = anchor; ui.rulesHighlight = anchor }
+        open != null -> RulePageView(app, data, open, ui.rulesTarget, ui.rulesHighlight, onScrolled = { ui.rulesTarget = null }) { ui.closeRulesPage() }
+        else -> RulesIndex(app, data) { p, anchor -> ui.rulesPage = p; ui.rulesTarget = anchor; ui.rulesHighlight = anchor }
     }
 }
 
+/** Rule pages as cards with a favorite star; the ALL / Favorites switch lists all marked entries. */
 @Composable
-private fun RulesIndex(data: RulesData, onOpen: (String, String?) -> Unit) {
+private fun RulesIndex(app: AppState, data: RulesData, onOpen: (String, String?) -> Unit) {
     val ui = LocalUi.current
     val query = ui.rulesQuery
     val results = if (query.length < 3) emptyList() else data.sections.filter {
@@ -58,13 +59,27 @@ private fun RulesIndex(data: RulesData, onOpen: (String, String?) -> Unit) {
 
     Page("Rules", listState = ui.list("rules-index")) {
         item {
+            ChipRow(listOf(false, true), { it == ui.rulesFavoritesOnly }, { if (it) "Favorites" else "ALL" }, { ui.rulesFavoritesOnly = it })
+        }
+        item {
             OutlinedTextField(query, { ui.rulesQuery = it }, Modifier.fillMaxWidth(), label = { Text("Search all rules (min. 3 letters)") }, singleLine = true)
         }
-        if (query.length < 3) {
+        if (query.length < 3 && ui.rulesFavoritesOnly) {
+            item {
+                SectionCard("Favorites") {
+                    if (app.favorites.value.isEmpty()) Text("Nothing marked yet. Use the star on rule pages, rule sections, teams, crit ops and tac ops.")
+                    app.favorites.value.forEach { key -> KeyLink(app, key) }
+                }
+            }
+        } else if (query.length < 3) {
             data.pages.forEach { p ->
                 val count = data.sections.count { it.page == p.id }
+                val key = "rule:${p.id}"
                 item {
-                    SectionCard(p.title, Modifier.clickable { onOpen(p.id, null) }) {
+                    SectionCard(
+                        p.title, Modifier.clickable { onOpen(p.id, null) },
+                        actions = { FavoriteButton(app.isFavorite(key)) { app.toggleFavorite(key) } },
+                    ) {
                         Text("$count sections", style = MaterialTheme.typography.bodySmall)
                     }
                 }
@@ -84,7 +99,11 @@ private fun RulesIndex(data: RulesData, onOpen: (String, String?) -> Unit) {
             items(results.size) { i ->
                 val s = results[i]
                 val pageTitle = data.pages.firstOrNull { it.id == s.page }?.title ?: s.page
-                SectionCard(s.title, Modifier.clickable { onOpen(s.page, s.id) }) {
+                val favKey = "section:${s.page}/${s.id}"
+                SectionCard(
+                    s.title, Modifier.clickable { onOpen(s.page, s.id) },
+                    actions = { FavoriteButton(app.isFavorite(favKey)) { app.toggleFavorite(favKey) } },
+                ) {
                     Text(pageTitle, style = MaterialTheme.typography.bodySmall, color = Palette.Accent)
                     Text(snippet(s, query), maxLines = 4, style = MaterialTheme.typography.bodyMedium)
                 }
@@ -102,6 +121,7 @@ private fun snippet(s: RuleSection, query: String): String {
 
 @Composable
 private fun RulePageView(
+    app: AppState,
     data: RulesData,
     pageId: String,
     target: String?,
@@ -133,10 +153,12 @@ private fun RulePageView(
     Page(title, onBack, state, onContents = { showContents = true }) {
         items(sections.size) { i ->
             val s = sections[i]
+            val favKey = "section:$pageId/${s.id}"
             SectionCard(
                 s.title,
                 Modifier.padding(start = ((s.level - 2).coerceAtLeast(0) * 12).dp),
                 headerColor = if (s.id.equals(highlight, ignoreCase = true)) Palette.Highlight else Palette.Accent,
+                actions = { FavoriteButton(app.isFavorite(favKey)) { app.toggleFavorite(favKey) } },
             ) {
                 if (s.paras.isNotEmpty()) RichParas(s.paras)
                 else if (s.plain.isNotBlank()) KeywordText(s.plain, style = MaterialTheme.typography.bodyMedium)

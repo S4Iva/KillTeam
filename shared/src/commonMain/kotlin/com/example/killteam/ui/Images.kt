@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,8 +38,8 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.killteam.data.Archetype
 import com.example.killteam.data.Killzone
 import killteam.shared.generated.resources.Res
-import killteam.shared.generated.resources.btn_remove
-import killteam.shared.generated.resources.btn_select
+import killteam.shared.generated.resources.ic_tac_remove
+import killteam.shared.generated.resources.ic_tac_select
 import killteam.shared.generated.resources.icon_condition
 import killteam.shared.generated.resources.icon_effect
 import killteam.shared.generated.resources.tacop_destroy
@@ -139,8 +138,8 @@ val mapKey: List<Pair<DrawableResource, String>> = listOf(
 val killGradeImage: DrawableResource get() = Res.drawable.kill_grade
 val reconFlankImage: DrawableResource get() = Res.drawable.recon_flank_example
 
-val selectIcon: DrawableResource get() = Res.drawable.btn_select
-val removeIcon: DrawableResource get() = Res.drawable.btn_remove
+val selectIcon: DrawableResource get() = Res.drawable.ic_tac_select
+val removeIcon: DrawableResource get() = Res.drawable.ic_tac_remove
 val effectIcon: DrawableResource get() = Res.drawable.icon_effect
 val conditionIcon: DrawableResource get() = Res.drawable.icon_condition
 
@@ -173,9 +172,9 @@ fun ZoomPanel(painter: Painter, modifier: Modifier = Modifier) {
             )
         }
         Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton({ scale = (scale * 1.4f).coerceAtMost(8f) }) { Text("Zoom +") }
-            OutlinedButton({ scale = (scale / 1.4f).coerceAtLeast(1f); if (scale <= 1f) offset = Offset.Zero }) { Text("Zoom -") }
-            OutlinedButton({ scale = 1f; offset = Offset.Zero }) { Text("Reset") }
+            AppButton("Zoom +", { scale = (scale * 1.4f).coerceAtMost(8f) }, kind = ButtonKind.Secondary, size = ButtonSize.S)
+            AppButton("Zoom -", { scale = (scale / 1.4f).coerceAtLeast(1f); if (scale <= 1f) offset = Offset.Zero }, kind = ButtonKind.Secondary, size = ButtonSize.S)
+            AppButton("Reset", { scale = 1f; offset = Offset.Zero }, kind = ButtonKind.Secondary, size = ButtonSize.S)
         }
     }
 }
@@ -187,7 +186,7 @@ fun ImageViewer(painter: Painter, onClose: () -> Unit) {
         Surface(Modifier.fillMaxSize(), color = Color(0xF2101010)) {
             Column(Modifier.fillMaxSize().padding(12.dp)) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    Button(onClose) { Text("Close") }
+                    AppButton("Close", onClose, kind = ButtonKind.Secondary)
                 }
                 ZoomPanel(painter, Modifier.weight(1f).fillMaxWidth())
             }

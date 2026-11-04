@@ -14,7 +14,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,9 +59,9 @@ fun LockScreen(startReason: AccessResult?, onSubmit: (String) -> AccessResult) {
             AccessResult.ClockChanged -> Text("The system clock was set back. Correct the date and time to continue.", color = MaterialTheme.colorScheme.error)
             else -> Unit
         }
-        Button(submit, enabled = code.isNotBlank()) { Text("Unlock") }
+        AppButton("Unlock", submit, enabled = code.isNotBlank(), fullWidth = true)
         Text("By entering the code you accept the terms of use.", style = MaterialTheme.typography.bodySmall)
-        TextButton({ showTerms = !showTerms }) { Text(if (showTerms) "Hide terms of use" else "Show terms of use") }
+        AppButton(if (showTerms) "Hide terms of use" else "Show terms of use", { showTerms = !showTerms }, kind = ButtonKind.Text)
         if (showTerms) {
             Column(Modifier.widthIn(max = 480.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 termsOfUse.forEach { (title, text) ->

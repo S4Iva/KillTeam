@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
@@ -15,7 +16,6 @@ import com.example.killteam.data.SearchKind
 import kotlinx.coroutines.delay
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -76,7 +76,7 @@ private fun TeamList(app: AppState, onOpen: (KillTeam) -> Unit, onOpenHit: (Kill
                 )
                 ChipRow(listOf<Archetype?>(null) + Archetype.entries, { it == archetype }, { it?.label ?: "All archetypes" }, { ui.teamArchetype = it })
                 ChipRow(listOf(true), { onlyFavorites }, { "Favorites only" }, { ui.teamFavoritesOnly = !onlyFavorites })
-                OutlinedButton(onRosters) { Text("Rosters (${app.rosters.value.size})") }
+                AppButton("Rosters (${app.rosters.value.size})", onRosters, kind = ButtonKind.Secondary, fullWidth = true)
             }
         }
         if (app.teamData == null) {
@@ -228,12 +228,12 @@ private fun RosterList(app: AppState, onBack: () -> Unit, onEdit: (Roster) -> Un
                     LoadStatus(app, "kill team data")
                 } else {
                     Dropdown("Kill team", app.teams, chosen, { it.name }, { teamChoice = it })
-                    Button({
+                    AppButton("Create", {
                         val r = Roster(nowMillis(), newName.ifBlank { "${chosen.name} roster" }, chosen.slug)
                         app.rosters.update(rosters + r)
                         newName = ""
                         onEdit(r)
-                    }) { Text("Create") }
+                    }, fullWidth = true)
                 }
             }
         }
@@ -263,10 +263,10 @@ private fun RosterEditor(app: AppState, initial: Roster, onBack: () -> Unit) {
                 val problems = team?.let { RosterRules.problems(it, roster) }.orEmpty()
                 if (problems.isEmpty()) Text("Roster size is valid. Check the selection limits in the text above.", color = MaterialTheme.colorScheme.primary)
                 problems.forEach { Text(it, color = MaterialTheme.colorScheme.error) }
-                OutlinedButton({
+                AppButton("Delete roster", {
                     app.rosters.update(app.rosters.value.filter { it.id != roster.id })
                     onBack()
-                }) { Text("Delete roster") }
+                }, kind = ButtonKind.Danger, fullWidth = true)
             }
         }
         val distinctOps = team?.operatives?.map { it.name }?.distinct().orEmpty()
@@ -275,12 +275,12 @@ private fun RosterEditor(app: AppState, initial: Roster, onBack: () -> Unit) {
             val count = roster.operatives.count { it == name }
             Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(name, Modifier.weight(1f))
-                OutlinedButton({
+                AppButton("-", {
                     val idx = roster.operatives.indexOfLast { it == name }
                     if (idx >= 0) save(roster.copy(operatives = roster.operatives.toMutableList().also { it.removeAt(idx) }))
-                }, enabled = count > 0) { Text("-") }
+                }, Modifier.widthIn(min = 48.dp), ButtonKind.Secondary, ButtonSize.S, enabled = count > 0)
                 Text(count.toString(), Modifier.padding(horizontal = 12.dp))
-                OutlinedButton({ save(roster.copy(operatives = roster.operatives + name)) }) { Text("+") }
+                AppButton("+", { save(roster.copy(operatives = roster.operatives + name)) }, Modifier.widthIn(min = 48.dp), ButtonKind.Secondary, ButtonSize.S)
             }
         }
     }

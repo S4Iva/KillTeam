@@ -1,6 +1,9 @@
 # Einmaliger Import der Kill-Team-Daten von Wahapedia (privat, nicht kommerziell).
 # Ausgabe: shared/src/commonMain/composeResources/files/killteams.json und files/img/tokens/*.png
-# Aufruf: powershell -ExecutionPolicy Bypass -File tools\import-wahapedia.ps1
+# Aufruf: powershell -ExecutionPolicy Bypass -File tools\import-wahapedia.ps1 [-Team slug1,slug2] [-Full]
+# Ohne -Full werden nur neue oder geänderte Teams in die vorhandene killteams.json übernommen (Bericht am Ende, Backup als .bak).
+# -Team beschränkt den Lauf auf einzelne Teams (Slug wie in der Wahapedia-URL). -Full schreibt die Datei komplett neu.
+param([string[]]$Team = @(), [switch]$Full)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $res = Join-Path $root 'shared\src\commonMain\composeResources\files'
@@ -208,6 +211,7 @@ function Parse-Datacards($html) {
 
 $nav = Get-Page "$base/kill-team3/nav.html"
 $slugs = [regex]::Matches($nav, 'href="/kill-team3/kill-teams/([a-z0-9-]+)"') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique
+if ($Team.Count -gt 0) { $slugs = @($slugs | Where-Object { $Team -contains $_ }) }
 Write-Output "Teams: $($slugs.Count)"
 
 $teams = @()
@@ -288,6 +292,41 @@ foreach ($slug in $slugs) {
 }
 
 if ($failed.Count -gt 0) { Write-Output "Abbruch, nichts geschrieben. Fehlgeschlagen: $($failed -join ', ')"; exit 1 }
-$json = [ordered]@{ source = 'wahapedia.ru/kill-team3'; importedAt = (Get-Date -Format 'yyyy-MM-dd'); teams = $teams } | ConvertTo-Json -Depth 10
-[IO.File]::WriteAllText((Join-Path $res 'killteams.json'), $json, (New-Object Text.UTF8Encoding($false)))
-Write-Output "Fertig: $($teams.Count) Teams"
+$file = Join-Path $res 'killteams.json'
+$utf8 = New-Object Text.UTF8Encoding($false)
+$old = $null
+if ((Test-Path $file) -and -not $Full) { $old = [IO.File]::ReadAllText($file, $utf8) | ConvertFrom-Json }
+
+if ($null -eq $old) {
+    $json = [ordered]@{ source = 'wahapedia.ru/kill-team3'; importedAt = (Get-Date -Format 'yyyy-MM-dd'); teams = $teams } | ConvertTo-Json -Depth 10
+    [IO.File]::WriteAllText($file, $json, $utf8)
+    Write-Output "Fertig: $($teams.Count) Teams (komplett geschrieben)"
+    exit 0
+}
+
+# Vergleich über den JSON-Text; die neuen Teams laufen vorher durch denselben Rundlauf wie die gespeicherten.
+function Same-Json($a, $b) { ($a | ConvertTo-Json -Depth 10 -Compress) -eq ($b | ConvertTo-Json -Depth 10 -Compress) }
+$merged = @($old.teams)
+$added = @(); $changed = @(); $same = @()
+foreach ($t in $teams) {
+    $new = ($t | ConvertTo-Json -Depth 10) | ConvertFrom-Json
+    $idx = -1
+    for ($i = 0; $i -lt $merged.Count; $i++) { if ($merged[$i].slug -eq $t.slug) { $idx = $i; break } }
+    if ($idx -lt 0) { $merged += $new; $added += $t.slug }
+    elseif (Same-Json $merged[$idx] $new) { $same += $t.slug }
+    else { $merged[$idx] = $new; $changed += $t.slug }
+}
+$seen = @($teams | ForEach-Object { $_.slug })
+$missing = @()
+if ($Team.Count -eq 0) { $missing = @($old.teams | Where-Object { $seen -notcontains $_.slug } | ForEach-Object { $_.slug }) }
+
+Write-Output "Neu: $($added.Count) $($added -join ', ')"
+Write-Output "Geaendert: $($changed.Count) $($changed -join ', ')"
+Write-Output "Unveraendert: $($same.Count)"
+if ($missing.Count -gt 0) { Write-Output "Nicht mehr in der Quelle (bleiben erhalten): $($missing -join ', ')" }
+if ($added.Count + $changed.Count -eq 0) { Write-Output 'Keine Aenderungen, Datei und Datenstand bleiben unveraendert.'; exit 0 }
+
+Copy-Item $file "$file.bak" -Force
+$json = [ordered]@{ source = $old.source; importedAt = (Get-Date -Format 'yyyy-MM-dd'); teams = $merged } | ConvertTo-Json -Depth 10
+[IO.File]::WriteAllText($file, $json, $utf8)
+Write-Output "Fertig: $($merged.Count) Teams in der Datei, Backup: killteams.json.bak"

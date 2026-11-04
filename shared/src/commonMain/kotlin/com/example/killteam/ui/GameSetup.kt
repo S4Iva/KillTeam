@@ -4,14 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,8 +56,8 @@ fun NewGameScreen(app: AppState, onOpenGenerator: () -> Unit) {
     Page("Game", listState = LocalUi.current.list("new-game")) {
         item {
             SectionCard("Mission") {
-                Text("${mission.critOp.label}  |  ${mission.killzone.label}, Map ${mission.mapIndex + 1}")
-                OutlinedButton(onOpenGenerator) { Text("Change mission") }
+                MissionSummary(mission)
+                AppButton("Change mission", onOpenGenerator, kind = ButtonKind.Secondary, fullWidth = true)
             }
         }
         for (i in 0..1) {
@@ -86,7 +85,7 @@ fun NewGameScreen(app: AppState, onOpenGenerator: () -> Unit) {
             }
         }
         item {
-            Button({
+            AppButton("Start game", {
                 val players = (0..1).map { i ->
                     PlayerState(
                         name = names[i].ifBlank { "Player ${i + 1}" },
@@ -97,7 +96,7 @@ fun NewGameScreen(app: AppState, onOpenGenerator: () -> Unit) {
                 }
                 val now = nowMillis()
                 app.game.update(GameState(id = now, startedAt = now, mission = mission, players = players))
-            }, Modifier.fillMaxWidth()) { Text("Start game") }
+            }, fullWidth = true)
         }
     }
 }
@@ -108,8 +107,8 @@ fun SecretHandover(playerName: String, onReady: () -> Unit, onDismiss: () -> Uni
         onDismissRequest = onDismiss,
         title = { Text("Secret selection") },
         text = { Text("Hand the device to $playerName. The other player must not look.") },
-        confirmButton = { Button(onReady) { Text("I am $playerName") } },
-        dismissButton = { TextButton(onDismiss) { Text("Cancel") } },
+        confirmButton = { AppButton("I am $playerName", onReady, size = ButtonSize.L) },
+        dismissButton = { AppButton("Cancel", onDismiss, kind = ButtonKind.Text) },
     )
 }
 
@@ -138,11 +137,11 @@ fun SecretSelectionPage(app: AppState, game: GameState, index: Int, onClose: () 
                 Text("Equipment: ${equipment.size}/$maxEquipment")
                 equipment.forEach { Text("- $it", style = MaterialTheme.typography.bodySmall) }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button({
+                    AppButton("Cancel", onClose, Modifier.weight(1f), ButtonKind.Secondary)
+                    AppButton("Confirm and hide", {
                         app.game.update(game.updatePlayer(index) { it.copy(tacOpId = tacId, tacRevealed = false, equipment = equipment) })
                         onClose()
-                    }, enabled = tacId != null) { Text("Confirm and hide") }
-                    OutlinedButton(onClose) { Text("Cancel") }
+                    }, Modifier.weight(1f), enabled = tacId != null)
                 }
             }
         }
@@ -157,13 +156,13 @@ fun SecretSelectionPage(app: AppState, game: GameState, index: Int, onClose: () 
                 ChipRow(ApprovedOps.universalEquipment, { it in equipment }, { it }, toggle)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(custom, { custom = it }, Modifier.weight(1f), label = { Text("Other equipment") }, singleLine = true)
-                    OutlinedButton({
+                    AppButton("Add", {
                         val c = custom.trim()
                         if (c.isNotEmpty() && c !in equipment && equipment.size < maxEquipment) { equipment = equipment + c; custom = "" }
-                    }) { Text("Add") }
+                    }, kind = ButtonKind.Secondary)
                 }
                 equipment.filter { it !in teamEquipment && it !in ApprovedOps.universalEquipment }.forEach { e ->
-                    TextButton({ equipment = equipment - e }) { Text("Remove: $e") }
+                    AppButton("Remove: $e", { equipment = equipment - e }, kind = ButtonKind.Text)
                 }
             }
         }
@@ -205,11 +204,11 @@ fun PrimaryOpDialog(app: AppState, game: GameState, index: Int, onDismiss: () ->
             }
         },
         confirmButton = {
-            Button({
+            AppButton("Confirm and hide", {
                 app.game.update(game.updatePlayer(index) { it.copy(primary = choice, primaryRevealed = false) })
                 onDismiss()
-            }, enabled = choice != null) { Text("Confirm and hide") }
+            }, enabled = choice != null)
         },
-        dismissButton = { TextButton(onDismiss) { Text("Cancel") } },
+        dismissButton = { AppButton("Cancel", onDismiss, kind = ButtonKind.Text) },
     )
 }

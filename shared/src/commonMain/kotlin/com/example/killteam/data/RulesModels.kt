@@ -83,8 +83,17 @@ class TermMatcher(terms: List<LookupTerm>) {
     }
 }
 
-suspend fun loadRulesData(): RulesData =
-    AppJson.decodeFromString(RulesData.serializer(), Res.readBytes("files/rules.json").decodeToString())
+/** Pages of the source that hold no rules (site info with forms and ads). */
+private val EXCLUDED_RULE_PAGES = setOf("about")
+
+suspend fun loadRulesData(): RulesData {
+    val data = AppJson.decodeFromString(RulesData.serializer(), Res.readBytes("files/rules.json").decodeToString())
+    return RulesData(
+        data.importedAt,
+        data.pages.filter { it.id !in EXCLUDED_RULE_PAGES },
+        data.sections.filter { it.page !in EXCLUDED_RULE_PAGES },
+    )
+}
 
 suspend fun loadLookupData(): LookupData =
     AppJson.decodeFromString(LookupData.serializer(), Res.readBytes("files/lookup.json").decodeToString())

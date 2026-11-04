@@ -1,6 +1,6 @@
 # Anforderungen: Kill Team Companion App
 
-Stand: 2026-11-02 | Status: Entwurf
+Stand: 2026-11-04 | Status: Entwurf (Alpha 1.4.0.a in Planung, Konzept in [konzept.md](konzept.md), Mock-up in [mockups/game-wizard.html](mockups/game-wizard.html))
 
 ## 1. Ziel
 
@@ -64,7 +64,7 @@ Priorität: **M** = Muss, **S** = Soll, **K** = Kann.
 | MG-3 | Anzeige der Crit Op mit Mission Action, Victory Points und Map-Bild samt Universal Map Key. | M |
 | MG-4 | Anzeige der Kill-Op-Regeln inklusive Kill-Grade-Tabelle. | M |
 | MG-5 | Liste aller Tac Ops, filterbar nach Archetyp (Infiltration, Recon, Security, Seek & Destroy). | M |
-| MG-6 | Tac Ops werden nicht im Generator, sondern im Spiel (Schritt 2 "Select Operatives") geheim ausgewählt, mit "Select" / "Remove" an den Tac-Op-Karten; wählbar sind die Archetypen des Kill Teams. Der Generator zeigt die Tac Ops nur zum Nachlesen. | M |
+| MG-6 | Tac Ops werden nicht im Generator, sondern im Spiel (Schritt 2 "Select Operatives") geheim ausgewählt, mit "Select" / "Remove" (eigenes Fadenkreuz-Symbol, siehe DS-6) an den Tac-Op-Karten; wählbar sind die Archetypen des Kill Teams. Der Generator zeigt die Tac Ops nur zum Nachlesen. | M |
 | MG-7 | Auswahl und generierte Mission bleiben nach App-Neustart erhalten (lokale Persistenz, Ersatz für die Cookies von Wahapedia). | M |
 | MG-8 | Crit-Op-Gruppen laut Tournament Companion für rundenweise Zufallsauswahl: (Secure, Loot, Transmission), (Orb, Energy Cells, Download), (Stake Claim, Data, Reboot). | S |
 
@@ -183,6 +183,7 @@ Ersetzt die zwei festen Passwörter aus AT-13 (unbegrenzt, 7 Tage ab erster Eing
 | ZC-9 | **Anzeige:** Nach der Eingabe zeigt ein Dialog einmalig "Unlimited" oder den Ablaufzeitpunkt (aus UTC in die Zeitzone des Geräts umgerechnet) und die Restzeit. Unter More steht dauerhaft der Status: unbegrenzt oder Restzeit und Ablaufzeitpunkt. | M |
 | ZC-10 | **Tests:** Unit-Tests für Erzeugen und Prüfen (Round-Trip), Tippfehler und manipulierte Zeichen, unbegrenzt, abgelaufen, Uhr zurückgestellt und ein fester Testvektor, damit PowerShell-Generator und App-Prüfung übereinstimmen. | M |
 | ZC-11 | **Nutzungsbedingungen:** Das Login-Fenster zeigt unter "Unlock" den Hinweis "By entering the code you accept the terms of use." und einen Schalter "Show terms of use", der die Bedingungen aufklappt (zugeklappt als Standard, Fenster scrollbar). Inhalt: privater, nicht kommerzieller Test; keine Weitergabe von App, APK, Code oder größeren Inhalten; Code nur für den Empfänger, keine Umgehung und keine eigenen Codes; Urheberrecht und Marken von Games Workshop und Wahapedia, inoffizielle App; keine Rückentwicklung; Haftungsbeschränkung; Offline-Betrieb ohne Konten und Telemetrie; Zugang jederzeit beendbar. Die Eingabe des Codes gilt als Zustimmung, eine Checkbox gibt es nicht. | M |
+| ZC-12 | **Schlüsselrotation pro Feature-Release:** Mit jedem Beta-Release eines neuen Features (erste Ziffer der Version, siehe VR-1) wird ein neues Ed25519-Schlüsselpaar erzeugt (`-NewKey -Force`). Codes der neuen Version laufen nicht in alten Versionen, alte Codes nicht in der neuen. Der private Schlüssel je Version wird gesichert (z. B. `tools/keys/access-private-key-1.4.txt`, nicht im Repository, externes Backup). Erweiterungs- und Bug-Releases sowie Alpha-Builds behalten den Schlüssel der letzten Beta. Vor dem Release sind die Tester zu informieren, da sie für das Update einen neuen Code brauchen. | S |
 
 Grenzen: Wer die APK zerlegt, kann die Abfrage überspringen (Patchen), aber keine gültigen Codes erzeugen. Ein Code ist nicht an ein Gerät gebunden und lässt sich weitergeben. Die Frist startet bei der Erzeugung, ein spät eingegebener Code hat entsprechend weniger Restzeit.
 
@@ -235,10 +236,134 @@ Die App misst Abstände auf dem Spieltisch über die Kamera, z. B. zwischen zwei
 | KM-17 | **Bedienung:** Die Messansicht funktioniert im Hoch- und Querformat (NF-4) und im Dunkelmodus (NF-5). Eine kurze Einblendung erklärt die Schritte (1. Kalibrieren, 2. Punkte setzen, 3. Ergebnis lesen). Der Bildschirm bleibt wach. | S |
 | KM-18 | **Tests:** Unit-Tests in `commonTest` für die Umrechnung Pixel zu Zoll/cm/mm, Kalibrierung mit zwei Punkten, Homographie mit bekanntem Rechteck, Länge von Linienzügen mit mehreren Punkten, Abstand zwischen beliebigen Punkten und Distanzprüfung (Kreis, Dreieck, Quadrat, Fünfeck, inklusive Grenzwerten). | M |
 | KM-19 | **Abnahme:** Auf Android und Desktop lassen sich nach Kalibrierung mindestens drei frei gewählte Punkte setzen, verschieben und löschen; die angezeigten Strecken weichen bei senkrechter Aufnahme eines 30"-Referenzmaßes um höchstens 3 mm je 10 cm ab; Zugang über More (KM-1) und Berechtigungsablauf sind geprüft. | M |
+| KM-20 | **Pausiert (ab 1.4.0.a):** Die Messfunktion wird herausgenommen, aber nicht gelöscht. Ein Feature-Flag `FeatureFlags.MEASURE = false` blendet den Eintrag "Measure" unter More aus und initialisiert die Kamera nicht. Die CAMERA-Berechtigung entfällt im Android-Manifest, solange das Flag aus ist. Der Code (`logic/Measure.kt`, `ui/MeasureScreen.kt`, `ui/CameraSource*.kt`, Tests) bleibt im Repository. Die Funktion kann in einer späteren Version wieder aktiviert werden, wenn sie sich als sinnvoll erweist. Die Datenschutztexte (RC-3) erwähnen die Kamera nur, wenn das Flag aktiv ist. | M |
 
 Nicht Teil dieser Anforderung (Basisversion): automatische Erkennung von Operatives oder Terrain per Bilderkennung, Sichtlinien- und Deckungsprüfung, Aufzeichnung von Videos, Cloud-Auswertung.
 
 Status 2026-11-03: KM-1 bis KM-11, KM-13, KM-15 bis KM-18 sind umgesetzt (`logic/Measure.kt`, `ui/MeasureScreen.kt`, `ui/CameraSource*.kt`, Tests in `MeasureTest`). Offen: KM-12 und KM-14 (Prio K), iOS-Kamera (der Eintrag ist dort ausgeblendet, braucht macOS zum Bauen und Prüfen), Desktop-Webcam (dort nur Foto-Import), KM-19 (Abnahme auf dem Gerät).
+
+### 4.15 Versionierung und Release-Prozess (Alpha 1.4.0.a)
+
+Die Version 1.3.0.b läuft im Test bei Usern. Neue Features entstehen ausschließlich in der Alpha (`1.4.0.a`). Die Versionsnummer wird erst beim nächsten Release zur Beta festgelegt. Bis dahin wird nur in der Alpha entwickelt, in der Beta nur Bugs behoben (dritte Ziffer).
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| VR-1 | **Schema:** `v<Feature>.<Erweiterung>.<Bug>.<Stufe>`: erste Ziffer = Feature, zweite = Erweiterung, dritte = Bug, Suffix `b` = Beta, `a` = Alpha (z. B. `v1.3.0.b`). | M |
+| VR-2 | **Anzeige:** Unter More steht ganz unten, nach dem letzten Feld, als Text die Version mit Datenstand: `v1.4.0.a - Daten: 2026-11-02` (Datum der letzten Aktualisierung der Daten). Die Version stammt aus einer Konstante in `shared`, der Datenstand aus dem Feld `dataDate` in `killteams.json` und `rules.json` (wird vom Import gesetzt). Betrifft NF-6. | M |
+| VR-3 | **Ablauf:** Branch `alpha` (oder `feature/*`) für neue Features; Beta-Release mit Versionsnummer, neuem Schlüsselpaar (ZC-12) und neuem Datenstand. Bug-Fixes der Beta laufen getrennt vom Alpha-Stand. | S |
+| VR-4 | **Installation:** Alpha und Beta verwenden dieselbe Application-ID. Ein Alpha-Build ist nicht parallel zur Beta installierbar und ersetzt sie auf dem Gerät. | M |
+
+Status 2026-11-04: VR-1, VR-2 und VR-4 sind umgesetzt (`logic/AppInfo.kt`, Fußzeile unter More, `versionName` 1.4.0.a; der Datenstand kommt aus `importedAt` der `killteams.json`). VR-3 ist organisatorisch.
+
+### 4.16 Design: Kill-Team-Orange
+
+Betrifft AT-14 (eigenständiges Design, bisher Petrol/Teal in `Palette`, `ui/Components.kt`). Das neue Design lehnt sich an die offiziellen Kill-Team-Farben und das Design der offiziellen App an, bleibt aber eigenständig gezeichnet.
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| DS-1 | **Farbschema:** Dunkler Grund (Anthrazit/Schwarz), Akzent **Kill-Team-Orange** (Richtwert `#E8650A`), helle Schrift. Alle Farben liegen nur in `Palette`, sodass ein Wechsel ohne Umbau der Screens möglich ist. | M |
+| DS-2 | **Buttons:** Gut erkennbar und einfach zu bedienen: primär = gefüllt orange, sekundär = Outline, Mindestgröße 48 dp, klare Beschriftung. Die nächste Aktion ist immer der auffälligste Button. | M |
+| DS-3 | **Hintergrundbilder:** Dezente Hintergründe (Textur, Raster, Metall) mit geringer Deckkraft sind möglich. Es werden nur eigene oder lizenzfreie Bilder verwendet, bis die Frage zu GW-Artwork geklärt ist (siehe Abschnitt 7). | K |
+| DS-4 | **Mock-ups zuerst:** Vor der Umsetzung entstehen Design-Entwürfe (Game-Phase, Phasenübersicht, Rules, More), siehe [mockups/game-wizard.html](mockups/game-wizard.html). Umsetzung erst nach Freigabe. | M |
+| DS-5 | **Referenz:** Die Orange-Farbwerte und Schriften orientieren sich an der offiziellen Kill-Team-App. Die genauen Werte sind noch zu klären (Abschnitt 7). | S |
+| DS-6 | **Eigenes Select-Symbol für Tac Ops:** Der Button zum Auswählen und Entfernen einer Tac Op (Karte im Spielablauf, MG-6, AT-7) nutzt keine Wahapedia-Grafik (bisher grüner Haken im Kreis), sondern ein eigenes, selbst gezeichnetes **Fadenkreuz** als Vektor-Drawable: "Select" = Fadenkreuz als orange Outline, "Remove" = gefüllte orange Scheibe mit dunklem Fadenkreuz. Größe 36 dp, Touch-Fläche mindestens 48 dp. Die Wahapedia-Grafiken `btn_select`/`btn_remove` entfallen. | M |
+| DS-7 | **Zähler rechtsbündig** (ersetzt die linksbündige Fassung vom selben Tag): Alle Stepper stehen als Zeile über die volle Kartenbreite. Die Beschriftung steht links, der Zähler ("-", Wert, "+") sitzt am rechten Rand, sodass die Zähler untereinander bündig in einer Spalte rechts stehen (Spielerkarte, Score, Rechner, Turnier). Die Wertspalte hat eine feste Mindestbreite und den Wert zentriert. | M |
+
+Status 2026-11-04: DS-1, DS-2, DS-4, DS-6 und DS-7 sind umgesetzt (`Palette` auf Orange/Anthrazit; Mock-up liegt vor). Der Orange-Wert ist ein Richtwert (DS-5 offen), DS-3 ist nicht umgesetzt.
+
+### 4.17 Game Wizard
+
+Weiterentwicklung des Game-Tabs (4.2). Der Spielablauf führt den Spieler durch jede Phase klar und verständlich, ohne dass er suchen muss.
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| GW-1 | **Phasenseite:** Jede Phase zeigt Titel, Kurzbeschreibung, die Liste "Was jetzt zu tun ist" als reine Textliste mit "- " (keine Haken, keine Bestätigungsfelder), relevante Regeln (einklappbar) und Aktionsbuttons. Betrifft AS-1, AT-9. | M |
+| GW-2 | ~~Weiter-Pfeil~~ **Entfällt (2026-11-04, nach Test):** Der runde Pfeil unten rechts und die Sperre durch Pflichtschritte werden nicht umgesetzt. Der Phasenwechsel läuft wie bisher über die Phasenwahl und den Button "Next". | - |
+| GW-3 | ~~Zurück-Pfeil~~ **Entfällt** mit GW-2. | - |
+| GW-4 | **Fortschritt:** Oben in der Phasenkarte zeigt eine Leiste Schritt 1-5 den aktuellen Stand; der Turning Point steht im Seitentitel. Eine eigene Übersichtsseite ist nicht Teil dieser Umsetzung. | S |
+| GW-5 | **Punktestand:** Der Score (Crit, Kill, Tac, Primary, Summe je Spieler) ist in der Phasenseite sichtbar (AT-2). | S |
+| GW-6 | **Persistenz:** Der Spielfortschritt bleibt nach App-Neustart erhalten (SH-3). Bei jedem Phasenwechsel scrollt die Ansicht nach oben (AT-5). | M |
+| GW-7 | ~~Umsetzung über `PhaseScaffold`~~ **Entfällt** mit GW-2. | - |
+| GW-8 | **Primary-Op-Auswahl:** Die Buttons "Player 1/2: select/change primary op" im Strategic gambit (Turning Point 1) sind größer: volle Breite, Mindesthöhe 56 dp. | M |
+| GW-9 | **Next am Seitenende:** Der Button zur nächsten Phase ("Next: <Phase>", Phasen 1 bis 3) steht ganz unten am Ende der Phasenseite, über "Discard game", in voller Breite und in derselben Größe wie "Next turning point" in Phase 4 (Standardhöhe), nicht mehr in der Phasenkarte oben. In Phase 4 bleibt der Button "Next turning point" am Ende, in Phase 5 gibt es keinen Next-Button. | M |
+| GW-10 | **Secret selection breiter:** Der Button "Secret selection (tac op, equipment)" in "Select Operatives" hat die volle Kartenbreite und mindestens 56 dp Höhe. | M |
+| GW-11 | **Mission-Karte überarbeitet:** Die Karte hat den Titel "Mission". Darunter steht die Crit Op groß und hervorgehoben, darunter Killzone und Map als getrennte Tags (Pillen mit Orange-Rand) statt eines langen Textes. Der Button ("Show crit op and map" im Spiel, "Change mission" vor dem Spielstart) hat die volle Breite. Dieselbe Darstellung gilt in der laufenden Partie und auf der Seite zum Starten eines neuen Spiels. | S |
+| GW-12 | **Result-Karte überarbeitet:** Das Ergebnis zeigt oben ein Banner mit dem Gewinner (orange gefüllt, große Schrift) oder "Draw" (neutral). Darunter steht eine Tabelle mit Spalten Crit, Kill, Tac, Primary, VP wie die Score-Karte, der Gewinner ist hervorgehoben. Der Button "Save result and close game" hat die volle Breite und mindestens 56 dp Höhe. | S |
+
+Status 2026-11-04: GW-1, GW-4, GW-5, GW-6 und GW-8 bis GW-12 sind umgesetzt. GW-2, GW-3 und GW-7 (Pfeile, Haken) wurden nach dem Test wieder zurückgenommen.
+
+### 4.18 Rules-Tab mit Favoriten-Schalter und Regeln zusammenführen
+
+Der Tab bleibt "Rules" (4.5) und zeigt nur die Regeln. Die zuerst geplante Umbenennung in "Reference" mit aufklappbaren Gruppen und Missionspaketen wurde nach dem Test verworfen (2026-11-04): Die Missionspakete (Crit Ops, Tac Ops, Kill Op, Maps) stehen im Generator. Behalten wird der Schalter ALL / Favoriten.
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| RF-1 | ~~Tab "Reference"~~ **Entfällt:** Der Tab heißt wieder "Rules" (Icon `ic_rules`, TI-1, TI-6, TI-7 gelten unverändert). | - |
+| RF-2 | ~~Aufklappbare Gruppen~~ **Entfällt:** Die Rules-Übersicht zeigt wieder die Regelseiten als Karten mit Anzahl der Abschnitte und die Universal Map Key. | - |
+| RF-3 | ~~Missionspakete in der Referenz~~ **Entfällt:** Missionspakete werden im Generator nachgeschlagen. | - |
+| RF-4 | **Favoriten-Schalter:** Ganz oben wählt ein Schalter ALL / Favorites. Im Favoriten-Modus erscheinen die markierten Einträge (Regelseiten, Teams, Crit Ops, Tac Ops) als antippbare Liste. Regelseiten werden mit dem Stern auf ihrer Karte markiert (Betrifft KB-4, AT-16). | M |
+| RF-5 | **Favoriten aus More:** Der Favoriten-Bereich unter More entfällt. Bestehende Favoriten-Daten bleiben unverändert. Notizen bleiben unter More. | M |
+| RF-6 | **Suche:** Die Suche arbeitet über alle Regelseiten (mindestens 3 Buchstaben). Treffer haben ebenfalls einen Stern. | S |
+| RF-7 | **Favoriten für Unterregeln:** Auch die Abschnitte (Unterregeln) einer Regelseite tragen einen Stern oben rechts auf ihrer Karte. Der Favoriten-Schlüssel ist `section:<Seite>/<Abschnitt>`. Im Favoriten-Modus erscheint der Eintrag als "Rule: <Abschnitt> (<Seite>)"; ein Tipp öffnet die Seite, scrollt zum Abschnitt und hebt ihn kurz hervor. | M |
+| RF-8 | **Seite "About" entfällt:** Die Seite "About" der Quelle (Formular und Werbung, kein Regeltext) wird nicht angezeigt und nicht durchsucht. Die App filtert sie beim Laden, der Import `import-rules.ps1` überspringt sie. Die Seite "Data sources" unter More bleibt. | M |
+| RG-1 | **Regeln zusammenführen (pausiert, 2026-11-04):** Mehrfach auftretende identische Regeln werden auf eine zentrale Regel reduziert (z. B. "Fight (1 AP)"). Verweise (Keyword-Popup, Team-Detail) zeigen auf die zentrale Regel. Abweichende Team-Varianten bleiben getrennt und verweisen auf die Grundregel. Das soll im Importskript (UP-1) passieren, damit es bei jedem Update erhalten bleibt. Befund und Vorschlag siehe unten. | S |
+
+Status 2026-11-04: RF-4 bis RF-8 sind umgesetzt (`ui/RulesScreen.kt`; Favoriten-Schlüssel `rule:<Seite>` und `section:<Seite>/<Abschnitt>`, Notizen unter More). RF-1 bis RF-3 wurden zurückgenommen. RG-1 ist pausiert.
+
+**RG-1: Befund der Prüfung (2026-11-04)**
+
+- Team-Daten (`killteams.json`): 1379 Regelzeilen bei den Operatives, 98 Texte mehrfach (57 in mehr als einem Team). Am häufigsten steht "This operative cannot perform this action while within control range of an enemy operative." 117-mal in 38 Teams, außerdem Aktionsköpfe wie Signal 1AP (10-mal) sowie Fähigkeiten wie "Icon bearer" (9-mal). Ploys, Equipment und Fraktionsregeln haben bei gleichem Namen immer unterschiedlichen Text (26 Namen), hier gibt es nichts zusammenzuführen.
+- Regel-Daten (`rules.json`, 1177 Abschnitte): 73 Gruppen identischer Abschnitte mit 505 überzähligen Kopien. Die Grundaktionen Shoot, Charge, Dash, Fight, Reposition und Fall Back stehen auf 9 bis 15 Seiten (2 bis 4 geringfügig abweichende Varianten je Aktion).
+- Importfehler: Der Abschnitt "Disable Ads" (E-Mail- und PIN-Formular der Quellseite) steht auf 15 Seiten und ist kein Regeltext.
+- Doppelte IDs: Tomb World hat 434 Abschnitte, aber nur 94 verschiedene IDs (neun Abschnitte 28 bis 29-mal, "Awakened Warrior" 58-mal), Typhon 154 Abschnitte bei 75 IDs. Ob das ein Importfehler ist oder zum Seitenaufbau gehört (Karten je Szenario), ist nicht geklärt. Ein Regel-Link springt bei doppelten IDs immer zum ersten Treffer.
+
+Vorschlag bei Wiederaufnahme: (1) "Disable Ads" im Importskript herausfiltern, (2) die sechs Grundaktionen nur auf der Core-Rules-Seite behalten und von den anderen Seiten dorthin verweisen, (3) die Standard-Bedingung und gängige Aktionsköpfe als zentrale Regel führen, (4) Tomb World und Typhon erst an der Quelle prüfen.
+
+### 4.19 Rechtliche Seiten
+
+Betrifft Abschnitt 2 (Rechtliches) und ZC-11.
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| RC-1 | **Seiten:** Unter More gibt es die Einträge "Nutzungsbedingungen" und "Datenschutz". Die Texte liegen lokal gebündelt und sind offline lesbar. | M |
+| RC-2 | **Zustimmung:** Beim ersten Start nach dem Zugangscode wird die Zustimmung eingeholt (bisher nur Hinweis in ZC-11). Die Zustimmung wird mit der Version der Texte gespeichert. Bei geänderten Texten wird erneut gefragt. | S |
+| RC-3 | **Datenschutz-Inhalt:** Offline-Betrieb, keine Konten, keine Weitergabe von Daten, lokale Speicherung (Notizen, Rosters, Verlauf). Die Kamera wird nur erwähnt, wenn die Messfunktion aktiv ist (KM-20). | M |
+| RC-4 | **Nutzungsbedingungen-Inhalt:** Privat, nicht kommerziell, Zugangscode nicht weitergeben, Inhalte gehören Games Workshop bzw. Wahapedia, kein Anspruch auf Verfügbarkeit. | M |
+| RC-5 | **Prüfung:** Die Texte sind Entwürfe und werden vor einer Verbreitung über den Testkreis hinaus rechtlich geprüft. | S |
+
+Status 2026-11-04: RC-1, RC-3, RC-4 und RC-5 (Entwurf) sind umgesetzt (More: "Terms of use", "Privacy"). RC-2 ist offen (bisher gilt die Eingabe des Codes als Zustimmung, ZC-11).
+
+### 4.20 Inkrementelle Updates und PDF-Import
+
+Bisher überschreiben `import-wahapedia.ps1` und `import-rules.ps1` alles (Abschnitt 6). Ziel: nur neue oder geänderte Objekte schreiben.
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| UP-1 | **Upsert:** Jedes Objekt (Team, Operative, Regel, Ploy, Equipment) hat eine stabile ID und einen Inhalts-Hash. Pro Lauf gilt: nicht vorhanden = anlegen, Hash anders = aktualisieren, sonst unverändert lassen. | M |
+| UP-2 | **Bereiche:** Die Skripte laufen auf einzelne Bereiche beschränkt (z. B. `-Teams`, `-Rules`, `-Team "Name"`, `-Section "Core Rules"`), damit aktuelle Regeln und Teams nicht erneut überschrieben werden. | M |
+| UP-3 | **Bericht und Backup:** Jeder Lauf erzeugt einen Änderungsbericht (neu, geändert, unverändert, nicht mehr in der Quelle) und sichert vorher die JSON-Dateien. Gelöschte Objekte werden nur markiert, nicht automatisch entfernt. | S |
+| UP-4 | **Datenstand:** `dataDate` (VR-2) wird nur bei tatsächlichen Änderungen gesetzt. | S |
+| UP-5 | **PDF-Reader:** Ein Update-Skript liest die Team- und Regel-PDFs, extrahiert den Text und mappt ihn auf das Datenmodell des Wahapedia-Imports. Nicht vorhandene Objekte werden neu angelegt, bei Änderungen aktualisiert (gleiche Logik wie UP-1). Die Textextraktion nutzt ein externes Werkzeug (Vorschlag: `pdftotext -layout`), da PowerShell PDFs nicht zuverlässig liest. Treffer mit geringer Sicherheit werden im Bericht markiert und nicht automatisch übernommen. | S |
+
+Status 2026-11-04: UP-1 bis UP-4 sind für die Teams umgesetzt (`tools/import-wahapedia.ps1 [-Team slug] [-Full]`: Vergleich pro Team, Bericht, Backup `.bak`, Datenstand nur bei Änderungen). `import-rules.ps1` ist noch nicht umgestellt, UP-5 (PDF-Reader) ist offen.
+
+### 4.21 Button-System
+
+Vereinheitlicht die vorhandenen Buttons zu festen Arten, Größen und Regeln (Konzept J in [konzept.md](konzept.md), Mock-up [mockups/buttons.html](mockups/buttons.html)). Betrifft DS-2, DS-6, DS-7, GW-8 bis GW-12.
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| BT-1 | **Arten:** Es gibt sieben feste Arten: Primary (orange gefüllt, weiße Schrift), Secondary (orange Outline), Text (nur orange Schrift), Danger (rote Outline, im Bestätigungsdialog rot gefüllt), Choice (Chip, gewählt orange gefüllt), Segmented (gleich breite Gruppe aus 2 bis 3 Optionen) und Icon (nur Symbol). Zusätzliche Bausteine sind der Stepper und die schwebende Nav-Pille (Index, Cards, Top). | M |
+| BT-2 | **Rollen:** Primary ist die Hauptaktion einer Karte oder Seite (z. B. Generate Mission, Next: <Phase>, Save result and close game). Secondary sind weitere Aktionen und Ein-/Ausblenden. Text ist für Cancel, Close, Back und Link-Aktionen. Danger ist für Aktionen, die Daten löschen oder verwerfen (Discard game, Delete, Clear all, Out). Pro Karte und Seite gibt es höchstens eine Primary. | M |
+| BT-3 | **Größen:** S = 40 dp (Zeilen mit mehreren Aktionen, Stepper), M = 48 dp (Standard, auch Next: <Phase>), L = 56 dp (nur Weitergabe- und Abschlussaktionen: Secret selection, Primary op wählen, Save result and close game, "I am <Spieler>"). Die Touch-Fläche beträgt immer mindestens 48 dp. | M |
+| BT-4 | **Form und Farbe:** Primary, Secondary, Text und Danger sind Pillen, Chips haben 8 dp Rundung, Icons sind rund. Alle Farben kommen aus `Palette` (neu: `Danger`; der gedrückte Zustand kommt vom Ripple des Systems). Deaktiviert heißt 38 % Deckkraft ohne Interaktion. Auf dem Desktop zeigt ein Fokusrahmen die Tastaturauswahl. | M |
+| BT-5 | **Beschriftung:** Englisch, Satzanfang groß, Verb zuerst, kein Punkt am Ende. Schalter zeigen die Aktion des nächsten Zustands ("Show" / "Hide"). Abbrechen heißt immer "Cancel", Schließen immer "Close". Bestätigen nutzt ein konkretes Verb statt "OK" (außer in reinen Hinweisdialogen). Lange Texte brechen zentriert um. | S |
+| BT-6 | **Anordnung:** Eine einzelne Aktion in einer Karte hat volle Breite. Gestapelt steht Primary oben, Secondary darunter, Danger zuletzt und abgesetzt. Zwei Aktionen nebeneinander sind gleich breit mit Primary rechts. In Dialogen steht Bestätigen rechts (bei Löschen als Danger) und Abbrechen links als Text. S-Buttons in Zeilen laufen in einer `FlowRow` und brechen um. | M |
+| BT-7 | **Zentrale Umsetzung:** Alle Buttons entstehen über `ui/Buttons.kt` (`AppButton` mit `ButtonKind` und `ButtonSize`, `SegmentedChoice`, `ChipRow`, `Stepper`, `FavoriteButton`, `NavButton`). Direkte Aufrufe von `Button`, `OutlinedButton` und `TextButton` außerhalb dieser Datei entfallen. | M |
+| BT-8 | **Migration:** In Etappen: (1) `Buttons.kt` und `Palette`, (2) Game, (3) Teams, Generator, More, Rules, (4) Dialoge, (5) Messfunktion (pausiert, zuletzt). Jede Etappe baut und besteht `:shared:jvmTest` und `:androidApp:assembleDebug`. Gespeicherte Daten sind nicht betroffen. | M |
+| BT-9 | **Abnahme:** Auf Android und Desktop haben gleichartige Aktionen in allen Tabs dieselbe Art, Höhe und Beschriftung. Eine Suche nach `OutlinedButton(` und `TextButton(` außerhalb von `Buttons.kt` findet nichts mehr. | M |
+
+Status 2026-11-04: BT-1 bis BT-9 sind umgesetzt (`ui/Buttons.kt`; alle Tabs, Dialoge und die Messfunktion nutzen `AppButton`). Ausnahmen: die Kamera-Toolbar der Messfunktion (eigene Farben auf dem Kamerabild, KM-20) und die Einträge der Index-Dialoge, die als Listenzeilen statt als Buttons gezeichnet sind. "Favorite" ist jetzt ein Stern-Icon, "Open rule" hat keinen Pfeil mehr.
 
 ## 5. Nicht-funktionale Anforderungen
 
@@ -249,7 +374,7 @@ Status 2026-11-03: KM-1 bis KM-11, KM-13, KM-15 bis KM-18 sind umgesetzt (`logic
 | NF-3 | Persistenz der Nutzerdaten (Auswahl, Rosters, Spielstände, Historie) lokal, plattformübergreifend. |
 | NF-4 | Responsive UI für Smartphone, Tablet und Desktop; Hoch- und Querformat. |
 | NF-5 | Bedienbarkeit am Spieltisch: große Touch-Flächen, Dunkelmodus, Bildschirm bleibt wach. |
-| NF-6 | Daten-Import als nachvollziehbares, wiederholbares Skript. Datenstand (Datum, Version laut Wahapedia, z. B. "August 2026") wird in der App angezeigt. |
+| NF-6 | Daten-Import als nachvollziehbares, wiederholbares Skript. Datenstand (Datum, Version laut Wahapedia, z. B. "August 2026") wird in der App angezeigt, zusammen mit der App-Version unter More (VR-2). |
 | NF-7 | Datenschutz: Keine Konten, keine Telemetrie, keine Werbung. |
 
 ## 6. Import-Pipeline
@@ -259,6 +384,7 @@ Status 2026-11-03: KM-1 bis KM-11, KM-13, KM-15 bis KM-18 sind umgesetzt (`logic
 3. Bilder werden lokal gespeichert und nach Typ benannt.
 4. Manuelle Stichproben-Prüfung gegen die Webseite.
 5. Regelupdates (Wahapedia aktualisiert regelmäßig) erfordern einen erneuten Import und ein neues App-Build.
+6. Ab 1.4.0.a laufen Updates inkrementell und bereichsweise, zusätzlich per PDF-Reader (siehe 4.20).
 
 ## 7. Offene Punkte
 
@@ -266,6 +392,13 @@ Status 2026-11-03: KM-1 bis KM-11, KM-13, KM-15 bis KM-18 sind umgesetzt (`logic
 - Genaue Kill-Grade-Tabelle liegt nur als Bild vor und muss für die Berechnung manuell in Daten überführt werden.
 - Prüfung, ob die Wahapedia-Nutzungsbedingungen den einmaligen Import ausdrücklich erlauben.
 - Umfang des Importes der Kill Teams (alle Seasons oder nur Auswahl).
+- Offizielle Farbwerte und Schriften für das Orange-Design (DS-5), z. B. aus eigenen Screenshots der offiziellen App.
+- Darf Artwork von Games Workshop als Hintergrund verwendet werden, solange die App nur im Testkreis bleibt (DS-3)?
+- Welche PDFs (Quelle, Format) liest der PDF-Reader (UP-5) und liegen sie in einem festen Layout vor?
+
+Entschieden für 1.4.0.a: Alpha und Beta sind nicht parallel installierbar (VR-4). Favoriten gelten für Regelseiten, Teams, Crit Ops und Tac Ops (RF-4). Die Referenz mit Missionspaketen wurde verworfen, RG-1 ist pausiert.
+
+Reihenfolge der Umsetzung 1.4.0.a: Kameramessung ausblenden (KM-20), Versionsanzeige (VR-2), Rechtliches (RC), Mock-ups (DS-4), Orange-Theme (DS), Rules-Tab mit Favoriten-Schalter (RF), Game Wizard (GW), Button-System (BT), inkrementelle Updates und PDF-Reader (UP), Beta-Release mit Schlüsselrotation (ZC-12). Regeln zusammenführen (RG-1) ist pausiert.
 
 ### 7.1 Offene Punkte aus dem Alpha-Test (Bedienung der App)
 

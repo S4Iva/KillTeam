@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,9 +49,9 @@ fun TacOpCard(
         icon = tacOpIcon(op.archetype),
         actions = {
             if (selected && onRemove != null) {
-                Image(painterResource(removeIcon), "Remove", Modifier.size(36.dp).clickable { onRemove() })
+                Image(painterResource(removeIcon), "Remove", Modifier.size(48.dp).clickable { onRemove() }.padding(6.dp))
             } else if (!selected && onSelect != null) {
-                Image(painterResource(selectIcon), "Select", Modifier.size(36.dp).clickable { onSelect() })
+                Image(painterResource(selectIcon), "Select", Modifier.size(48.dp).clickable { onSelect() }.padding(6.dp))
             }
         },
     ) {
@@ -109,8 +109,8 @@ fun GeneratorScreen(app: AppState, onStartGame: () -> Unit) {
         item {
             SectionCard("Approved Ops 2025") {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button({ app.mission.update(MissionGenerator.random(app.mission.value)) }) { Text("Generate Mission") }
-                    OutlinedButton(onStartGame) { Text("Start game") }
+                    AppButton("Start game", onStartGame, Modifier.weight(1f), ButtonKind.Secondary)
+                    AppButton("Generate Mission", { app.mission.update(MissionGenerator.random(app.mission.value)) }, Modifier.weight(1f))
                 }
                 Dropdown("Mission", ApprovedOps.critOps, state.critOp, { it.label }, { app.mission.update(state.withCritOp(it.index)) })
                 Dropdown("Killzone", Killzone.entries, state.killzone, { it.label }, { app.mission.update(state.withKillzone(it)) })
@@ -133,7 +133,7 @@ fun GeneratorScreen(app: AppState, onStartGame: () -> Unit) {
             SectionCard("MAP  ${state.killzone.label} - Map ${state.mapIndex + 1}") {
                 ClickableImage(mapResource(state.killzone, state.mapIndex), Modifier.fillMaxWidth())
                 Text("Tap the map to enlarge it.", style = androidx.compose.material3.MaterialTheme.typography.bodySmall)
-                OutlinedButton({ showKey = !showKey }) { Text(if (showKey) "Hide map key" else "Show map key") }
+                AppButton(if (showKey) "Hide map key" else "Show map key", { showKey = !showKey }, kind = ButtonKind.Secondary, fullWidth = true)
                 if (showKey) {
                     mapKey.forEach { (icon, text) ->
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {

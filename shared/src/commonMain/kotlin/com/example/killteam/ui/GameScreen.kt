@@ -1,13 +1,23 @@
 package com.example.killteam.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +37,7 @@ import com.example.killteam.logic.AppState
 import com.example.killteam.logic.GamePhase
 import com.example.killteam.logic.GameState
 import com.example.killteam.logic.InitiativeCard
+import com.example.killteam.logic.MissionState
 import com.example.killteam.logic.Scoring
 import com.example.killteam.logic.advanceTurningPoint
 import com.example.killteam.logic.changeOperative
@@ -72,7 +83,7 @@ private val phaseChecklist = mapOf(
     ),
 )
 
-private class PendingConfirm(val text: String, val label: String, val action: () -> Unit)
+private class PendingConfirm(val text: String, val label: String, val danger: Boolean = false, val action: () -> Unit)
 
 private val phaseSummary = mapOf(
     GamePhase.SetUpBattle to "Kill teams, killzone, crit op, initiative and drop zones.",
@@ -109,11 +120,12 @@ fun RunningGame(app: AppState, game: GameState) {
         SecretHandover(game.players[index].name, { secretReady = true }, { secretFor = null })
     }
     primaryFor?.let { PrimaryOpDialog(app, game, it) { primaryFor = null } }
-    confirm?.let { c -> ConfirmDialog(c.text, c.label, c.action) { confirm = null } }
+    confirm?.let { c -> ConfirmDialog(c.text, c.label, c.action, onDismiss = { confirm = null }, danger = c.danger) }
 
     Page("Game - Turning Point ${game.turningPoint}/${ApprovedOps.TURNING_POINTS}", listState = listState) {
         item {
             SectionCard("Phase") {
+                PhaseProgress(game)
                 ChipRow(GamePhase.entries, { it == game.phase }, { it.label }, { target ->
                     if (target == GamePhase.End && game.phase != GamePhase.End) {
                         confirm = PendingConfirm("Jump to \"${target.label}\"? The battle then counts as ended.", "End the battle") {
@@ -123,10 +135,6 @@ fun RunningGame(app: AppState, game: GameState) {
                         update(game.copy(phase = target, ended = false))
                     }
                 })
-                val next = GamePhase.entries.getOrNull(game.phase.ordinal + 1)
-                if (next != null && game.phase != GamePhase.Play) {
-                    Button({ update(game.copy(phase = next)) }) { Text("Next: ${next.label}") }
-                }
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     GamePhase.entries.forEach { ph ->
                         val current = ph == game.phase
@@ -167,13 +175,13 @@ fun RunningGame(app: AppState, game: GameState) {
                             Text("(Sets the kill grade row of ${game.players[1 - i].name}.)")
                             Stepper("CP", p.cp, { v -> update(game.updatePlayer(i) { it.copy(cp = v) }) }, 0, 20)
                             Text(if (p.tacOpId != null) "Tac op selected (hidden), equipment ${p.equipment.size}/${ApprovedOps.MAX_EQUIPMENT}" else "No secret selection yet.")
-                            OutlinedButton({ secretFor = i }) { Text("Secret selection (tac op, equipment)") }
+                            AppButton("Secret selection (tac op, equipment)", { secretFor = i }, kind = ButtonKind.Secondary, size = ButtonSize.L, fullWidth = true)
                         }
                     }
                 }
                 item {
                     SectionCard("Reveal equipment") {
-                        OutlinedButton({ showEquipment = !showEquipment }) { Text(if (showEquipment) "Hide" else "Reveal simultaneously") }
+                        AppButton(if (showEquipment) "Hide" else "Reveal simultaneously", { showEquipment = !showEquipment }, kind = ButtonKind.Secondary, fullWidth = true)
                         if (showEquipment) game.players.forEach { p ->
                             Text("${p.name}: ${p.equipment.joinToString().ifEmpty { "-" }}")
                         }
@@ -191,7 +199,10 @@ fun RunningGame(app: AppState, game: GameState) {
                         SectionCard("Strategic gambit: primary op") {
                             Text("In the first turning point each player secretly selects one of their three ops as primary op.")
                             game.players.forEachIndexed { i, p ->
-                                OutlinedButton({ primaryFor = i }) { Text("${p.name}: ${if (p.primary == null) "select" else "change"} primary op") }
+                                AppButton(
+                                    "${p.name}: ${if (p.primary == null) "select" else "change"} primary op", { primaryFor = i },
+                                    kind = ButtonKind.Secondary, size = ButtonSize.L, fullWidth = true,
+                                )
                             }
                         }
                     }
@@ -200,15 +211,13 @@ fun RunningGame(app: AppState, game: GameState) {
                 item { MissionCard(game, showMission) { showMission = it } }
                 item {
                     val last = game.turningPoint >= ApprovedOps.TURNING_POINTS
-                    Button({
+                    AppButton(if (last) "End the battle" else "Next turning point (${game.turningPoint + 1})", {
                         if (game.readyDone) update(game.advanceTurningPoint())
                         else confirm = PendingConfirm(
                             "The Ready step was not done in this turning point: no CP were gained and expended operatives were not readied. Continue anyway?",
                             if (last) "End the battle" else "Next turning point",
                         ) { update(game.advanceTurningPoint()) }
-                    }, Modifier.fillMaxWidth()) {
-                        Text(if (last) "End the battle" else "Next turning point (${game.turningPoint + 1})")
-                    }
+                    }, fullWidth = true)
                 }
             }
 
@@ -225,31 +234,93 @@ fun RunningGame(app: AppState, game: GameState) {
                                 },
                             )
                         }
-                        Button({ update(finished) }) { Text("Reveal both") }
+                        AppButton("Reveal both", { update(finished) }, fullWidth = true)
                     }
                 }
                 item {
-                    val winner = Scoring.winner(finished)
-                    SectionCard("Result") {
-                        finished.players.indices.forEach { i ->
-                            val s = Scoring.score(finished, i)
-                            Text("${finished.players[i].name}: ${s.total} VP (Crit ${s.crit}, Kill ${s.kill}, Tac ${s.tac}, Primary +${s.primaryBonus})")
-                        }
-                        Text(if (winner == -1) "Draw" else "Winner: ${finished.players[winner].name}", style = MaterialTheme.typography.titleLarge)
-                        Text("Saving reveals both primary ops, so their bonus is included.", style = MaterialTheme.typography.bodySmall)
-                        Button({
-                            app.history.update(listOf(finished.toResult()) + app.history.value)
-                            app.game.update(null)
-                        }) { Text("Save result and close game") }
+                    ResultCard(finished) {
+                        app.history.update(listOf(finished.toResult()) + app.history.value)
+                        app.game.update(null)
                     }
                 }
             }
         }
 
+        val nextPhase = GamePhase.entries.getOrNull(game.phase.ordinal + 1)
+        if (nextPhase != null && game.phase != GamePhase.Play) {
+            item {
+                AppButton("Next: ${nextPhase.label}", { update(game.copy(phase = nextPhase)) }, fullWidth = true)
+            }
+        }
+
         item {
-            OutlinedButton({
-                confirm = PendingConfirm("Discard this game? Its score and all entries are lost and nothing is saved to the history.", "Discard game") { app.game.update(null) }
-            }) { Text("Discard game") }
+            AppButton(
+                "Discard game",
+                { confirm = PendingConfirm("Discard this game? Its score and all entries are lost and nothing is saved to the history.", "Discard game", danger = true) { app.game.update(null) } },
+                kind = ButtonKind.Danger, fullWidth = true,
+            )
+        }
+    }
+}
+
+/** Crit op in large type with killzone and map as tags; shared by the game and the new-game page. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun MissionSummary(m: MissionState) {
+    Text(m.critOp.label, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Palette.Accent)
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Tag(m.killzone.label)
+        Tag("Map ${m.mapIndex + 1}")
+    }
+}
+
+/** Outlined pill for short facts such as killzone and map. */
+@Composable
+private fun Tag(text: String) {
+    Text(
+        text, Modifier.border(1.dp, Palette.Accent, RoundedCornerShape(50)).padding(horizontal = 12.dp, vertical = 6.dp),
+        style = MaterialTheme.typography.labelLarge,
+    )
+}
+
+/** Winner banner, score table and the save button of the last phase. */
+@Composable
+private fun ResultCard(finished: GameState, onSave: () -> Unit) {
+    val winner = Scoring.winner(finished)
+    SectionCard("Result") {
+        Box(
+            Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).background(if (winner == -1) Palette.Header else Palette.Accent).padding(vertical = 14.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                if (winner == -1) "Draw" else "Winner: ${finished.players[winner].name}",
+                style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Color.White,
+            )
+        }
+        ScoreRow("", null, listOf("Crit", "Kill", "Tac", "Primary", "VP"), header = true)
+        HorizontalDivider(color = Palette.Accent.copy(alpha = 0.4f))
+        finished.players.forEachIndexed { i, p ->
+            val s = Scoring.score(finished, i)
+            ScoreRow(
+                p.name, if (winner == i) "Winner" else null,
+                listOf(s.crit.toString(), s.kill.toString(), s.tac.toString(), "+${s.primaryBonus}", s.total.toString()),
+                header = false,
+            )
+        }
+        Text("Saving reveals both primary ops, so their bonus is included.", style = MaterialTheme.typography.bodySmall)
+        AppButton("Save result and close game", onSave, kind = ButtonKind.Primary, size = ButtonSize.L, fullWidth = true)
+    }
+}
+
+/** One segment per step; finished steps and the current one are orange. */
+@Composable
+private fun PhaseProgress(game: GameState) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        GamePhase.entries.forEach { ph ->
+            Box(
+                Modifier.weight(1f).height(6.dp).clip(RoundedCornerShape(3.dp))
+                    .background(if (ph.ordinal <= game.phase.ordinal) Palette.Accent else Palette.Text.copy(alpha = 0.2f)),
+            )
         }
     }
 }
@@ -293,20 +364,16 @@ private fun ScoreRow(name: String, note: String?, values: List<String>, header: 
 /** Equally wide buttons to choose the player with initiative; the current one is filled. */
 @Composable
 private fun InitiativeButtons(game: GameState, selected: Int?, enabled: Boolean, onPick: (Int) -> Unit) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        game.players.forEachIndexed { i, p ->
-            val label: @Composable () -> Unit = { Text("${p.name} has initiative", textAlign = TextAlign.Center) }
-            if (selected == i) Button({ onPick(i) }, Modifier.weight(1f), enabled = enabled, content = { label() })
-            else OutlinedButton({ onPick(i) }, Modifier.weight(1f), enabled = enabled, content = { label() })
-        }
-    }
+    SegmentedChoice(game.players.indices.toList(), selected, { "${game.players[it].name} has initiative" }, onPick, enabled)
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun MissionCard(game: GameState, open: Boolean, onToggle: (Boolean) -> Unit) {
     val m = game.mission
-    SectionCard("Mission: ${m.critOp.label}  |  ${m.killzone.label}, Map ${m.mapIndex + 1}") {
-        OutlinedButton({ onToggle(!open) }) { Text(if (open) "Hide crit op and map" else "Show crit op and map") }
+    SectionCard("Mission") {
+        MissionSummary(m)
+        AppButton(if (open) "Hide crit op and map" else "Show crit op and map", { onToggle(!open) }, kind = ButtonKind.Secondary, fullWidth = true)
         if (open) {
             OpSectionsView(m.critOp.sections)
             ClickableImage(mapResource(m.killzone, m.mapIndex), Modifier.fillMaxWidth())
@@ -316,6 +383,7 @@ private fun MissionCard(game: GameState, open: Boolean, onToggle: (Boolean) -> U
 
 private fun cardLabel(card: InitiativeCard) = if (card == InitiativeCard.Reroll) "Re-roll" else card.label
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun InitiativePanel(game: GameState, update: (GameState) -> Unit) {
     val resolved = game.rollOffResolved
@@ -327,13 +395,13 @@ private fun InitiativePanel(game: GameState, update: (GameState) -> Unit) {
                 if (!resolved) {
                     ChipRow((1..6).toList(), { game.rolls[i] == it }, { it.toString() }, { v -> update(game.withRoll(i, v)) })
                     if (p.cards.isNotEmpty()) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             p.cards.forEach { card ->
                                 if (card == InitiativeCard.Reroll) {
-                                    OutlinedButton({ update(game.useReroll(i)) }) { Text("Use Re-roll") }
+                                    AppButton("Use Re-roll", { update(game.useReroll(i)) }, kind = ButtonKind.Secondary, size = ButtonSize.S)
                                 } else {
-                                    OutlinedButton({ update(game.useModifier(i, card, up = true)) }, enabled = game.rolls[i] != null) { Text("+${card.modifier}") }
-                                    OutlinedButton({ update(game.useModifier(i, card, up = false)) }, enabled = game.rolls[i] != null) { Text("-${card.modifier}") }
+                                    AppButton("+${card.modifier}", { update(game.useModifier(i, card, up = true)) }, kind = ButtonKind.Secondary, size = ButtonSize.S, enabled = game.rolls[i] != null)
+                                    AppButton("-${card.modifier}", { update(game.useModifier(i, card, up = false)) }, kind = ButtonKind.Secondary, size = ButtonSize.S, enabled = game.rolls[i] != null)
                                 }
                             }
                         }
@@ -344,7 +412,7 @@ private fun InitiativePanel(game: GameState, update: (GameState) -> Unit) {
             }
         }
         if (!resolved) {
-            Button({ update(game.resolveRollOff()) }, enabled = game.rolls.all { it != null }) { Text("Resolve roll-off") }
+            AppButton("Resolve roll-off", { update(game.resolveRollOff()) }, enabled = game.rolls.all { it != null }, fullWidth = true)
         } else {
             val winner = game.rollOffWinner ?: 0
             Text("${game.players[winner].name} wins the roll-off and decides who has initiative.")
@@ -353,7 +421,7 @@ private fun InitiativePanel(game: GameState, update: (GameState) -> Unit) {
                     ?: "No initiative card is gained in the fourth turning point.",
             )
             InitiativeButtons(game, if (game.initiativeChosen) game.initiative else null, !game.readyDone) { update(game.chooseInitiative(it)) }
-            if (!game.readyDone) OutlinedButton({ update(game.reopenRollOff()) }) { Text("Redo roll-off") }
+            if (!game.readyDone) AppButton("Redo roll-off", { update(game.reopenRollOff()) }, kind = ButtonKind.Secondary, fullWidth = true)
         }
         Text(if (game.initiativeChosen || game.turningPoint == 1) "Initiative: ${game.players[game.initiative].name}" else "Initiative: decide after the roll-off")
     }
@@ -369,11 +437,12 @@ private fun ReadyStepPanel(game: GameState, update: (GameState) -> Unit) {
             val gains = game.readyGains()
             if (game.initiativeChosen) Text(game.players.indices.joinToString { "${game.players[it].name} +${gains[it]} CP" })
             else Text("Resolve the roll-off and choose who has initiative first.")
-            Button({ update(game.readyStep()) }, enabled = game.initiativeChosen) { Text("Do the Ready step") }
+            AppButton("Do the Ready step", { update(game.readyStep()) }, enabled = game.initiativeChosen, fullWidth = true)
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
     val p = game.players[index]
@@ -395,10 +464,10 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
         if (tac != null) {
             if (p.tacRevealed) {
                 Text("Tac op: ${tac.name}" + (tac.maxVpPerTurningPoint?.let { " (max. $it VP per turning point)" } ?: ""), fontWeight = FontWeight.Bold)
-                OutlinedButton({ showTac = !showTac }) { Text(if (showTac) "Hide tac op rules" else "Show tac op rules") }
+                AppButton(if (showTac) "Hide tac op rules" else "Show tac op rules", { showTac = !showTac }, kind = ButtonKind.Secondary, fullWidth = true)
                 if (showTac) OpSectionsView(tac.sections)
             } else {
-                OutlinedButton({ update(game.updatePlayer(index) { it.copy(tacRevealed = true) }) }) { Text("Reveal tac op (reveal condition met)") }
+                AppButton("Reveal tac op (reveal condition met)", { update(game.updatePlayer(index) { it.copy(tacRevealed = true) }) }, kind = ButtonKind.Secondary, fullWidth = true)
             }
         } else Text("No tac op selected.")
         Stepper("CP", p.cp, { v -> update(game.updatePlayer(index) { it.copy(cp = v) }) }, 0, 20)
@@ -409,7 +478,10 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
         })
 
         if (p.operatives.isNotEmpty()) {
-            OutlinedButton({ showOperatives = !showOperatives }) { Text(if (showOperatives) "Hide operatives" else "Operatives (${p.operatives.count { !it.incapacitated }}/${p.operatives.size})") }
+            AppButton(
+                if (showOperatives) "Hide operatives" else "Operatives (${p.operatives.count { !it.incapacitated }}/${p.operatives.size})",
+                { showOperatives = !showOperatives }, kind = ButtonKind.Secondary, fullWidth = true,
+            )
             if (showOperatives) {
                 p.operatives.forEachIndexed { oi, o ->
                     Column(Modifier.fillMaxWidth()) {
@@ -417,12 +489,16 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
                             "${o.name}  ${o.wounds}/${o.maxWounds} W" + if (o.incapacitated) "  [incapacitated]" else if (o.injured) "  [injured]" else if (o.wounded) "  [wounded]" else "",
                             fontWeight = FontWeight.Bold,
                         )
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                            OutlinedButton({ update(game.changeOperative(index, oi) { it.copy(wounds = (it.wounds - 1).coerceAtLeast(0)) }) }) { Text("-1 W") }
-                            OutlinedButton({ update(game.changeOperative(index, oi) { it.copy(wounds = (it.wounds + 1).coerceAtMost(it.maxWounds)) }) }) { Text("+1 W") }
-                            OutlinedButton({ update(game.changeOperative(index, oi) { it.copy(engage = !it.engage) }) }) { Text(if (o.engage) "Engage" else "Conceal") }
-                            OutlinedButton({ update(game.changeOperative(index, oi) { it.copy(expended = !it.expended) }) }) { Text(if (o.expended) "Expended" else "Ready") }
-                            OutlinedButton({ update(game.setIncapacitated(index, oi, !o.incapacitated)) }) { Text(if (o.incapacitated) "Revive" else "Out") }
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            val s = ButtonSize.S
+                            AppButton("-1 W", { update(game.changeOperative(index, oi) { it.copy(wounds = (it.wounds - 1).coerceAtLeast(0)) }) }, kind = ButtonKind.Secondary, size = s)
+                            AppButton("+1 W", { update(game.changeOperative(index, oi) { it.copy(wounds = (it.wounds + 1).coerceAtMost(it.maxWounds)) }) }, kind = ButtonKind.Secondary, size = s)
+                            AppButton(if (o.engage) "Engage" else "Conceal", { update(game.changeOperative(index, oi) { it.copy(engage = !it.engage) }) }, kind = ButtonKind.Secondary, size = s)
+                            AppButton(if (o.expended) "Expended" else "Ready", { update(game.changeOperative(index, oi) { it.copy(expended = !it.expended) }) }, kind = ButtonKind.Secondary, size = s)
+                            AppButton(
+                                if (o.incapacitated) "Revive" else "Out", { update(game.setIncapacitated(index, oi, !o.incapacitated)) },
+                                kind = if (o.incapacitated) ButtonKind.Secondary else ButtonKind.Danger, size = s,
+                            )
                         }
                     }
                 }

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kill Team Companion - Mock-up Button-System</title>
+<style>
+  :root {
+    --bg: #121212; --card: #1e1e1e; --header: #1f1f1f; --line: #3a3a3a;
+    --orange: #e8650a; --orange-dark: #b84e05; --danger: #e5645a; --text: #f2f2f2; --muted: #a0a0a0;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #000; color: var(--text); font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.hint { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .panel { width: 360px; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+  .panel > h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--orange); margin: 0 0 10px; }
+  .card { background: var(--card); border-radius: 14px; overflow: hidden; margin-bottom: 12px; }
+  .card .title { background: var(--header); border-left: 6px solid var(--orange); padding: 8px 10px; font-weight: 600; }
+  .card .body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .note { font-size: 12px; color: var(--muted); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .row.eq > * { flex: 1; }
+
+  /* Buttons */
+  .btn { border-radius: 999px; font: inherit; font-weight: 600; font-size: 14px; padding: 0 20px; cursor: pointer; border: 1.5px solid var(--orange); display: inline-flex; align-items: center; justify-content: center; text-align: center; }
+  .btn.s { min-height: 40px; padding: 0 14px; }
+  .btn.m { min-height: 48px; }
+  .btn.l { min-height: 56px; font-size: 15px; }
+  .btn.full { width: 100%; }
+  .primary { background: var(--orange); color: #fff; }
+  .primary:active { background: var(--orange-dark); }
+  .secondary { background: transparent; color: var(--orange); }
+  .text { background: transparent; color: var(--orange); border-color: transparent; }
+  .danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+  .danger.filled { background: var(--danger); color: #fff; }
+  .btn:disabled { opacity: .38; cursor: not-allowed; }
+
+  .chip { border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; font-size: 14px; background: transparent; color: var(--text); cursor: pointer; }
+  .chip.on { background: var(--orange); border-color: var(--orange); color: #fff; }
+  .seg { display: flex; gap: 8px; }
+  .seg .btn { flex: 1; min-height: 48px; }
+  .icon { width: 48px; height: 48px; border-radius: 50%; border: 0; background: transparent; color: var(--orange); font-size: 24px; cursor: pointer; }
+  .stepper { display: flex; align-items: center; gap: 8px; }
+  .stepper .lbl { flex: 1; }
+  .stepper .btn { min-width: 48px; padding: 0; }
+  .stepper .val { min-width: 32px; text-align: center; font-weight: 600; }
+  .pill { display: inline-flex; gap: 6px; background: var(--header); color: var(--orange); border-radius: 999px; padding: 10px 16px; font-weight: 700; font-size: 14px; }
+  .dialog { background: #2a2a2a; border-radius: 20px; padding: 18px; }
+  .dialog p { margin: 0 0 18px; }
+  .dialog .actions { display: flex; justify-content: flex-end; gap: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  td, th { border-bottom: 1px solid var(--line); padding: 6px 4px; text-align: left; vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+</style>
+</head>
+<body>
+<h1>Mock-up: Button-System (Konzept J)</h1>
+<p class="hint">Alle Arten, Gr&ouml;&szlig;en und Anordnungen auf einen Blick. Keine App-Logik.</p>
+
+<div class="grid">
+
+  <div class="panel">
+    <h2>1 - Arten</h2>
+    <div class="card"><div class="title">Primary &middot; Secondary &middot; Text &middot; Danger</div><div class="body">
+      <button class="btn m primary full">Primary: Generate Mission</button>
+      <button class="btn m secondary full">Secondary: Change mission</button>
+      <button class="btn m text full">Text: Cancel</button>
+      <button class="btn m danger full">Danger: Discard game</button>
+      <button class="btn m primary full" disabled>Disabled: Resolve roll-off</button>
+    </div></div>
+    <div class="card"><div class="title">Choice (Chip)</div><div class="body">
+      <div class="row">
+        <button class="chip on">1</button><button class="chip">2</button><button class="chip">3</button>
+        <button class="chip">4</button><button class="chip">5</button><button class="chip">6</button>
+      </div>
+      <div class="row"><button class="chip on">Recon</button><button class="chip">Security</button><button class="chip">Seek &amp; Destroy</button></div>
+    </div></div>
+    <div class="card"><div class="title">Segmented</div><div class="body">
+      <div class="seg"><button class="btn primary">Player 1 has initiative</button><button class="btn secondary">Player 2 has initiative</button></div>
+      <div class="seg"><button class="btn primary">ALL</button><button class="btn secondary">Favoriten</button></div>
+    </div></div>
+    <div class="card"><div class="title">Icon, Stepper, Nav-Pille</div><div class="body">
+      <div class="row"><button class="icon" title="Favorit">&#9733;</button><button class="icon" title="Select">&#8982;</button><span class="note">Touch-Fl&auml;che 48 dp</span></div>
+      <div class="stepper"><span class="lbl">CP</span><button class="btn s secondary">-</button><span class="val">2</span><button class="btn s secondary">+</button></div>
+      <div class="stepper"><span class="lbl">Incapacitated</span><button class="btn s secondary" disabled>-</button><span class="val">0</span><button class="btn s secondary">+</button></div>
+      <div><span class="pill">&uarr; Top</span></div>
+    </div></div>
+  </div>
+
+  <div class="panel">
+    <h2>2 - Gr&ouml;&szlig;en</h2>
+    <div class="card"><div class="title">S &middot; 40 dp</div><div class="body">
+      <div class="row"><button class="btn s secondary">-1 W</button><button class="btn s secondary">+1 W</button><button class="btn s secondary">Engage</button><button class="btn s secondary">Ready</button><button class="btn s danger">Out</button></div>
+      <span class="note">Zeilen mit mehreren Aktionen, umbrechend (FlowRow)</span>
+    </div></div>
+    <div class="card"><div class="title">M &middot; 48 dp (Standard)</div><div class="body">
+      <button class="btn m primary full">Next: 4. Play the Battle</button>
+      <button class="btn m secondary full">Show crit op and map</button>
+    </div></div>
+    <div class="card"><div class="title">L &middot; 56 dp (Weitergabe, Abschluss)</div><div class="body">
+      <button class="btn l secondary full">Secret selection (tac op, equipment)</button>
+      <button class="btn l secondary full">Player 1: select primary op</button>
+      <button class="btn l primary full">Save result and close game</button>
+    </div></div>
+  </div>
+
+  <div class="panel">
+    <h2>3 - Anordnung</h2>
+    <div class="card"><div class="title">Eine Aktion: volle Breite</div><div class="body">
+      <button class="btn m primary full">Start game</button>
+    </div></div>
+    <div class="card"><div class="title">Gestapelt: Primary, Secondary, Danger zuletzt</div><div class="body">
+      <button class="btn m primary full">Next: 3. Set Up Operatives</button>
+      <button class="btn m secondary full">Show crit op and map</button>
+      <hr style="border:0;border-top:1px solid var(--line);width:100%;margin:4px 0">
+      <button class="btn m danger full">Discard game</button>
+    </div></div>
+    <div class="card"><div class="title">Zwei nebeneinander: gleich breit</div><div class="body">
+      <div class="row eq"><button class="btn m secondary">Clear points</button><button class="btn m primary">Apply</button></div>
+    </div></div>
+    <div class="card"><div class="title">Dialog</div><div class="body">
+      <div class="dialog">
+        <p>Discard this game? Its score and all entries are lost.</p>
+        <div class="actions"><button class="btn m text">Cancel</button><button class="btn m danger filled">Discard game</button></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="panel" style="width:520px">
+    <h2>4 - Zuordnung heutiger Buttons</h2>
+    <table>
+      <tr><th>Heute</th><th>Art / Gr&ouml;&szlig;e</th></tr>
+      <tr><td>Generate Mission</td><td>Primary M</td></tr>
+      <tr><td>Start game (Generator)</td><td>Secondary M</td></tr>
+      <tr><td>Next: &lt;Phase&gt;, Next turning point</td><td>Primary M</td></tr>
+      <tr><td>Resolve roll-off, Do the Ready step, Reveal both</td><td>Primary M</td></tr>
+      <tr><td>Save result and close game</td><td>Primary L</td></tr>
+      <tr><td>Secret selection, Primary op w&auml;hlen, "I am ..."</td><td>Secondary L / Primary L</td></tr>
+      <tr><td>Show/Hide ..., Change mission, Rosters</td><td>Secondary M</td></tr>
+      <tr><td>Redo roll-off, Use Re-roll, Reveal tac op</td><td>Secondary M</td></tr>
+      <tr><td>-1 W, +1 W, Engage/Conceal, Ready/Expended</td><td>Secondary S</td></tr>
+      <tr><td>Out / Revive</td><td>Danger S / Secondary S</td></tr>
+      <tr><td>Discard game, Delete, Clear all</td><td>Danger M</td></tr>
+      <tr><td>Cancel, Close, &lt; Back, Remove: ...</td><td>Text M</td></tr>
+      <tr><td>Player 1/2 has initiative, ALL / Favoriten</td><td>Segmented</td></tr>
+      <tr><td>Filter, W&uuml;rfelwerte, Phase, Einheiten</td><td>Choice</td></tr>
+      <tr><td>Favorite, Select/Remove (Fadenkreuz), Stern</td><td>Icon</td></tr>
+      <tr><td>CP, Team size, Dice, Damage</td><td>Stepper (S)</td></tr>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

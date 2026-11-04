@@ -28,10 +28,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -221,7 +219,7 @@ fun MeasureScreen(app: AppState, onBack: () -> Unit) {
         val panelMax = maxHeight * 0.42f
         Column(Modifier.fillMaxSize()) {
             Row(Modifier.fillMaxWidth().background(Palette.Header).padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onBack) { Text("< Back") }
+                AppButton("< Back", onBack, kind = ButtonKind.Text)
                 Text("Measure distances", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold, color = Color.White, modifier = Modifier.padding(start = 4.dp))
             }
             HorizontalDivider(thickness = 2.dp, color = Palette.Accent.copy(alpha = 0.6f))
@@ -238,7 +236,7 @@ fun MeasureScreen(app: AppState, onBack: () -> Unit) {
                 if (message != null) {
                     Column(Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(message, color = Color.White, textAlign = TextAlign.Center)
-                        source.actionLabel?.let { Button(source::action, Modifier.padding(top = 12.dp)) { Text(it) } }
+                        source.actionLabel?.let { AppButton(it, source::action, Modifier.padding(top = 12.dp)) }
                     }
                 } else {
                     MeasureOverlay(st, settings)
@@ -258,7 +256,7 @@ fun MeasureScreen(app: AppState, onBack: () -> Unit) {
     if (!settings.noticeSeen) {
         AlertDialog(
             onDismissRequest = {},
-            confirmButton = { Button({ update(settings.copy(noticeSeen = true)) }) { Text("OK") } },
+            confirmButton = { AppButton("OK", { update(settings.copy(noticeSeen = true)) }) },
             title = { Text("Accuracy") },
             text = {
                 Text(
@@ -439,10 +437,10 @@ private fun CalibrationPanel(st: MeasureState) {
     }
     Text("Points set: ${st.calPoints.size} of ${st.method.needed}. Drag a point to adjust it.")
     error?.let { Text(it, color = Palette.Condition) }
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Button({ error = st.applyCalibration() }, enabled = st.calPoints.size == st.method.needed) { Text("Apply") }
-        OutlinedButton({ st.calPoints.clear(); error = null }, enabled = st.calPoints.isNotEmpty()) { Text("Clear points") }
-        if (st.scale != null) OutlinedButton({ st.calibrating = false }) { Text("Cancel") }
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        AppButton("Apply", { error = st.applyCalibration() }, enabled = st.calPoints.size == st.method.needed)
+        AppButton("Clear points", { st.calPoints.clear(); error = null }, kind = ButtonKind.Secondary, enabled = st.calPoints.isNotEmpty())
+        if (st.scale != null) AppButton("Cancel", { st.calibrating = false }, kind = ButtonKind.Text)
     }
 }
 
@@ -489,10 +487,10 @@ private fun MeasurePanel(st: MeasureState, settings: MeasureSettings, update: (M
         }
     }
     st.warning?.let { Text(it, color = Palette.Highlight, style = MaterialTheme.typography.bodySmall) }
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        OutlinedButton(st::deleteSelected, enabled = st.selected.isNotEmpty()) { Text("Delete selected") }
-        OutlinedButton(st::undo, enabled = st.points.isNotEmpty()) { Text("Undo") }
-        OutlinedButton(st::clearPoints, enabled = st.points.isNotEmpty()) { Text("Clear all") }
-        OutlinedButton({ st.calibrating = true }) { Text("Recalibrate") }
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        AppButton("Delete selected", st::deleteSelected, kind = ButtonKind.Danger, size = ButtonSize.S, enabled = st.selected.isNotEmpty())
+        AppButton("Undo", st::undo, kind = ButtonKind.Secondary, size = ButtonSize.S, enabled = st.points.isNotEmpty())
+        AppButton("Clear all", st::clearPoints, kind = ButtonKind.Danger, size = ButtonSize.S, enabled = st.points.isNotEmpty())
+        AppButton("Recalibrate", { st.calibrating = true }, kind = ButtonKind.Secondary, size = ButtonSize.S)
     }
 }

@@ -11,12 +11,12 @@ Die App hat fünf Tabs:
 - **Generator:** zufällige oder manuell gewählte Mission (Crit Op), Map und Killzone, Kill-Op-Regeln mit Kill-Grade-Tabelle. Die Tac Ops sind nach Archetyp filterbar, ausgewählt werden sie aber erst im Spiel. Mission und Auswahl bleiben nach dem Neustart erhalten.
 - **Game:** Assistent durch die fünf Schritte eines Approved-Ops-Spiels mit Phasenübersicht, Score-Tabelle und Initiative-Verwaltung. Jede neue Phase beginnt oben im Bild. Bei der Teamwahl ergeben sich Teamgröße und wählbare Tac Ops aus den Team-Regeln. In "Select Operatives" wählt jeder Spieler geheim eine Tac Op (Karten wie im Generator) und bis zu 4 Ausrüstungen aus Team- und allgemeiner Ausrüstung. Die Zahl der Incapacitated ist auf die Teamgröße begrenzt. Dazu Spielverlauf, Turniere und Statistiken.
 - **Teams:** alle 48 Kill Teams alphabetisch, mit Wortsuche über Teams, Operatives, Regeln, Ploys und Ausrüstung. Zusammensetzung (Pfeile, Optionen und Auswahllisten, Ausrüstungsoptionen eingerückt), Datacards, Fraktionsregeln, Ploys, Equipment und Marker. Dazu Favoriten, Notizen und Rosters.
-- **Rules:** Regelseiten von Wahapedia mit Suche.
-- **More:** weitere Hilfen und Einstellungen.
+- **Rules:** Regelseiten von Wahapedia mit Suche und Favoriten (Schalter ALL / Favorites, der Favoriten-Modus listet auch markierte Teams, Crit Ops und Tac Ops).
+- **More:** weitere Hilfen und Einstellungen, ganz unten die Version mit Datenstand (z. B. `v1.4.0.a - Daten: 2026-11-02`). Die Kamera-Messfunktion ist pausiert (`FeatureFlags.MEASURE` in `logic/AppInfo.kt`).
 
 Schlüsselbegriffe in den Texten sind antippbar. Ein Popup zeigt die Definition und führt zur passenden Regel.
 
-Das Design ist bewusst eigenständig (petrolfarbenes Dunkel-Theme mit Teal-Akzent in `ui/Components.kt`, Objekt `Palette`).
+Das Design ist bewusst eigenständig (anthrazitfarbenes Dunkel-Theme mit Kill-Team-Orange in `ui/Components.kt`, Objekt `Palette`).
 
 ## Projektstruktur
 

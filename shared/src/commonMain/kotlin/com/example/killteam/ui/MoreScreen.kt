@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,12 +20,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.killteam.data.ApprovedOps
 import com.example.killteam.logic.AccessGate
 import com.example.killteam.logic.AccessStatus
+import com.example.killteam.logic.AppInfo
 import com.example.killteam.logic.AppState
 import com.example.killteam.logic.DamageCalc
+import com.example.killteam.logic.FeatureFlags
 import com.example.killteam.logic.GameResult
 import com.example.killteam.logic.Pairing
 import com.example.killteam.logic.Statistics
@@ -47,19 +49,47 @@ fun MoreScreen(app: AppState, gate: AccessGate) {
     when (ui.morePage) {
         null -> Page("More", listState = ui.list("more")) {
             item { AccessCard(gate) }
-            MorePage.entries.filter { it != MorePage.Measure || cameraAvailable }.forEach { p ->
-                item { OutlinedButton({ ui.morePage = p }, Modifier.fillMaxWidth()) { Text(p.label) } }
+            MorePage.entries.filter { it != MorePage.Measure || (FeatureFlags.MEASURE && cameraAvailable) }.forEach { p ->
+                item { AppButton(p.label, { ui.morePage = p }, kind = ButtonKind.Secondary, fullWidth = true) }
+            }
+            item {
+                val dataDate = app.teamData?.importedAt.orEmpty().take(10).ifBlank { "-" }
+                Text(
+                    "v${AppInfo.VERSION} - Daten: $dataDate",
+                    Modifier.fillMaxWidth().padding(top = 12.dp), textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
         }
         MorePage.History -> HistoryPage(app, back)
         MorePage.Tournament -> TournamentPage(app, back)
         MorePage.Dice -> DicePage(back)
-        MorePage.Favorites -> FavoritesPage(app, back)
+        MorePage.Notes -> NotesPage(app, back)
         MorePage.Measure -> MeasureScreen(app, back)
         MorePage.About -> AboutPage(app, back)
         MorePage.Terms -> TermsPage(back)
+        MorePage.Privacy -> PrivacyPage(back)
     }
 }
+
+@Composable
+private fun PrivacyPage(onBack: () -> Unit) {
+    Page("Privacy", onBack) {
+        items(privacyPolicy.size) { i ->
+            val (title, text) = privacyPolicy[i]
+            SectionCard(title) { Text(text) }
+        }
+    }
+}
+
+// Draft; have it checked before the app goes beyond the test group.
+private val privacyPolicy = listOf(
+    "Offline" to "The app works offline. It does not send any data and has no network access at runtime.",
+    "No accounts, no tracking" to "There are no accounts, no telemetry, no analytics and no ads.",
+    "Stored on your device" to "Rosters, notes, favorites, game history and settings are stored locally on your device and are removed when you delete the app or its data.",
+    "Access code" to "The access code and its expiry time are stored locally to check the access. The check happens on the device.",
+    "Third-party content" to "Rules, texts and images belong to Games Workshop and Wahapedia. See Data sources and Terms of use.",
+)
 
 @Composable
 private fun TermsPage(onBack: () -> Unit) {
@@ -133,7 +163,7 @@ private fun ResultCard(app: AppState, r: GameResult) {
             )
         }
         Text(if (r.winner == -1) "Draw" else "Winner: ${r.players[r.winner].name}")
-        OutlinedButton({ app.history.update(app.history.value.filter { it.id != r.id }) }) { Text("Delete") }
+        AppButton("Delete", { app.history.update(app.history.value.filter { it.id != r.id }) }, kind = ButtonKind.Danger, fullWidth = true)
     }
 }
 
@@ -151,12 +181,12 @@ private fun TournamentPage(app: AppState, onBack: () -> Unit) {
         item {
             SectionCard("New tournament") {
                 OutlinedTextField(newName, { newName = it }, Modifier.fillMaxWidth(), label = { Text("Name") }, singleLine = true)
-                Button({
+                AppButton("Create", {
                     val t = Tournament(nowMillis(), newName.ifBlank { "Tournament" }, emptyList())
                     app.tournaments.update(all + t)
                     newName = ""
                     ui.tournamentOpen = t.id
-                }) { Text("Create") }
+                }, fullWidth = true)
             }
         }
         items(all.size) { i ->
@@ -164,8 +194,8 @@ private fun TournamentPage(app: AppState, onBack: () -> Unit) {
             SectionCard(t.name) {
                 Text("${t.players.size} players, ${t.rounds.size} rounds")
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button({ ui.tournamentOpen = t.id }) { Text("Open") }
-                    OutlinedButton({ app.tournaments.update(all.filter { it.id != t.id }) }) { Text("Delete") }
+                    AppButton("Delete", { app.tournaments.update(all.filter { it.id != t.id }) }, Modifier.weight(1f), ButtonKind.Danger)
+                    AppButton("Open", { ui.tournamentOpen = t.id }, Modifier.weight(1f))
                 }
             }
         }
@@ -184,12 +214,12 @@ private fun TournamentDetail(app: AppState, t: Tournament, onBack: () -> Unit) {
                 if (t.rounds.isEmpty()) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                         OutlinedTextField(playerName, { playerName = it }, Modifier.weight(1f), label = { Text("Player name") }, singleLine = true)
-                        Button({
+                        AppButton("Add", {
                             if (playerName.isNotBlank()) {
                                 save(t.copy(players = t.players + TPlayer((t.players.maxOfOrNull { it.id } ?: 0) + 1, playerName.trim())))
                                 playerName = ""
                             }
-                        }) { Text("Add") }
+                        })
                     }
                 }
                 Text(t.players.joinToString { it.name }.ifEmpty { "No players yet." })
@@ -202,10 +232,10 @@ private fun TournamentDetail(app: AppState, t: Tournament, onBack: () -> Unit) {
                 Text("Crit op for all players this round (Tournament Companion groups):")
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     ApprovedOps.critOpGroups.indices.forEach { g ->
-                        Button({
+                        AppButton("Random from group ${g + 1}", {
                             val crit = com.example.killteam.logic.MissionGenerator.randomFromGroup(g)
                             save(t.copy(rounds = t.rounds + TRound(crit, TournamentLogic.nextPairings(t))))
-                        }, enabled = canNext) { Text("Random from group ${g + 1}") }
+                        }, Modifier.weight(1f), ButtonKind.Secondary, enabled = canNext)
                     }
                 }
                 if (!canNext && t.players.size >= 2) Text("Enter all results of the current round first.")
@@ -268,7 +298,7 @@ private fun DicePage(onBack: () -> Unit) {
         item {
             SectionCard("D6 roller") {
                 Stepper("Dice", count, { count = it }, 1, 12)
-                Button({ dice = List(count) { DamageCalc.rollD6() } }) { Text("Roll") }
+                AppButton("Roll", { dice = List(count) { DamageCalc.rollD6() } }, fullWidth = true)
                 if (dice.isNotEmpty()) Text(dice.joinToString("  ") + "   (sum ${dice.sum()})", style = MaterialTheme.typography.titleLarge)
             }
         }
@@ -291,19 +321,12 @@ private fun DicePage(onBack: () -> Unit) {
 }
 
 @Composable
-private fun FavoritesPage(app: AppState, onBack: () -> Unit) {
-    val favorites = app.favorites.value
-    Page("Favorites and notes", onBack) {
-        item {
-            SectionCard("Favorites") {
-                if (favorites.isEmpty()) Text("Mark crit ops, tac ops and kill teams with the Favorite button.")
-                favorites.forEach { key -> KeyLink(app, key) }
-            }
-        }
+private fun NotesPage(app: AppState, onBack: () -> Unit) {
+    Page("Notes", onBack) {
         val notes = app.notes.value.entries.toList()
         item {
             SectionCard("Notes") {
-                if (notes.isEmpty()) Text("No notes yet.")
+                if (notes.isEmpty()) Text("No notes yet. Favorites are in the Rules tab.")
                 notes.forEach { (key, text) ->
                     Column {
                         KeyLink(app, key, FontWeight.Bold)
@@ -315,9 +338,9 @@ private fun FavoritesPage(app: AppState, onBack: () -> Unit) {
     }
 }
 
-/** Entry of Favorites and notes; tapping it opens the team, crit op or tac op it belongs to. */
+/** Entry of the Rules favorites and Notes; tapping it opens the team, crit op, tac op or rule page it belongs to. */
 @Composable
-private fun KeyLink(app: AppState, key: String, weight: FontWeight? = null) {
+internal fun KeyLink(app: AppState, key: String, weight: FontWeight? = null) {
     val ui = LocalUi.current
     val label = describeKey(app, key)
     if (canOpenKey(app, key)) {
@@ -329,20 +352,34 @@ private fun KeyLink(app: AppState, key: String, weight: FontWeight? = null) {
     } else Text(label, fontWeight = weight)
 }
 
-private fun canOpenKey(app: AppState, key: String): Boolean {
+internal fun canOpenKey(app: AppState, key: String): Boolean {
     val id = key.substringAfter(':')
     return when (key.substringBefore(':')) {
         "tac" -> ApprovedOps.tacOps.any { it.id == id }
         "crit" -> id.toIntOrNull() in ApprovedOps.critOps.indices
         "team" -> app.team(id) != null
+        "rule" -> app.rules?.pages?.any { it.id == id } == true
+        "section" -> app.rules?.section(id.substringBefore('/'), id.substringAfter('/')) != null
         else -> false
     }
 }
 
 /** Shows the entry in its own tab. A crit op becomes the current generator mission, as the generator shows only that one. */
-private fun openKey(app: AppState, ui: UiState, key: String) {
+internal fun openKey(app: AppState, ui: UiState, key: String) {
     val id = key.substringAfter(':')
     when (key.substringBefore(':')) {
+        "rule" -> {
+            ui.rulesPage = id
+            ui.rulesTarget = null
+            ui.rulesHighlight = null
+            ui.requestedTab = Tab.Rules
+        }
+        "section" -> {
+            ui.rulesPage = id.substringBefore('/')
+            ui.rulesTarget = id.substringAfter('/')
+            ui.rulesHighlight = id.substringAfter('/')
+            ui.requestedTab = Tab.Rules
+        }
         "team" -> {
             ui.teamsPage = TeamsPage.List
             ui.rosterEditing = null
@@ -359,9 +396,15 @@ private fun openKey(app: AppState, ui: UiState, key: String) {
     }
 }
 
-private fun describeKey(app: AppState, key: String): String {
+internal fun describeKey(app: AppState, key: String): String {
     val (kind, id) = key.substringBefore(':') to key.substringAfter(':')
     return when (kind) {
+        "rule" -> "Rule: " + (app.rules?.pages?.firstOrNull { it.id == id }?.title ?: id)
+        "section" -> {
+            val page = id.substringBefore('/')
+            val section = app.rules?.section(page, id.substringAfter('/'))
+            "Rule: " + (section?.title ?: id) + (app.rules?.pages?.firstOrNull { it.id == page }?.let { " (${it.title})" } ?: "")
+        }
         "tac" -> "Tac op: " + (ApprovedOps.tacOps.firstOrNull { it.id == id }?.name ?: id)
         "crit" -> "Crit op: " + (id.toIntOrNull()?.let { ApprovedOps.critOps.getOrNull(it)?.label } ?: id)
         "team" -> "Kill team: " + (app.team(id)?.name ?: id)

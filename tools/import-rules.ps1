@@ -85,6 +85,7 @@ function Get-Tooltips($html) {
 $nav = Get-Page "$base/kill-team3/nav.html"
 $pageList = @()
 foreach ($m in [regex]::Matches($nav, 'href="/kill-team3/the-rules/([a-z0-9-]+)"[^>]*>([^<]*)<')) {
+    if ($m.Groups[1].Value -eq 'about') { continue }
     if (-not ($pageList | Where-Object { $_.id -eq $m.Groups[1].Value })) {
         $t = [System.Net.WebUtility]::HtmlDecode($m.Groups[2].Value).Trim()
         if (-not $t) { $t = ($m.Groups[1].Value -replace '-', ' ') }

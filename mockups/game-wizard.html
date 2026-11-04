@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kill Team Companion - Mock-up Game Wizard</title>
+<style>
+  :root {
+    --bg: #121212;
+    --surface: #1e1e1e;
+    --surface2: #2a2a2a;
+    --line: #3a3a3a;
+    --orange: #e8650a;
+    --orange-dark: #b84e05;
+    --text: #f2f2f2;
+    --muted: #a0a0a0;
+    --ok: #5cb85c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px; background: #000; color: var(--text);
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.hint { color: var(--muted); margin: 0 0 24px; font-size: 14px; }
+  .row { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
+  .col h2 { font-size: 14px; color: var(--orange); margin: 0 0 8px; text-transform: uppercase; letter-spacing: .08em; }
+
+  /* Phone */
+  .phone {
+    width: 360px; height: 720px; background: var(--bg); border: 8px solid #333;
+    border-radius: 32px; overflow: hidden; position: relative; display: flex; flex-direction: column;
+  }
+  .topbar { background: var(--surface); border-bottom: 2px solid var(--orange); padding: 10px 14px; }
+  .topbar .title { font-weight: 700; font-size: 16px; display: flex; justify-content: space-between; }
+  .topbar .title span.tp { color: var(--orange); font-size: 13px; }
+  .progress { display: flex; gap: 4px; margin-top: 8px; }
+  .progress i { flex: 1; height: 5px; border-radius: 3px; background: var(--line); }
+  .progress i.done { background: var(--orange); }
+  .progress i.cur { background: linear-gradient(90deg, var(--orange) 50%, var(--line) 50%); }
+
+  .content { flex: 1; overflow-y: auto; padding: 14px 14px 90px; position: relative; scrollbar-width: thin; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+  .card h3 { margin: 0 0 6px; font-size: 15px; }
+  .card p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 14px 0 6px; }
+
+  .check { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; cursor: pointer; }
+  .check:last-child { border-bottom: 0; }
+  .box { width: 22px; height: 22px; border: 2px solid var(--orange); border-radius: 5px; flex: none; display: flex; align-items: center; justify-content: center; font-size: 15px; color: transparent; }
+  .check.on .box { background: var(--orange); color: #000; }
+  .check.on .txt { color: var(--muted); text-decoration: line-through; }
+
+  .btn { display: block; width: 100%; padding: 14px; border-radius: 8px; border: 2px solid var(--orange); background: var(--orange); color: #000; font-weight: 700; font-size: 15px; text-align: center; cursor: pointer; margin-bottom: 10px; }
+  .btn.sec { background: transparent; color: var(--orange); }
+  .btn:active { background: var(--orange-dark); }
+
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 10px; }
+  summary { padding: 12px; cursor: pointer; font-size: 14px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; }
+  summary::after { content: "+"; color: var(--orange); font-size: 18px; line-height: 1; }
+  details[open] summary::after { content: "\2013"; }
+  details .body { padding: 0 12px 12px; font-size: 13px; color: var(--muted); line-height: 1.45; }
+  details details { margin: 0 12px 10px; background: var(--surface2); }
+
+  .fab-row { position: absolute; right: 14px; bottom: 14px; display: flex; gap: 10px; align-items: center; transition: opacity .2s, transform .2s; }
+  .fab-row.hidden { opacity: 0; transform: translateY(20px); pointer-events: none; }
+  .fab { width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--orange); color: #000; font-size: 28px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,.6); }
+  .fab.disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+  .fab.back { width: 44px; height: 44px; font-size: 20px; background: transparent; border: 2px solid var(--orange); color: var(--orange); }
+  .fab-note { position: absolute; right: 14px; bottom: 78px; font-size: 11px; color: var(--muted); background: var(--surface2); padding: 4px 8px; border-radius: 6px; }
+
+  .nav { display: flex; background: var(--surface); border-top: 1px solid var(--line); }
+  .nav div { flex: 1; text-align: center; padding: 8px 0 6px; font-size: 10px; color: var(--muted); }
+  .nav div b { display: block; font-size: 18px; font-weight: 400; }
+  .nav div.act { color: var(--orange); }
+
+  .score { display: flex; gap: 10px; }
+  .score .p { flex: 1; text-align: center; background: var(--surface2); border-radius: 8px; padding: 8px; }
+  .score .p b { display: block; font-size: 22px; color: var(--orange); }
+  .score .p span { font-size: 11px; color: var(--muted); }
+
+  .seg { display: flex; border: 2px solid var(--orange); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+  .seg div { flex: 1; text-align: center; padding: 8px; font-size: 13px; font-weight: 700; color: var(--orange); cursor: pointer; }
+  .seg div.on { background: var(--orange); color: #000; }
+  .star { color: var(--orange); }
+  .item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 13px; border-top: 1px solid var(--line); }
+  .item:first-child { border-top: 0; }
+</style>
+</head>
+<body>
+
+<h1>Mock-up: Game Wizard und Rules (Alpha)</h1>
+<p class="hint">Klickbarer Entwurf, keine App-Logik. Die Pfeil-Buttons und Haken wurden nach dem Test verworfen (GW-2, GW-3).</p>
+
+<div class="row">
+
+  <!-- Screen 1: Phase -->
+  <div class="col">
+    <h2>1 - Phase</h2>
+    <div class="phone" id="phone1">
+      <div class="topbar">
+        <div class="title">Step 4: Play the Battle <span class="tp">Turning Point 2 / 4</span></div>
+        <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i></div>
+      </div>
+      <div class="content" id="scroll1">
+        <div class="card">
+          <h3>Strategy Phase</h3>
+          <p>Bestimmt die Initiative und vergebt die Initiative-Karte. Danach erhalten beide Spieler CP.</p>
+        </div>
+
+        <div class="label">Was jetzt zu tun ist</div>
+        <div class="card" id="checklist">
+          <div class="item">- Initiative-Roll-off</div>
+          <div class="item">- Gewinner entscheidet Initiative</div>
+          <div class="item">- Initiative-Karte an Verlierer</div>
+          <div class="item">- 1 CP je Spieler</div>
+        </div>
+
+        <button class="btn">Initiative würfeln</button>
+        <button class="btn sec">Initiative-Karte wählen</button>
+
+        <div class="label">Regeln zur Phase</div>
+        <details>
+          <summary>Initiative</summary>
+          <div class="body">Beide Spieler würfeln einen D6. Der höhere Wurf gewinnt, bei Gleichstand gewinnt der Spieler ohne Initiative.</div>
+        </details>
+        <details>
+          <summary>Initiative-Karten</summary>
+          <div class="body">Der Verlierer erhält die Karte passend zum Turning Point. Im 4. Turning Point gibt es keine Karte.</div>
+        </details>
+        <details>
+          <summary>Fight (1 AP)</summary>
+          <div class="body">Ein Operative im Kontakt mit Gegnern führt einen Nahkampf aus.</div>
+        </details>
+
+        <div class="label">Punktestand</div>
+        <div class="card">
+          <div class="score">
+            <div class="p"><b>4</b><span>Spieler 1</span></div>
+            <div class="p"><b>3</b><span>Spieler 2</span></div>
+          </div>
+        </div>
+        <div style="height:120px"></div>
+      </div>
+      <div class="nav">
+        <div><b>&#9679;</b>Generator</div><div class="act"><b>&#9679;</b>Game</div><div><b>&#9679;</b>Teams</div><div><b>&#9679;</b>Rules</div><div><b>&#9679;</b>More</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Phasenübersicht -->
+  <div class="col">
+    <h2>2 - Übersicht der Schritte</h2>
+    <div class="phone">
+      <div class="topbar">
+        <div class="title">Game Wizard <span class="tp">Mission: Secure</span></div>
+        <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i><i class="cur"></i><i></i></div>
+      </div>
+      <div class="content">
+        <div class="card"><h3>1 Set up the Battle</h3><p>Erledigt</p></div>
+        <div class="card"><h3>2 Select Operatives</h3><p>Erledigt</p></div>
+        <div class="card"><h3>3 Set up Operatives</h3><p>Erledigt</p></div>
+        <div class="card" style="border-color:var(--orange)">
+          <h3 class="star">4 Play the Battle</h3>
+          <p>Turning Point 2 von 4, Strategy Phase</p>
+          <div style="height:10px"></div>
+          <button class="btn" style="margin:0">Weiter spielen</button>
+        </div>
+        <div class="card"><h3>5 End the Battle</h3><p>Offen</p></div>
+      </div>
+      <div class="nav">
+        <div><b>&#9679;</b>Generator</div><div class="act"><b>&#9679;</b>Game</div><div><b>&#9679;</b>Teams</div><div><b>&#9679;</b>Rules</div><div><b>&#9679;</b>More</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 3: Rules -->
+  <div class="col">
+    <h2>3 - Rules (ALL / Favoriten)</h2>
+    <div class="phone">
+      <div class="topbar">
+        <div class="title">Rules</div>
+      </div>
+      <div class="content" id="rules">
+        <div class="seg" id="seg">
+          <div class="on" data-m="all">ALL</div>
+          <div data-m="fav">Favorites</div>
+        </div>
+        <div class="card" data-rule><div class="title">Core Rules <span class="star" style="float:right">&#9733;</span></div><div class="body"><p>75 sections</p></div></div>
+        <div class="card" data-rule><div class="title">Killzones <span style="float:right;color:var(--orange)">&#9734;</span></div><div class="body"><p>85 sections</p></div></div>
+        <div class="card" data-rule><div class="title">The Missions <span style="float:right;color:var(--orange)">&#9734;</span></div><div class="body"><p>52 sections</p></div></div>
+        <div class="card" data-rule><div class="title">Appendix <span style="float:right;color:var(--orange)">&#9734;</span></div><div class="body"><p>33 sections</p></div></div>
+        <div class="card"><div class="title">Universal map key</div><div class="body"><p>Drop zones, territory, killzone edge, objective markers</p></div></div>
+        <div class="card" id="favEmpty" style="display:none"><p>Nothing marked yet.</p></div>
+      </div>
+      <div class="nav">
+        <div><b>&#9679;</b>Generator</div><div><b>&#9679;</b>Game</div><div><b>&#9679;</b>Teams</div><div class="act"><b>&#9679;</b>Rules</div><div><b>&#9679;</b>More</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 4: More -->
+  <div class="col">
+    <h2>4 - More mit Version</h2>
+    <div class="phone">
+      <div class="topbar"><div class="title">More</div></div>
+      <div class="content">
+        <div class="card"><h3>Zugangscode</h3><p>Gültig bis 2026-11-16 00:00 UTC</p></div>
+        <div class="card"><h3>Einstellungen</h3></div>
+        <div class="card"><h3>Nutzungsbedingungen</h3></div>
+        <div class="card"><h3>Datenschutz</h3></div>
+        <div class="card"><h3>About / Quellen</h3></div>
+        <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:24px">v1.4.0.a - Daten: 2026-11-02</p>
+      </div>
+      <div class="nav">
+        <div><b>&#9679;</b>Generator</div><div><b>&#9679;</b>Game</div><div><b>&#9679;</b>Teams</div><div><b>&#9679;</b>Rules</div><div class="act"><b>&#9679;</b>More</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Screen 3: ALL / Favoriten
+  document.querySelectorAll('#seg div').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#seg div').forEach(x => x.classList.toggle('on', x === b));
+    const fav = b.dataset.m === 'fav';
+    let shown = 0;
+    document.querySelectorAll('#rules .card[data-rule]').forEach(c => {
+      const has = c.querySelector('.star') !== null;
+      c.style.display = (!fav || has) ? '' : 'none';
+      if (!fav || has) shown++;
+    });
+    document.getElementById('favEmpty').style.display = (fav && shown === 0) ? '' : 'none';
+  }));
+</script>
+</body>
+</html>

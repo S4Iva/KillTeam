@@ -27,12 +27,13 @@ enum class TeamsPage { List, Rosters }
 
 enum class MorePage(val label: String) {
     History("Game history and statistics"),
-    Favorites("Favorites and notes"),
+    Notes("Notes"),
     Tournament("Tournament mode"),
     Dice("Dice and damage calculator"),
     Measure("Measure distances (camera)"),
     About("Data sources"),
     Terms("Terms of use"),
+    Privacy("Privacy"),
 }
 
 /** Navigation, search and scroll state that must survive switching tabs and is used by the back button. */
@@ -58,6 +59,9 @@ class UiState {
     var rulesTarget: String? by mutableStateOf(null)
     var rulesHighlight: String? by mutableStateOf(null)
     var rulesQuery: String by mutableStateOf("")
+
+    /** Rules tab: switch ALL / Favorites. */
+    var rulesFavoritesOnly: Boolean by mutableStateOf(false)
 
     var morePage: MorePage? by mutableStateOf(null)
     var tournamentOpen: Long? by mutableStateOf(null)

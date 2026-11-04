@@ -23,7 +23,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -45,6 +44,7 @@ import com.example.killteam.logic.AccessStatus
 import com.example.killteam.logic.formatLocalDateTime
 import com.example.killteam.logic.formatRemaining
 import com.example.killteam.logic.AppState
+import com.example.killteam.ui.AppButton
 import com.example.killteam.ui.GameScreen
 import com.example.killteam.ui.GeneratorScreen
 import com.example.killteam.ui.KeywordContext
@@ -103,7 +103,7 @@ fun App() {
                             } else "Unlimited access. This is shown under More.",
                         )
                     },
-                    confirmButton = { TextButton({ notice = null }) { Text("OK") } },
+                    confirmButton = { AppButton("OK", { notice = null }) },
                 )
             }
         }

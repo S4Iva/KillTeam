@@ -44,10 +44,8 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -69,14 +67,15 @@ import killteam.shared.generated.resources.ic_nav_top
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
-/** Own dark theme (petrol and teal), deliberately different from the Wahapedia look. */
+/** Own dark theme (anthracite and Kill-Team orange); the exact orange value is still to be matched with the official look. */
 object Palette {
-    val Accent = Color(0xFF13A08F)
-    val Highlight = Color(0xFFE0A030)
-    val Header = Color(0xFF0D2B33)
-    val Card = Color(0xFF1B242B)
-    val Background = Color(0xFF12181D)
-    val Text = Color(0xFFE4EAEE)
+    val Accent = Color(0xFFE8650A)
+    val Danger = Color(0xFFE5645A)
+    val Highlight = Color(0xFFF2C14E)
+    val Header = Color(0xFF1F1F1F)
+    val Card = Color(0xFF1E1E1E)
+    val Background = Color(0xFF121212)
+    val Text = Color(0xFFF2F2F2)
     val Link = Color(0xFF6FB6FF)
     val Infiltration = Color(0xFF5E7C9A)
     val Recon = Color(0xFFC98A2B)
@@ -109,7 +108,7 @@ fun Page(
     val scope = rememberCoroutineScope()
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.fillMaxWidth().background(Palette.Header).padding(horizontal = 12.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-            if (onBack != null) TextButton(onBack) { Text("< Back") }
+            if (onBack != null) AppButton("< Back", onBack, kind = ButtonKind.Text)
             Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold, color = Color.White, modifier = Modifier.padding(start = 4.dp))
         }
         HorizontalDivider(thickness = 2.dp, color = Palette.Accent.copy(alpha = 0.6f))
@@ -122,7 +121,7 @@ fun Page(
                 content = content,
             )
             ListScrollbar(listState, Modifier.align(Alignment.CenterEnd).fillMaxHeight())
-            Column(Modifier.align(Alignment.BottomEnd).padding(start = 12.dp, top = 12.dp, bottom = 12.dp, end = if (isDesktop) 32.dp else 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(Modifier.align(Alignment.BottomEnd).padding(start = 12.dp, top = 12.dp, bottom = 12.dp, end = if (isDesktop) 32.dp else 12.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (onContents != null) NavButton("Index", Res.drawable.ic_nav_index, onContents)
                 if (onList != null) NavButton("Cards", Res.drawable.ic_nav_cards, onList)
                 if (listState.canScrollBackward) NavButton("Top", Res.drawable.ic_nav_top) { scope.launch { listState.animateScrollToItem(0) } }
@@ -145,32 +144,19 @@ fun LoadStatus(app: AppState, what: String) {
             Text("Loading $what...")
         } else {
             Text("Could not load $what: ${app.loadError ?: "unknown error"}", color = MaterialTheme.colorScheme.error)
-            Button({ scope.launch { app.load() } }) { Text("Retry") }
+            AppButton("Retry", { scope.launch { app.load() } })
         }
     }
 }
 
-/** Small pill button floating over the page (index, card list, back to top). */
+/** Asks before an action that cannot be undone; [danger] makes the confirm button red for actions that delete or discard data. */
 @Composable
-fun NavButton(label: String, icon: DrawableResource, onClick: () -> Unit) {
-    Row(
-        Modifier.clip(RoundedCornerShape(50)).background(Palette.Header).clickable(onClick = onClick).padding(start = 12.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Icon(painterResource(icon), contentDescription = null, tint = Palette.Accent, modifier = Modifier.size(18.dp))
-        Text(label, color = Palette.Accent, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
-    }
-}
-
-/** Asks before an action that cannot be undone. */
-@Composable
-fun ConfirmDialog(text: String, confirmLabel: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+fun ConfirmDialog(text: String, confirmLabel: String, onConfirm: () -> Unit, onDismiss: () -> Unit, danger: Boolean = false) {
     AlertDialog(
         onDismissRequest = onDismiss,
         text = { Text(text) },
-        confirmButton = { Button({ onDismiss(); onConfirm() }) { Text(confirmLabel) } },
-        dismissButton = { TextButton(onDismiss) { Text("Cancel") } },
+        confirmButton = { AppButton(confirmLabel, { onDismiss(); onConfirm() }, kind = if (danger) ButtonKind.DangerSolid else ButtonKind.Primary) },
+        dismissButton = { AppButton("Cancel", onDismiss, kind = ButtonKind.Text) },
     )
 }
 
@@ -184,13 +170,14 @@ fun JumpDialog(title: String, entries: List<String>, onPick: (Int) -> Unit, onDi
             val scroll = rememberScrollState()
             Column(Modifier.heightIn(max = 420.dp).dragToScroll(scroll).verticalScroll(scroll)) {
                 entries.forEachIndexed { i, e ->
-                    TextButton({ onPick(i); onDismiss() }, Modifier.fillMaxWidth()) {
-                        Text(e, Modifier.fillMaxWidth(), textAlign = TextAlign.Start)
-                    }
+                    Text(
+                        e, Modifier.fillMaxWidth().clickable { onPick(i); onDismiss() }.padding(horizontal = 4.dp, vertical = 12.dp),
+                        color = Palette.Accent, textAlign = TextAlign.Start,
+                    )
                 }
             }
         },
-        confirmButton = { TextButton(onDismiss) { Text("Close") } },
+        confirmButton = { AppButton("Close", onDismiss, kind = ButtonKind.Text) },
     )
 }
 
@@ -286,43 +273,13 @@ fun BulletRow(effect: Boolean, text: String) {
 fun <T> Dropdown(label: String, options: List<T>, selected: T, text: (T) -> String, onSelect: (T) -> Unit, modifier: Modifier = Modifier) {
     var open by remember { mutableStateOf(false) }
     Box(modifier) {
-        OutlinedButton({ open = true }, Modifier.fillMaxWidth()) {
-            Text("$label: ${text(selected)}", maxLines = 1)
-        }
+        AppButton("$label: ${text(selected)}", { open = true }, Modifier.fillMaxWidth(), ButtonKind.Secondary)
         DropdownMenu(open, { open = false }) {
             options.forEach { o ->
                 DropdownMenuItem(text = { Text(text(o)) }, onClick = { open = false; onSelect(o) })
             }
         }
     }
-}
-
-@Composable
-fun Stepper(label: String, value: Int, onChange: (Int) -> Unit, min: Int = 0, max: Int = 99, modifier: Modifier = Modifier) {
-    Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(label, Modifier.widthIn(min = 90.dp))
-        OutlinedButton({ onChange((value - 1).coerceAtLeast(min)) }, enabled = value > min) { Text("-") }
-        Text(value.toString(), style = MaterialTheme.typography.titleMedium, modifier = Modifier.widthIn(min = 28.dp))
-        OutlinedButton({ onChange((value + 1).coerceAtMost(max)) }, enabled = value < max) { Text("+") }
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun <T> ChipRow(options: List<T>, isSelected: (T) -> Boolean, text: (T) -> String, onClick: (T) -> Unit) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        options.forEach { o ->
-            FilterChip(
-                isSelected(o), { onClick(o) }, { Text(text(o)) },
-                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Palette.Accent, selectedLabelColor = Color.White),
-            )
-        }
-    }
-}
-
-@Composable
-fun FavoriteButton(active: Boolean, onToggle: () -> Unit) {
-    TextButton(onToggle) { Text(if (active) "Favorite *" else "Favorite") }
 }
 
 @Composable

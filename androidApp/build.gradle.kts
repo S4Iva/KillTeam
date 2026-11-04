@@ -27,8 +27,8 @@ android {
         applicationId = "com.example.killteam"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 1400
+        versionName = "1.4.0.a"
     }
     packaging {
         resources {
