@@ -1,5 +1,6 @@
 package com.example.killteam
 
+import com.example.killteam.data.AppJson
 import com.example.killteam.logic.GamePhase
 import com.example.killteam.logic.GameState
 import com.example.killteam.logic.InitiativeCard
@@ -11,17 +12,22 @@ import com.example.killteam.logic.Scoring
 import com.example.killteam.logic.advanceTurningPoint
 import com.example.killteam.logic.chooseInitiative
 import com.example.killteam.logic.chooseSetupInitiative
+import com.example.killteam.logic.confirmStrategy
 import com.example.killteam.logic.finish
+import com.example.killteam.logic.ployCost
 import com.example.killteam.logic.readyGains
 import com.example.killteam.logic.readyStep
 import com.example.killteam.logic.reopenRollOff
+import com.example.killteam.logic.reopenStrategy
 import com.example.killteam.logic.resolveRollOff
 import com.example.killteam.logic.setIncapacitated
 import com.example.killteam.logic.toResult
 import com.example.killteam.logic.useModifier
 import com.example.killteam.logic.useReroll
 import com.example.killteam.logic.withEnemyStart
+import com.example.killteam.logic.withPloy
 import com.example.killteam.logic.withRoll
+import com.example.killteam.logic.withoutPloy
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -112,6 +118,49 @@ class GameFlowTest {
         val ready = game().withRoll(0, 6).withRoll(1, 1).resolveRollOff().chooseInitiative(0).readyStep()
         assertEquals(ready, ready.chooseInitiative(1))
         assertEquals(ready, ready.reopenRollOff())
+    }
+
+    @Test
+    fun choosingAPloyDeductsItsCostAndTakingItBackReturnsIt() {
+        val ready = game().withRoll(0, 6).withRoll(1, 1).resolveRollOff().chooseInitiative(0).readyStep() // CP 3 / 3
+        val used = ready.withPloy(0, "Cut Them Down", 1)
+        assertEquals(2, used.players[0].cp)
+        assertEquals(listOf("Cut Them Down"), used.players[0].ployNames)
+        assertEquals(used, used.withPloy(0, "Cut Them Down", 1)) // each ploy only once
+        assertEquals(ready, used.withoutPloy(0, "Cut Them Down", 1))
+        assertEquals(1, ployCost(""))
+        assertEquals(2, ployCost("2CP"))
+    }
+
+    @Test
+    fun ploysNeedTheReadyStepEnoughCpAndAnOpenStrategyPhase() {
+        val start = game()
+        assertEquals(start, start.withPloy(0, "A", 1)) // Ready step not done
+        val ready = start.withRoll(0, 6).withRoll(1, 1).resolveRollOff().chooseInitiative(0).readyStep()
+        assertEquals(ready, ready.withPloy(0, "A", 4)) // CP 3 only
+        val confirmed = ready.withPloy(0, "A", 1).confirmStrategy()
+        assertEquals(confirmed, confirmed.withPloy(1, "B", 1))
+        assertEquals(confirmed, confirmed.withoutPloy(0, "A", 1))
+        assertTrue(confirmed.reopenStrategy().withoutPloy(0, "A", 1).players[0].ployNames.isEmpty())
+    }
+
+    @Test
+    fun theStrategyPhaseCanBeConfirmedWithoutPloysAndIsResetByTheNextTurningPoint() {
+        val ready = game().withRoll(0, 6).withRoll(1, 1).resolveRollOff().chooseInitiative(0).readyStep()
+        val confirmed = ready.confirmStrategy()
+        assertEquals(ready.players.map { it.cp }, confirmed.players.map { it.cp })
+        val next = confirmed.copy(players = confirmed.players.map { it.copy(ployNames = listOf("A")) }).advanceTurningPoint()
+        assertTrue(!next.strategyDone)
+        assertTrue(next.players.all { it.ployNames.isEmpty() })
+    }
+
+    @Test
+    fun oldSavedGamesLoadWithAnOpenStrategyPhase() {
+        val json = AppJson.encodeToString(GameState.serializer(), game())
+            .replace("\"strategyDone\":false,", "").replace("\"ployNames\":[],", "")
+        val loaded = AppJson.decodeFromString(GameState.serializer(), json)
+        assertTrue(!loaded.strategyDone)
+        assertTrue(loaded.players.all { it.ployNames.isEmpty() })
     }
 
     @Test

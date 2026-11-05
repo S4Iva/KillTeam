@@ -67,6 +67,8 @@ data class PlayerState(
     val primaryRevealed: Boolean = false,
     val cards: List<InitiativeCard> = emptyList(),
     val operatives: List<OperativeTrack> = emptyList(),
+    /** Strategy ploys used in the current turning point. */
+    val ployNames: List<String> = emptyList(),
 ) {
     val killGrade get() = KillOp.grade(enemyStartCount, kills)
 }
@@ -90,6 +92,8 @@ data class GameState(
     val initiativeBeforeRollOff: Int = 0,
     val initiativeChosen: Boolean = false,
     val readyDone: Boolean = false,
+    /** The Strategy phase of the current turning point is confirmed; the Firefight phase is open. */
+    val strategyDone: Boolean = false,
 ) {
     fun updatePlayer(index: Int, change: (PlayerState) -> PlayerState) =
         copy(players = players.mapIndexed { i, p -> if (i == index) change(p) else p })
@@ -165,5 +169,6 @@ fun GameState.advanceTurningPoint(): GameState =
         gainedCard = null,
         initiativeChosen = false,
         readyDone = false,
-        players = players.map { p -> p.copy(operatives = p.operatives.map { it.copy(expended = false) }) },
+        strategyDone = false,
+        players = players.map { p -> p.copy(ployNames = emptyList(), operatives = p.operatives.map { it.copy(expended = false) }) },
     )

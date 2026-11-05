@@ -65,6 +65,26 @@ fun GameState.readyStep(): GameState {
     )
 }
 
+/** CP cost of a ploy from its cost text ("1CP"); 1 CP when the text has no number. */
+fun ployCost(cost: String): Int = Regex("\\d+").find(cost)?.value?.toIntOrNull() ?: 1
+
+/** Uses a strategy ploy: needs the Ready step, an open Strategy phase, enough CP and a ploy not yet used this turning point. */
+fun GameState.withPloy(player: Int, name: String, cost: Int): GameState {
+    val p = players[player]
+    if (!readyDone || strategyDone || name in p.ployNames || p.cp < cost) return this
+    return updatePlayer(player) { it.copy(cp = it.cp - cost, ployNames = it.ployNames + name) }
+}
+
+/** Takes a ploy back before the Strategy phase is confirmed and returns its CP. */
+fun GameState.withoutPloy(player: Int, name: String, cost: Int): GameState {
+    if (strategyDone || name !in players[player].ployNames) return this
+    return updatePlayer(player) { it.copy(cp = it.cp + cost, ployNames = it.ployNames - name) }
+}
+
+fun GameState.confirmStrategy(): GameState = copy(strategyDone = true)
+
+fun GameState.reopenStrategy(): GameState = copy(strategyDone = false)
+
 /** Setting up the battle: the player with initiative picks a drop zone, the opponent holds the Re-roll card. */
 fun GameState.chooseSetupInitiative(player: Int): GameState =
     copy(initiative = player)

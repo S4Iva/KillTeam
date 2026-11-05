@@ -15,6 +15,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.HorizontalDivider
@@ -46,10 +48,13 @@ import com.example.killteam.logic.advanceTurningPoint
 import com.example.killteam.logic.changeOperative
 import com.example.killteam.logic.chooseInitiative
 import com.example.killteam.logic.chooseSetupInitiative
+import com.example.killteam.logic.confirmStrategy
 import com.example.killteam.logic.finish
+import com.example.killteam.logic.ployCost
 import com.example.killteam.logic.readyGains
 import com.example.killteam.logic.readyStep
 import com.example.killteam.logic.reopenRollOff
+import com.example.killteam.logic.reopenStrategy
 import com.example.killteam.logic.resolveRollOff
 import com.example.killteam.logic.rollOffResolved
 import com.example.killteam.logic.setIncapacitated
@@ -57,7 +62,9 @@ import com.example.killteam.logic.toResult
 import com.example.killteam.logic.useModifier
 import com.example.killteam.logic.useReroll
 import com.example.killteam.logic.withEnemyStart
+import com.example.killteam.logic.withPloy
 import com.example.killteam.logic.withRoll
+import com.example.killteam.logic.withoutPloy
 
 @Composable
 fun GameScreen(app: AppState, onOpenGenerator: () -> Unit) {
@@ -114,7 +121,7 @@ fun RunningGame(app: AppState, game: GameState) {
     var equipmentOpen by remember(game.id) { mutableStateOf(setOf<Int>()) }
 
     // Every new phase or turning point starts at the top of the screen (not when only switching back to this tab).
-    val position = "${game.id}:${game.phase}:${game.turningPoint}"
+    val position = "${game.id}:${game.phase}:${game.turningPoint}:${game.strategyDone}"
     LaunchedEffect(position) {
         if (ui.gameScrollKey != null && ui.gameScrollKey != position) listState.scrollToItem(0)
         ui.gameScrollKey = position
@@ -130,7 +137,7 @@ fun RunningGame(app: AppState, game: GameState) {
     primaryFor?.let { PrimaryOpDialog(app, game, it) { primaryFor = null } }
     confirm?.let { c -> ConfirmDialog(c.text, c.label, c.action, onDismiss = { confirm = null }, danger = c.danger) }
 
-    Page("Game - Turning Point ${game.turningPoint}/${ApprovedOps.TURNING_POINTS}", listState = listState) {
+    Page("Game - Turning Point ${game.turningPoint}/${ApprovedOps.TURNING_POINTS}" + if (game.phase == GamePhase.Play) (if (game.strategyDone) " - Firefight phase" else " - Strategy phase") else "", listState = listState) {
         item {
             SectionCard("Phase") {
                 PhaseProgress(game)
@@ -210,32 +217,54 @@ fun RunningGame(app: AppState, game: GameState) {
             GamePhase.SetUpOperatives -> Unit
 
             GamePhase.Play -> {
-                item { InitiativePanel(game, update) }
-                item { ReadyStepPanel(game, update) }
-                if (game.turningPoint == 1) {
-                    item {
-                        SectionCard("Strategic gambit: primary op") {
-                            Text("In the first turning point each player secretly selects one of their three ops as primary op.")
-                            game.players.forEachIndexed { i, p ->
-                                AppButton(
-                                    "${p.name}: ${if (p.primary == null) "select" else "change"} primary op", { primaryFor = i },
-                                    kind = ButtonKind.Secondary, size = ButtonSize.L, fullWidth = true,
-                                )
+                if (!game.strategyDone) {
+                    item { InitiativePanel(game, update) }
+                    item { ReadyStepPanel(game, update) }
+                    if (game.turningPoint == 1) {
+                        item {
+                            SectionCard("Strategic gambit: primary op") {
+                                Text("In the first turning point each player secretly selects one of their three ops as primary op.")
+                                game.players.forEachIndexed { i, p ->
+                                    AppButton(
+                                        "${p.name}: ${if (p.primary == null) "select" else "change"} primary op", { primaryFor = i },
+                                        kind = ButtonKind.Secondary, size = ButtonSize.L, fullWidth = true,
+                                    )
+                                }
                             }
                         }
                     }
-                }
-                game.players.forEachIndexed { i, _ -> item { PlayerPanel(app, game, i) } }
-                item { MissionCard(game, showMission) { showMission = it } }
-                item {
-                    val last = game.turningPoint >= ApprovedOps.TURNING_POINTS
-                    AppButton(if (last) "End the battle" else "Next turning point (${game.turningPoint + 1})", {
-                        if (game.readyDone) update(game.advanceTurningPoint())
-                        else confirm = PendingConfirm(
-                            "The Ready step was not done in this turning point: no CP were gained and expended operatives were not readied. Continue anyway?",
-                            if (last) "End the battle" else "Next turning point",
-                        ) { update(game.advanceTurningPoint()) }
-                    }, fullWidth = true)
+                    listOf(game.initiative, 1 - game.initiative).forEach { i -> item { StrategyPloyPanel(app, game, i) } }
+                    item {
+                        AppButton("Confirm strategy phase", {
+                            if (game.readyDone) update(game.confirmStrategy())
+                            else confirm = PendingConfirm(
+                                "The Ready step was not done in this turning point: no CP were gained and expended operatives were not readied. Continue anyway?",
+                                "Continue anyway",
+                            ) { update(game.confirmStrategy()) }
+                        }, fullWidth = true)
+                    }
+                } else {
+                    item {
+                        SectionCard("Strategy phase") {
+                            Text("Initiative: ${game.players[game.initiative].name}")
+                            game.players.forEach { p ->
+                                Text("${p.name}: strategy ploys used: ${p.ployNames.joinToString().ifEmpty { "none" }}", style = MaterialTheme.typography.bodySmall)
+                            }
+                            AppButton("Back to strategy phase", { update(game.reopenStrategy()) }, kind = ButtonKind.Secondary, fullWidth = true)
+                        }
+                    }
+                    game.players.forEachIndexed { i, _ -> item { PlayerPanel(app, game, i) } }
+                    item { MissionCard(game, showMission) { showMission = it } }
+                    item {
+                        val last = game.turningPoint >= ApprovedOps.TURNING_POINTS
+                        AppButton(if (last) "End the battle" else "Next turning point (${game.turningPoint + 1})", {
+                            if (game.readyDone) update(game.advanceTurningPoint())
+                            else confirm = PendingConfirm(
+                                "The Ready step was not done in this turning point: no CP were gained and expended operatives were not readied. Continue anyway?",
+                                if (last) "End the battle" else "Next turning point",
+                            ) { update(game.advanceTurningPoint()) }
+                        }, fullWidth = true)
+                    }
                 }
             }
 
@@ -456,6 +485,52 @@ private fun ReadyStepPanel(game: GameState, update: (GameState) -> Unit) {
             if (game.initiativeChosen) Text(game.players.indices.joinToString { "${game.players[it].name} +${gains[it]} CP" })
             else Text("Resolve the roll-off and choose who has initiative first.")
             AppButton("Do the Ready step", { update(game.readyStep()) }, enabled = game.initiativeChosen, fullWidth = true)
+        }
+    }
+}
+
+/** Strategy ploys of one player; choosing one deducts its CP at once. Folded by default. */
+@Composable
+private fun StrategyPloyPanel(app: AppState, game: GameState, index: Int) {
+    val p = game.players[index]
+    val team = app.team(p.teamSlug)
+    var open by remember(game.id, game.turningPoint, index) { mutableStateOf(false) }
+    val ploys = team?.strategyPloys.orEmpty()
+    SectionCard(
+        "${p.name}${team?.let { " - ${it.name}" } ?: ""}",
+        actions = { Text("CP ${p.cp}", color = Color.White, fontWeight = FontWeight.Bold) },
+    ) {
+        Text("Ploys: ${p.ployNames.size} selected" + if (p.ployNames.isEmpty()) "" else " (${p.ployNames.joinToString()})")
+        if (ploys.isEmpty()) {
+            Text("No strategy ploys", style = MaterialTheme.typography.bodySmall)
+        } else {
+            if (open) {
+                if (!game.readyDone) Text("Do the Ready step first.", color = Palette.Accent)
+                Text("Select the ploys you use. The CP are deducted automatically.", style = MaterialTheme.typography.bodySmall)
+                ploys.forEach { ploy ->
+                    val cost = ployCost(ploy.cost)
+                    val on = ploy.name in p.ployNames
+                    val poor = !on && p.cp < cost
+                    val locked = !game.readyDone || poor
+                    val shape = RoundedCornerShape(8.dp)
+                    Column(
+                        Modifier.fillMaxWidth().alpha(if (locked) 0.5f else 1f).clip(shape)
+                            .border(1.dp, if (on) Palette.Accent else Palette.StrategyPloy, shape)
+                            .clickable(enabled = !locked) { app.game.update(if (on) game.withoutPloy(index, ploy.name, cost) else game.withPloy(index, ploy.name, cost)) }
+                            .padding(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Checkbox(on, null, enabled = !locked)
+                            Text(ploy.name, Modifier.weight(1f), fontWeight = FontWeight.Bold)
+                            Text("-$cost CP", color = Palette.Accent, fontWeight = FontWeight.Bold)
+                        }
+                        if (ploy.paras.isNotEmpty()) RichParas(ploy.paras) else KeywordText(ploy.text)
+                        if (poor && game.readyDone) Text("not enough CP", color = Palette.Accent, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+            AppButton(if (open) "Hide strategy ploys" else "Show strategy ploys", { open = !open }, kind = ButtonKind.Secondary, fullWidth = true)
         }
     }
 }

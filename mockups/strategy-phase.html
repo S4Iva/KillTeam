@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kill Team Companion - Mock-up Strategy Phase</title>
+<style>
+  :root {
+    --bg: #121212; --surface: #1e1e1e; --surface2: #2a2a2a; --line: #3a3a3a;
+    --orange: #e8650a; --orange-dark: #b84e05; --text: #f2f2f2; --muted: #a0a0a0;
+    --ok: #5cb85c; --warn: #e6b422; --ploy: #3f6f63;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #000; color: var(--text); font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.hint { color: var(--muted); margin: 0 0 24px; font-size: 14px; }
+  .row { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
+  .col h2 { font-size: 14px; color: var(--orange); margin: 0 0 8px; text-transform: uppercase; letter-spacing: .08em; }
+  .notes { max-width: 340px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .notes li { margin-bottom: 6px; }
+  .notes button { background: transparent; color: var(--orange); border: 2px solid var(--orange); border-radius: 8px; padding: 8px 12px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+
+  .phone { width: 360px; height: 720px; background: var(--bg); border: 8px solid #333; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; }
+  .topbar { background: var(--surface); border-bottom: 2px solid var(--orange); padding: 10px 14px; }
+  .topbar .title { font-weight: 700; font-size: 16px; }
+  .topbar .sub { font-size: 12px; color: var(--orange); margin-top: 2px; }
+  .seg { display: flex; gap: 4px; margin-top: 8px; }
+  .seg i { flex: 1; height: 5px; border-radius: 3px; background: var(--line); }
+  .seg i.on { background: var(--orange); }
+  .content { flex: 1; overflow-y: auto; padding: 14px; scrollbar-width: thin; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+  .card h3 { margin: 0 0 6px; font-size: 15px; }
+  .card p { margin: 0 0 6px; font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 14px 0 6px; }
+  .cp { float: right; font-size: 13px; font-weight: 700; color: var(--orange); background: var(--surface2); border-radius: 12px; padding: 2px 10px; }
+  .done-line { font-size: 13px; color: var(--ok); }
+
+  .btn { display: block; width: 100%; padding: 14px; border-radius: 8px; border: 2px solid var(--orange); background: var(--orange); color: #000; font-weight: 700; font-size: 15px; text-align: center; cursor: pointer; margin-bottom: 10px; }
+  .btn.sec { background: transparent; color: var(--orange); }
+  .btn:active { background: var(--orange-dark); }
+
+  .ploy { border: 1px solid var(--ploy); border-left: 4px solid var(--ploy); border-radius: 8px; background: var(--surface2); padding: 10px; margin-bottom: 8px; cursor: pointer; }
+  .ploy .head { display: flex; align-items: center; gap: 10px; }
+  .ploy .box { width: 22px; height: 22px; border: 2px solid var(--orange); border-radius: 5px; flex: none; display: flex; align-items: center; justify-content: center; font-size: 15px; color: transparent; }
+  .ploy.on { border-color: var(--orange); background: #2f2318; }
+  .ploy.on .box { background: var(--orange); color: #000; }
+  .ploy .name { font-weight: 700; font-size: 14px; flex: 1; }
+  .ploy .cost { font-size: 12px; color: var(--orange); font-weight: 700; }
+  .ploy .txt { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+  .ploy.locked { opacity: .45; cursor: not-allowed; border-color: var(--line); }
+  .ploy .note { font-size: 11px; color: var(--warn); margin-top: 4px; }
+  .pill { display: inline-block; font-size: 12px; border: 1px solid var(--orange); color: var(--orange); border-radius: 12px; padding: 2px 8px; margin: 2px 4px 2px 0; }
+  .hint-warn { font-size: 12px; color: var(--warn); margin-bottom: 8px; }
+  .op { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; border-top: 1px solid var(--line); }
+  .op:first-of-type { border-top: 0; }
+  .op span { color: var(--muted); }
+
+  .dialog { position: absolute; inset: 0; background: rgba(0,0,0,.7); display: none; align-items: center; justify-content: center; padding: 20px; }
+  .dialog.show { display: flex; }
+  .dialog .box { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; font-size: 14px; }
+  .dialog .box p { margin: 0 0 12px; line-height: 1.4; }
+  .phoneWrap { position: relative; }
+  .sum { font-size: 13px; margin-bottom: 8px; }
+  .btn.small { padding: 10px; font-size: 14px; margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<h1>Mock-up: Strategy phase mit Strategy Ploys (4.25)</h1>
+<p class="hint">Klickbarer Entwurf, keine App-Logik. Erst "Ready step" ausführen, dann Ploys antippen, dann bestätigen.</p>
+
+<div class="row">
+  <div class="col">
+    <h2>Turning Point 2</h2>
+    <div class="phoneWrap">
+      <div class="phone">
+        <div class="topbar">
+          <div class="title">Game - Turning Point 2/4</div>
+          <div class="sub" id="sub">Strategy phase</div>
+          <div class="seg"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+        </div>
+        <div class="content" id="content"></div>
+      </div>
+      <div class="dialog" id="dialog">
+        <div class="box">
+          <p>The Ready step was not done in this turning point: no CP were gained and expended operatives were not readied. Continue anyway?</p>
+          <button class="btn" onclick="confirmAnyway()">Continue anyway</button>
+          <button class="btn sec" onclick="closeDialog()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col notes">
+    <h2>Hinweise</h2>
+    <ul>
+      <li>Strategy phase: Initiative, Ready step, (im 1. TP Primary op), Strategy ploys, "Confirm strategy phase".</li>
+      <li>Ploys sind vor dem Ready step gesperrt (SP-4).</li>
+      <li>Wählen zieht die Kosten sofort ab, Abwählen gibt sie zurück (SP-3). Ohne Angabe gelten 1 CP.</li>
+      <li>Kein Ploy ist Pflicht, bestätigen geht immer (SP-5).</li>
+      <li>Die Spielerkarten sind standardmäßig zugeklappt und zeigen CP und die Zahl der gewählten Ploys; "Show/Hide strategy ploys" klappt sie je Spieler auf und zu (SP-13).</li>
+      <li>Erst nach der Bestätigung erscheint die Firefight phase mit Spielerkarten und "Next turning point" (SP-1, SP-6).</li>
+      <li>"Back to strategy phase" öffnet die Auswahl wieder (SP-7).</li>
+    </ul>
+    <button onclick="reset()">Zurücksetzen</button>
+  </div>
+</div>
+
+<script>
+  const ploys = [
+    { id: 0, name: "Cut Them Down", cost: 1, text: "Until the end of the turning point, each time a friendly operative makes a shooting attack against a wounded enemy operative, you can re-roll one of your attack dice." },
+    { id: 1, name: "Hold the Line", cost: 1, text: "Until the end of the turning point, each friendly operative within 3\" of a friendly objective marker has +1 APL." },
+    { id: 2, name: "Unleash Everything", cost: 2, text: "Until the end of the turning point, add 1 to the Atk stat of friendly operative weapons that have the Rapid fire special rule." },
+  ];
+  const start = () => ({ ready: false, confirmed: false, cp: [2, 1], chosen: [[], []], dialog: false, open: [false, false] });
+  let s = start();
+  const names = ["Player 1 (Kasrkin, initiative)", "Player 2 (Nemesis Claw)"];
+
+  function gain() { return [1, 2]; }
+
+  function readyStep() { s.ready = true; s.cp = s.cp.map((c, i) => c + gain()[i]); draw(); }
+
+  function toggle(p, id) {
+    if (!s.ready || s.confirmed) return;
+    const ploy = ploys[id], on = s.chosen[p].includes(id);
+    if (on) { s.chosen[p] = s.chosen[p].filter(x => x !== id); s.cp[p] += ploy.cost; }
+    else if (s.cp[p] >= ploy.cost) { s.chosen[p].push(id); s.cp[p] -= ploy.cost; }
+    draw();
+  }
+
+  function confirmStrategy() { if (!s.ready) { s.dialog = true; draw(); } else { s.confirmed = true; draw(); } }
+  function fold(p) { s.open[p] = !s.open[p]; draw(); }
+  function confirmAnyway() { s.dialog = false; s.confirmed = true; draw(); }
+  function closeDialog() { s.dialog = false; draw(); }
+  function back() { s.confirmed = false; draw(); }
+  function reset() { s = start(); draw(); }
+
+  function ployRows(p) {
+    return ploys.map(x => {
+      const on = s.chosen[p].includes(x.id);
+      const poor = !on && s.cp[p] < x.cost;
+      const locked = !s.ready || poor;
+      return `<div class="ploy ${on ? "on" : ""} ${locked ? "locked" : ""}" onclick="toggle(${p},${x.id})">
+        <div class="head"><div class="box">&#10003;</div><div class="name">${x.name}</div><div class="cost">-${x.cost} CP</div></div>
+        <div class="txt">${x.text}</div>
+        ${poor && s.ready ? '<div class="note">not enough CP</div>' : ""}
+      </div>`;
+    }).join("");
+  }
+
+  function strategy() {
+    return `
+      <div class="card"><h3>Initiative</h3><p>Player 1 has initiative (roll-off done).</p></div>
+      <div class="card">
+        <h3>Ready step</h3>
+        ${s.ready
+          ? '<div class="done-line">Done. Player 1 +1 CP, Player 2 +2 CP, all operatives ready.</div>'
+          : '<p>Each player gains 1CP. After the first turning point the player without initiative gains 2CP instead.</p><button class="btn sec" onclick="readyStep()">Do the Ready step</button>'}
+      </div>
+      <div class="label">Strategy ploys</div>
+      ${s.ready ? "" : '<div class="hint-warn">Do the Ready step first.</div>'}
+      ${[0, 1].map(p => `
+        <div class="card"><span class="cp">CP ${s.cp[p]}</span><h3>${names[p]}</h3>
+          <div class="sum">Ploys: ${s.chosen[p].length} selected ${s.chosen[p].map(i => `<span class="pill">${ploys[i].name}</span>`).join("")}</div>
+          ${s.open[p] ? `<p>Select the ploys you use. The CP are deducted automatically.</p>${ployRows(p)}` : ""}
+          <button class="btn sec small" onclick="fold(${p})">${s.open[p] ? "Hide strategy ploys" : "Show strategy ploys"}</button>
+        </div>`).join("")}
+      <button class="btn" onclick="confirmStrategy()">Confirm strategy phase</button>`;
+  }
+
+  function firefight() {
+    return `
+      ${[0, 1].map(p => `
+        <div class="card"><span class="cp">CP ${s.cp[p]}</span><h3>${names[p]}</h3>
+          <div style="font-size:13px;margin-bottom:6px;">Strategy ploys used: ${s.chosen[p].length ? s.chosen[p].map(i => `<span class="pill">${ploys[i].name}</span>`).join("") : "none"}</div>
+          <div class="op">Sergeant <span>Wounds 9/9 - Ready</span></div>
+          <div class="op">Trooper 1 <span>Wounds 8/8 - Ready</span></div>
+        </div>`).join("")}
+      <button class="btn sec" onclick="back()">Back to strategy phase</button>
+      <button class="btn">Next turning point (3)</button>`;
+  }
+
+  function draw() {
+    document.getElementById("sub").textContent = s.confirmed ? "Firefight phase" : "Strategy phase";
+    document.getElementById("content").innerHTML = s.confirmed ? firefight() : strategy();
+    document.getElementById("dialog").classList.toggle("show", s.dialog);
+  }
+  draw();
+</script>
+</body>
+</html>
