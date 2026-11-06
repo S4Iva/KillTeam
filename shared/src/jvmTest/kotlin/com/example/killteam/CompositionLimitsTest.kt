@@ -91,6 +91,31 @@ class CompositionLimitsTest {
     }
 
     @Test
+    fun eachGunnerLineOfKasrkinCanBeTakenOnce() {
+        val kasrkin = team("kasrkin")
+        val gunner = card("kasrkin", "Gunner")
+        val options = kasrkin.weaponOptions.getValue(gunner).map { it.label }
+        val roster = Roster(1, "r", "kasrkin").withAdded(gunner).withAdded(gunner).withOption(0, options[0])
+        assertEquals("used by ${roster.slotLabel(0)}", RosterRules.optionBlock(kasrkin, roster, 1, options[0]))
+        assertNull(RosterRules.optionBlock(kasrkin, roster, 1, options[1]))
+        assertNull(RosterRules.optionBlock(kasrkin, roster, 0, options[0]))
+        val twice = roster.withOption(1, options[0])
+        assertTrue(RosterRules.warnings(kasrkin, twice).any { it.startsWith("Weapon option chosen twice") })
+    }
+
+    @Test
+    fun gunnersOfExactionSquadMustHaveDifferentOptions() {
+        assertTrue(card("exaction-squad", "Gunner") in team("exaction-squad").compositionLimits.distinctOptions)
+    }
+
+    @Test
+    fun namedWeaponsAreCapped() {
+        val caps = data.teams.flatMap { it.compositionLimits.weaponMax.keys }
+        println("weapon caps: $caps")
+        assertTrue(caps.isNotEmpty())
+    }
+
+    @Test
     fun teamsWithoutReadableLimitsStayUnlimited() {
         assertNull(team("kasrkin").compositionLimits.room(emptyMap(), "No such card"))
     }

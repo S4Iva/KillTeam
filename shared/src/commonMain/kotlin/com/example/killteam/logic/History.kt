@@ -1,6 +1,7 @@
 package com.example.killteam.logic
 
 import com.example.killteam.data.ApprovedOps
+import com.example.killteam.data.CompositionRules
 import com.example.killteam.data.KillOp
 import com.example.killteam.data.Killzone
 import com.example.killteam.data.KillTeam
@@ -101,8 +102,36 @@ object RosterRules {
         roster.operatives.forEachIndexed { i, name ->
             if (team.weaponOptions[name] != null && roster.optionAt(i).isBlank()) add("Weapon option not selected: $name")
         }
+        val limits = team.compositionLimits
+        limits.distinctOptions.forEach { card ->
+            roster.operatives.indices.filter { roster.operatives[it] == card && roster.optionAt(it).isNotBlank() }
+                .groupBy { roster.optionAt(it) }.filterValues { it.size > 1 }.keys.forEach { add("Weapon option chosen twice: $it ($card)") }
+        }
+        limits.weaponMax.forEach { (weapon, max) ->
+            val n = roster.operatives.indices.count { weapon in slotWeapons(team, roster, it) }
+            if (n > max) add("Too many with $weapon: $max allowed, $n selected.")
+        }
         if (roster.equipment.distinct().size > ApprovedOps.MAX_EQUIPMENT) add("More than ${ApprovedOps.MAX_EQUIPMENT} equipment.")
         roster.unassignedEquipment.forEach { add("Equipment not given to an operative: $it") }
+    }
+
+    /** Lower-case weapon names (without profile suffix) of the option chosen at [slot]; empty when none is chosen. */
+    private fun slotWeapons(team: KillTeam, roster: Roster, slot: Int): Set<String> =
+        team.weaponOptions[roster.operatives[slot]]?.firstOrNull { it.label == roster.optionAt(slot) }?.weapons.orEmpty().map { CompositionRules.weaponBase(it) }.toSet()
+
+    /** Why [option] cannot be chosen for the operative at [slot] under the composition text, or null when it can. */
+    fun optionBlock(team: KillTeam, roster: Roster, slot: Int, option: String): String? {
+        val card = roster.operatives.getOrNull(slot) ?: return null
+        val limits = team.compositionLimits
+        val others = roster.operatives.indices.filter { it != slot }
+        if (card in limits.distinctOptions) {
+            others.firstOrNull { roster.operatives[it] == card && roster.optionAt(it) == option }?.let { return "used by ${roster.slotLabel(it)}" }
+        }
+        val weapons = team.weaponOptions[card]?.firstOrNull { it.label == option }?.weapons.orEmpty().map { CompositionRules.weaponBase(it) }.toSet()
+        limits.weaponMax.forEach { (weapon, max) ->
+            if (weapon in weapons && others.count { weapon in slotWeapons(team, roster, it) } >= max) return "limit: $max $weapon"
+        }
+        return null
     }
 
     /** Operatives a player brings to a game: the roster size, else the size from the team rules, else [default] (within the kill grade table). */

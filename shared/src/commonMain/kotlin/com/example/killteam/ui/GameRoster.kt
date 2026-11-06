@@ -47,19 +47,24 @@ fun NoRosterOperatives(team: KillTeam, roster: Roster, onChange: (Roster) -> Uni
     }
     Text("Selected operatives", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = Palette.Accent)
     roster.operatives.indices.forEach { slot ->
-        val hasOptions = team.weaponOptions[roster.operatives[slot]] != null
+        val choices = team.weaponOptions[roster.operatives[slot]]
         val option = roster.optionAt(slot)
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(roster.slotLabel(slot), fontWeight = FontWeight.Bold)
-            Text(
-                if (!hasOptions) "Standard weapons" else option.ifBlank { "Choose weapons" },
-                style = MaterialTheme.typography.bodySmall,
-                color = if (hasOptions && option.isBlank()) Palette.Highlight else Palette.Text.copy(alpha = 0.7f),
-            )
+            if (choices == null) {
+                Text("Standard weapons", style = MaterialTheme.typography.bodySmall, color = Palette.Text.copy(alpha = 0.7f))
+            } else {
+                Text("Weapons", style = MaterialTheme.typography.labelMedium, color = if (option.isBlank()) Palette.Highlight else Palette.Text.copy(alpha = 0.7f))
+                choices.forEach { c ->
+                    val chosen = option == c.label
+                    val block = if (chosen) null else RosterRules.optionBlock(team, roster, slot, c.label)
+                    ChoiceRow(chosen, true, c.label, null, block, block == null) { onChange(roster.withOption(slot, c.label)) }
+                }
+            }
             val carried = roster.equipmentOf(slot)
             if (carried.isEmpty()) Text("No equipment", style = MaterialTheme.typography.labelSmall, color = Palette.Text.copy(alpha = 0.5f))
             else FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) { carried.forEach { Pill(it) } }
-            AppButton("Weapons and equipment", { onEdit(slot) }, kind = ButtonKind.Secondary, size = ButtonSize.S, fullWidth = true)
+            AppButton("Weapon stats and equipment", { onEdit(slot) }, kind = ButtonKind.Secondary, size = ButtonSize.S, fullWidth = true)
         }
     }
     RosterRules.problems(team, roster).forEach { Text(it, color = MaterialTheme.colorScheme.error) }

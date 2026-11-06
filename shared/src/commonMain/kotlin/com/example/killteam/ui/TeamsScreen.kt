@@ -354,7 +354,7 @@ private fun Chevron(expanded: Boolean, onClick: () -> Unit) {
 
 /** One selectable row: filled marker when chosen (round for one-of-many, square for many), title, optional text and tag. With [details] an arrow before the title unfolds them below the row. */
 @Composable
-private fun ChoiceRow(
+internal fun ChoiceRow(
     selected: Boolean, radio: Boolean, title: String, text: String?, tag: String?, enabled: Boolean,
     expanded: Boolean = false, onToggleDetails: (() -> Unit)? = null, details: (@Composable () -> Unit)? = null, onClick: () -> Unit,
 ) {
@@ -485,7 +485,8 @@ internal fun RosterUnitPage(roster: Roster, team: KillTeam, slot: Int, save: (Ro
                     if (datacard != null) WeaponStatsToggle("" in statsOpen, { toggleStats("") }, datacard.weapons)
                 } else {
                     choices.forEach { c ->
-                        ChoiceRow(roster.optionAt(slot) == c.label, true, c.label, null, null, true) { save(roster.withOption(slot, c.label)) }
+                        val block = if (roster.optionAt(slot) == c.label) null else RosterRules.optionBlock(team, roster, slot, c.label)
+                        ChoiceRow(roster.optionAt(slot) == c.label, true, c.label, null, block, block == null) { save(roster.withOption(slot, c.label)) }
                         if (datacard != null) WeaponStatsToggle(c.label in statsOpen, { toggleStats(c.label) }, datacard.weapons.filter { it.name in c.weapons })
                     }
                 }

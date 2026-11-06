@@ -1,7 +1,15 @@
 package com.example.killteam.data
 
-/** How many operatives of one datacard, or of a set of datacards combined, the composition text of a team allows. */
-class CompositionLimits(val perCard: Map<String, Int>, val groups: List<Group>) {
+/**
+ * How many operatives of one datacard, or of a set of datacards combined, the composition text of a team allows.
+ * [distinctOptions] are datacards whose operatives must each take a different weapon option; [weaponMax] caps the operatives that carry a weapon (lower-case name without profile suffix).
+ */
+class CompositionLimits(
+    val perCard: Map<String, Int>,
+    val groups: List<Group>,
+    val distinctOptions: Set<String> = emptySet(),
+    val weaponMax: Map<String, Int> = emptyMap(),
+) {
     class Group(val cards: Set<String>, val max: Int)
 
     /** How many more operatives of [card] fit with the [counts] already chosen; null when the text sets no limit for it. */
@@ -39,6 +47,11 @@ object CompositionRules {
     private val upTo = Regex("up to (\\w+) ([A-Z][A-Z\\- ]*[A-Z])\\s+operatives?\\b(?!\\s+with)")
     private val combined = Regex("^(\\*|\\d)\\s*You cannot select more than (\\w+) of these operatives combined", RegexOption.IGNORE_CASE)
     private val marks = Regex("[*\\d,]+$")
+    private val differentOptions = Regex("^\\s*\\(each (?:one )?must have (?:a )?different options?\\)", RegexOption.IGNORE_CASE)
+    private val weaponUpTo = Regex("up to (\\w+) ([a-z][a-z' \\-]*?)(?=\\s*(?:,|\\band\\b|\\.|\\(|$))")
+
+    /** Weapon name without the profile suffix: "Plasma pistol (supercharge)" becomes "plasma pistol". */
+    fun weaponBase(name: String) = name.replace(Regex("\\s*\\(.*\\)$"), "").trim().lowercase()
 
     private fun hasLower(s: String) = s.any { it.isLowerCase() }
 
@@ -98,12 +111,18 @@ object CompositionRules {
         val weighted = paras.any { Regex("counts? as", RegexOption.IGNORE_CASE).containsMatchIn(it.text) }
         val entries = lists.flatMap { it.second }
         val perCard = mutableMapOf<String, Int>()
+        val distinct = mutableSetOf<String>()
+        val weaponMax = mutableMapOf<String, Int>()
         val groups = mutableListOf<CompositionLimits.Group>()
 
         texts.firstOrNull { onceRule.containsMatchIn(it) && !it.contains("unless", ignoreCase = true) }?.let { rule ->
             val exempt = exceptions.find(rule)?.groupValues?.get(1)?.split(Regex(",|\\band\\b"))?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
             entries.groupBy { it.card }.forEach { (card, es) ->
-                if (es.none { e -> exempt.any { x -> e.name == x || e.name.endsWith(" $x") || card.uppercase().let { c -> c == x || c.endsWith(" $x") } } }) perCard[card] = es.size
+                if (es.none { e -> exempt.any { x -> e.name == x || e.name.endsWith(" $x") || card.uppercase().let { c -> c == x || c.endsWith(" $x") } } }) {
+                    perCard[card] = es.size
+                    // Several list lines for one datacard ("GUNNER with flamer ...", "GUNNER with meltagun ...") are different options, each line once.
+                    if (es.size > 1) distinct += card
+                }
             }
         }
         texts.forEach { t ->
@@ -111,6 +130,13 @@ object CompositionRules {
                 val n = numberWords[m.groupValues[1].lowercase()] ?: m.groupValues[1].toIntOrNull() ?: return@forEach
                 val card = findCard(team, m.groupValues[2]) ?: return@forEach
                 perCard[card] = minOf(perCard[card] ?: n, n)
+                if (differentOptions.containsMatchIn(t.substring(m.range.last + 1))) distinct += card
+            }
+            val bases = team.operatives.flatMap { o -> o.weapons.map { weaponBase(it.name) } }.toSet()
+            weaponUpTo.findAll(t).forEach { m ->
+                val n = numberWords[m.groupValues[1].lowercase()] ?: return@forEach
+                val name = m.groupValues[2].trim().let { if (it in bases) it else it.removeSuffix("s") }
+                if (name in bases) weaponMax[name] = minOf(weaponMax[name] ?: n, n)
             }
         }
         val listed = entries.map { it.card }.toSet()
@@ -134,6 +160,6 @@ object CompositionRules {
                 if (cards.isNotEmpty()) groups += CompositionLimits.Group(cards, n)
             }
         }
-        return CompositionLimits(perCard, groups)
+        return CompositionLimits(perCard, groups, distinct, weaponMax)
     }
 }
