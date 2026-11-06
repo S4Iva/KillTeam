@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kill Team Companion - Mock-up Waffenwerte im Roster</title>
+<style>
+  :root { --bg: #121212; --surface: #1e1e1e; --surface2: #2a2a2a; --line: #3a3a3a; --orange: #e8650a; --text: #f2f2f2; --muted: #a0a0a0; --warn: #f2c14e; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #000; color: var(--text); font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.hint { color: var(--muted); margin: 0 0 24px; font-size: 14px; max-width: 900px; line-height: 1.45; }
+  .row { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
+  .col h2 { font-size: 14px; color: var(--orange); margin: 0 0 8px; text-transform: uppercase; letter-spacing: .08em; }
+  .notes { max-width: 340px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .notes li { margin-bottom: 6px; }
+
+  .phone { width: 360px; height: 720px; background: var(--bg); border: 8px solid #333; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; }
+  .topbar { background: var(--surface); border-bottom: 2px solid var(--orange); padding: 10px 14px; }
+  .topbar .title { font-weight: 700; font-size: 16px; }
+  .topbar .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .content { flex: 1; overflow-y: auto; padding: 12px 14px 20px; scrollbar-width: thin; }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 14px 0 6px; }
+
+  .opt { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; cursor: pointer; }
+  .opt .head { display: flex; gap: 10px; align-items: center; }
+  .opt .mark { width: 20px; height: 20px; border: 2px solid var(--orange); border-radius: 50%; flex: none; }
+  .opt.on { border-color: var(--orange); background: #2a1f17; }
+  .opt.on .mark { background: var(--orange); box-shadow: inset 0 0 0 3px #2a1f17; }
+  .opt .t { font-size: 13px; font-weight: 600; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
+  th { text-align: left; color: var(--muted); font-weight: 600; padding: 3px 4px; border-bottom: 1px solid var(--line); }
+  td { padding: 4px; border-bottom: 1px solid var(--surface2); vertical-align: top; }
+  td.n { font-weight: 700; color: var(--text); }
+  td.num { text-align: center; }
+  td.wr { color: var(--orange); }
+  .tag { display: inline-block; font-size: 9px; padding: 1px 5px; border-radius: 8px; background: #4a5562; color: #fff; margin-right: 4px; }
+  .tag.m { background: #7a3a2a; }
+
+  .btn { display: block; width: 100%; padding: 12px; border-radius: 8px; border: 2px solid var(--orange); background: var(--orange); color: #000; font-weight: 700; font-size: 14px; text-align: center; margin-top: 8px; }
+  .btn.sec { background: transparent; color: var(--orange); cursor: pointer; }
+  .btn.small { padding: 7px; font-size: 12px; margin: 8px 0 0; }
+</style>
+</head>
+<body>
+<h1>Mock-up: Waffenwerte in der Waffenwahl (4.26)</h1>
+<p class="hint">Klickbarer Entwurf, keine App-Logik. Die Waffennamen und Werte sind Platzhalter, in der App kommen sie aus den Datenkarten.</p>
+
+<div class="row">
+  <div class="col">
+    <h2>Einheit bearbeiten: Sergeant</h2>
+    <div class="phone">
+      <div class="topbar">
+        <div class="title">Kasrkin Sergeant</div>
+        <div class="sub">Weapons: choose one combination</div>
+      </div>
+      <div class="content" id="c"></div>
+    </div>
+  </div>
+  <div class="col notes">
+    <h2>Hinweise</h2>
+    <ul>
+      <li>Jede Kombination hat "Show stats" / "Hide stats" und ist standardmäßig zugeklappt (WS-1). Die Kombinationen klappen unabhängig voneinander.</li>
+      <li>Auf- und Zuklappen ändert die Auswahl nicht, Wählen ändert das Aufklappen nicht (WS-3).</li>
+      <li>Dieselbe Tabelle wie in der Datenkarte (WS-2). Schlüsselwörter in WR sind antippbar.</li>
+      <li>Profile wie "(standard)" und "(supercharge)" stehen als eigene Zeilen.</li>
+      <li>Ohne Optionstext erscheint "All weapons of the datacard" mit allen Waffen (WS-4).</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  const W = {
+    "Bolt pistol": ["r", "4", "3+", "3/4", "Range 8\""],
+    "Power weapon": ["m", "4", "3+", "4/6", "Lethal 5+"],
+    "Plasma pistol (standard)": ["r", "4", "3+", "3/5", "Range 8\", Piercing 1"],
+    "Plasma pistol (supercharge)": ["r", "4", "3+", "4/6", "Range 8\", Hot, Piercing 1"],
+    "Power fist": ["m", "5", "3+", "4/5", "Brutal"],
+    "Fists": ["m", "3", "4+", "3/4", "-"],
+  };
+  const options = [
+    ["Bolt pistol", "Power weapon"],
+    ["Plasma pistol (standard)", "Plasma pistol (supercharge)", "Power fist"],
+  ];
+  let sel = 0;
+  let open = {};
+  function toggle(k, ev) { ev.stopPropagation(); open[k] = !open[k]; draw(); }
+
+  function stats(k, names) {
+    return `<div class="btn sec small" onclick="toggle('${k}', event)">${open[k] ? "Hide stats" : "Show stats"}</div>${open[k] ? table(names) : ""}`;
+  }
+
+  function table(names) {
+    return `<table><tr><th>Name</th><th>Atk</th><th>Hit</th><th>Dmg</th><th>WR</th></tr>` + names.map(n => {
+      const w = W[n];
+      return `<tr><td class="n"><span class="tag ${w[0] === "m" ? "m" : ""}">${w[0] === "m" ? "Melee" : "Ranged"}</span>${n}</td><td class="num">${w[1]}</td><td class="num">${w[2]}</td><td class="num">${w[3]}</td><td class="wr">${w[4]}</td></tr>`;
+    }).join("") + `</table>`;
+  }
+
+  function pick(i) { sel = i; draw(); }
+
+  function draw() {
+    document.getElementById("c").innerHTML = `<div class="label">Weapons</div>` +
+      options.map((o, i) => {
+        const text = i === 0 ? "Bolt pistol; power weapon" : "Plasma pistol; power fist";
+        return `<div class="opt ${sel === i ? "on" : ""}" onclick="pick(${i})"><div class="head"><div class="mark"></div><div class="t">${text}</div></div>${stats("o" + i, o)}</div>`;
+      }).join("") +
+      `<div class="label">Datacard without options</div><div class="opt"><div class="head"><div class="t">All weapons of the datacard</div></div>${stats("all", ["Bolt pistol", "Fists"])}</div>` +
+      `<div class="btn">Done</div>`;
+  }
+  draw();
+</script>
+</body>
+</html>

@@ -111,7 +111,7 @@ private fun StatBox(label: String, icon: DrawableResource, value: String) {
 }
 
 @Composable
-private fun WeaponTable(weapons: List<Weapon>) {
+internal fun WeaponTable(weapons: List<Weapon>) {
     if (weapons.isEmpty()) return
     BoxWithConstraints(Modifier.fillMaxWidth().padding(top = 6.dp)) {
         val wide = maxWidth >= 560.dp
@@ -153,6 +153,13 @@ private fun WeaponTable(weapons: List<Weapon>) {
             HorizontalDivider(thickness = 1.dp, color = Palette.Accent)
         }
     }
+}
+
+/** "Show stats" / "Hide stats" button with the weapon table below it. */
+@Composable
+internal fun WeaponStatsToggle(open: Boolean, onToggle: () -> Unit, weapons: List<Weapon>) {
+    AppButton(if (open) "Hide stats" else "Show stats", onToggle, kind = ButtonKind.Secondary, size = ButtonSize.S, fullWidth = true)
+    if (open) WeaponTable(weapons)
 }
 
 @Composable

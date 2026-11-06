@@ -60,6 +60,11 @@
   .dialog .box { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; font-size: 14px; }
   .dialog .box p { margin: 0 0 12px; line-height: 1.4; }
   .phoneWrap { position: relative; }
+  .used { border: 2px solid var(--orange); border-radius: 8px; background: #2f2318; padding: 10px; margin-bottom: 8px; }
+  .used .tag { font-size: 11px; font-weight: 700; color: #000; background: var(--orange); border-radius: 10px; padding: 1px 8px; margin-left: 6px; }
+  .plain { border: 1px solid var(--ploy); border-left: 4px solid var(--ploy); border-radius: 8px; background: var(--surface2); padding: 10px; margin-bottom: 8px; }
+  .plain .name, .used .name { font-weight: 700; font-size: 14px; }
+  .plain .txt, .used .txt { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
   .sum { font-size: 13px; margin-bottom: 8px; }
   .btn.small { padding: 10px; font-size: 14px; margin-bottom: 0; }
 </style>
@@ -101,6 +106,7 @@
       <li>Die Spielerkarten sind standardmäßig zugeklappt und zeigen CP und die Zahl der gewählten Ploys; "Show/Hide strategy ploys" klappt sie je Spieler auf und zu (SP-13).</li>
       <li>Erst nach der Bestätigung erscheint die Firefight phase mit Spielerkarten und "Next turning point" (SP-1, SP-6).</li>
       <li>"Back to strategy phase" öffnet die Auswahl wieder (SP-7).</li>
+      <li>Firefight phase: Der Umschalter "Strategy ploys (n)" in der Spielerkarte zeigt die gewählten Ploys zuerst und markiert (orange Rahmen, "Used this turning point"), danach die übrigen (PM-1 bis PM-3).</li>
     </ul>
     <button onclick="reset()">Zurücksetzen</button>
   </div>
@@ -112,7 +118,7 @@
     { id: 1, name: "Hold the Line", cost: 1, text: "Until the end of the turning point, each friendly operative within 3\" of a friendly objective marker has +1 APL." },
     { id: 2, name: "Unleash Everything", cost: 2, text: "Until the end of the turning point, add 1 to the Atk stat of friendly operative weapons that have the Rapid fire special rule." },
   ];
-  const start = () => ({ ready: false, confirmed: false, cp: [2, 1], chosen: [[], []], dialog: false, open: [false, false] });
+  const start = () => ({ ready: false, confirmed: false, cp: [2, 1], chosen: [[], []], dialog: false, open: [false, false], fview: [false, false] });
   let s = start();
   const names = ["Player 1 (Kasrkin, initiative)", "Player 2 (Nemesis Claw)"];
 
@@ -130,6 +136,7 @@
 
   function confirmStrategy() { if (!s.ready) { s.dialog = true; draw(); } else { s.confirmed = true; draw(); } }
   function fold(p) { s.open[p] = !s.open[p]; draw(); }
+  function ffold(p) { s.fview[p] = !s.fview[p]; draw(); }
   function confirmAnyway() { s.dialog = false; s.confirmed = true; draw(); }
   function closeDialog() { s.dialog = false; draw(); }
   function back() { s.confirmed = false; draw(); }
@@ -169,10 +176,16 @@
   }
 
   function firefight() {
+    const view = p => {
+      const used = ploys.filter(x => s.chosen[p].includes(x.id)), rest = ploys.filter(x => !s.chosen[p].includes(x.id));
+      return used.map(x => `<div class="used"><div class="name">${x.name}<span class="tag">Used this turning point (-${x.cost} CP)</span></div><div class="txt">${x.text}</div></div>`).join("")
+        + rest.map(x => `<div class="plain"><div class="name">${x.name}</div><div class="txt">${x.text}</div></div>`).join("");
+    };
     return `
       ${[0, 1].map(p => `
         <div class="card"><span class="cp">CP ${s.cp[p]}</span><h3>${names[p]}</h3>
-          <div style="font-size:13px;margin-bottom:6px;">Strategy ploys used: ${s.chosen[p].length ? s.chosen[p].map(i => `<span class="pill">${ploys[i].name}</span>`).join("") : "none"}</div>
+          <button class="btn sec small" style="margin-bottom:8px" onclick="ffold(${p})">Strategy ploys${s.chosen[p].length ? ` (${s.chosen[p].length})` : ""}</button>
+          ${s.fview[p] ? view(p) : ""}
           <div class="op">Sergeant <span>Wounds 9/9 - Ready</span></div>
           <div class="op">Trooper 1 <span>Wounds 8/8 - Ready</span></div>
         </div>`).join("")}

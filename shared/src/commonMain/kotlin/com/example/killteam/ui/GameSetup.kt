@@ -49,13 +49,40 @@ fun rosterToTracks(team: KillTeam?, roster: Roster?): List<OperativeTrack> {
     }
 }
 
+/** Starting state of a player; without a roster the operatives and equipment come from the team selection ([NoRosterOperatives]). */
+fun startPlayer(name: String, team: KillTeam?, roster: Roster?, enemyStartCount: Int) = PlayerState(
+    name = name,
+    teamSlug = team?.slug,
+    enemyStartCount = enemyStartCount,
+    operatives = rosterToTracks(team, roster),
+    equipment = roster?.equipment.orEmpty(),
+    rosterEquipment = roster?.unassignedEquipment.orEmpty(),
+)
+
 @Composable
 fun NewGameScreen(app: AppState, onOpenGenerator: () -> Unit) {
     var names by remember { mutableStateOf(listOf("Player 1", "Player 2")) }
     var teams by remember { mutableStateOf(listOf<KillTeam?>(null, null)) }
     var rosters by remember { mutableStateOf(listOf<Roster?>(null, null)) }
+    // Operatives picked for a team without a roster; a temporary roster that is never saved.
+    var picks by remember { mutableStateOf(listOf<Roster?>(null, null)) }
+    var editing by remember { mutableStateOf<Pair<Int, Int>?>(null) }
     var sizes by remember { mutableStateOf(listOf(6, 6)) }
     val mission = app.mission.value
+    val setPick = { i: Int, r: Roster? ->
+        picks = picks.toMutableList().also { it[i] = r }
+        teams[i]?.let { t -> sizes = sizes.toMutableList().also { it[i] = RosterRules.gameSize(t, r) } }
+    }
+    val chosenRoster = { i: Int -> rosters[i] ?: picks[i]?.takeIf { it.operatives.isNotEmpty() } }
+
+    editing?.let { (pi, slot) ->
+        val t = teams[pi]
+        val r = picks[pi]
+        if (t != null && r != null && slot in r.operatives.indices) {
+            RosterUnitPage(r, t, slot, { setPick(pi, it) }, { editing = null })
+            return
+        }
+    }
 
     Page("Game", listState = LocalUi.current.list("new-game")) {
         item {
@@ -71,16 +98,21 @@ fun NewGameScreen(app: AppState, onOpenGenerator: () -> Unit) {
                     Dropdown("Kill team", listOf<KillTeam?>(null) + app.teams, teams[i], { it?.name ?: "None" }, { t ->
                         teams = teams.toMutableList().also { it[i] = t }
                         rosters = rosters.toMutableList().also { it[i] = null }
+                        picks = picks.toMutableList().also { it[i] = null }
                         sizes = sizes.toMutableList().also { it[i] = RosterRules.gameSize(t, null) }
                     })
                     val available = app.rosters.value.filter { it.teamSlug == teams[i]?.slug }
                     if (available.isNotEmpty()) {
                         Dropdown("Roster", listOf<Roster?>(null) + available, rosters[i], { it?.name ?: "None" }, { r ->
                             rosters = rosters.toMutableList().also { it[i] = r }
+                            picks = picks.toMutableList().also { it[i] = null }
                             sizes = sizes.toMutableList().also { it[i] = RosterRules.gameSize(teams[i], r) }
                         })
                     }
                     teams[i]?.let { t ->
+                        if (rosters[i] == null) {
+                            NoRosterOperatives(t, picks[i] ?: Roster(i + 1L, "", t.slug), { r -> setPick(i, r) }, { slot -> editing = i to slot })
+                        }
                         Stepper("Team size", sizes[i], { v -> sizes = sizes.toMutableList().also { it[i] = v } }, KillOp.minOperatives, KillOp.maxOperatives)
                         Text("Size from the team rules and roster; it sets the kill grade row of the opponent.", style = MaterialTheme.typography.bodySmall)
                         Text("Tac ops: ${tacOpsFor(t).map { it.archetype.label }.distinct().joinToString(", ")}", style = MaterialTheme.typography.bodySmall)
@@ -91,14 +123,7 @@ fun NewGameScreen(app: AppState, onOpenGenerator: () -> Unit) {
         item {
             AppButton("Start game", {
                 val players = (0..1).map { i ->
-                    PlayerState(
-                        name = names[i].ifBlank { "Player ${i + 1}" },
-                        teamSlug = teams[i]?.slug,
-                        enemyStartCount = sizes[1 - i],
-                        operatives = rosterToTracks(teams[i], rosters[i]),
-                        equipment = rosters[i]?.equipment.orEmpty(),
-                        rosterEquipment = rosters[i]?.unassignedEquipment.orEmpty(),
-                    )
+                    startPlayer(names[i].ifBlank { "Player ${i + 1}" }, teams[i], chosenRoster(i), sizes[1 - i])
                 }
                 val now = nowMillis()
                 app.game.update(GameState(id = now, startedAt = now, mission = mission, players = players))
@@ -118,11 +143,12 @@ fun SecretHandover(playerName: String, onReady: () -> Unit, onDismiss: () -> Uni
     )
 }
 
-/** Secret tac op and equipment selection for one player (pass-and-play), a full page with the same tac op cards as the generator. */
+/** Secret tac op selection for one player (pass-and-play); without a kill team the equipment is still entered here. */
 @Composable
 fun SecretSelectionPage(app: AppState, game: GameState, index: Int, onClose: () -> Unit) {
     val player = game.players[index]
     val team = app.team(player.teamSlug)
+    val equipmentFixed = team != null
     val teamTacOps = remember(team) { tacOpsFor(team) }
     var filter by remember { mutableStateOf<Archetype?>(null) }
     var tacId by remember { mutableStateOf(player.tacOpId) }
@@ -140,8 +166,10 @@ fun SecretSelectionPage(app: AppState, game: GameState, index: Int, onClose: () 
         item {
             SectionCard("Your selection") {
                 Text("Tac op: ${selected?.name ?: "none selected"}")
-                Text("Equipment: ${equipment.size}/$maxEquipment")
-                equipment.forEach { Text("- $it", style = MaterialTheme.typography.bodySmall) }
+                if (!equipmentFixed) {
+                    Text("Equipment: ${equipment.size}/$maxEquipment")
+                    equipment.forEach { Text("- $it", style = MaterialTheme.typography.bodySmall) }
+                }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     AppButton("Cancel", onClose, Modifier.weight(1f), ButtonKind.Secondary)
                     AppButton("Confirm and hide", {
@@ -151,7 +179,14 @@ fun SecretSelectionPage(app: AppState, game: GameState, index: Int, onClose: () 
                 }
             }
         }
-        item {
+        if (equipmentFixed) item {
+            SectionCard("Equipment (${player.equipment.size}/$maxEquipment)") {
+                Text("Equipment is set at the operatives.", style = MaterialTheme.typography.bodySmall)
+                player.operatives.forEach { o -> o.equipment.forEach { Text("- $it (${o.name})", style = MaterialTheme.typography.bodySmall) } }
+                player.rosterEquipment.forEach { Text("- $it", style = MaterialTheme.typography.bodySmall) }
+                if (player.equipment.isEmpty()) Text("No equipment.", style = MaterialTheme.typography.bodySmall)
+            }
+        } else item {
             SectionCard("Equipment (${equipment.size}/$maxEquipment)") {
                 Text("Select up to $maxEquipment options, each option only once.")
                 if (teamEquipment.isNotEmpty()) {

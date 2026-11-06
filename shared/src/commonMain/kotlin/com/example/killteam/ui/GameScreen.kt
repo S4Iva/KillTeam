@@ -82,7 +82,7 @@ private val phaseChecklist = mapOf(
     ),
     GamePhase.SelectOperatives to listOf(
         "Each player secretly selects their operatives, then reveals simultaneously.",
-        "Each player secretly selects up to four equipment options (each only once), then reveals simultaneously.",
+        "Each player gets up to four equipment options (each only once) from the roster or the selected operatives.",
         "Each player starts with 2CP.",
         "Each player secretly selects a tac op from one of their kill team's archetypes.",
     ),
@@ -102,7 +102,7 @@ private enum class PlayerView(val label: String) {
 
 private val phaseSummary = mapOf(
     GamePhase.SetUpBattle to "Kill teams, killzone, crit op, initiative and drop zones.",
-    GamePhase.SelectOperatives to "Operatives, equipment (max. 4), 2 CP and the secret tac op.",
+    GamePhase.SelectOperatives to "Operatives and equipment (max. 4) from the roster or team selection, 2 CP and the secret tac op.",
     GamePhase.SetUpOperatives to "Set up equipment and a third of the team with Conceal orders.",
     GamePhase.Play to "Four turning points: initiative, Ready step, activations.",
     GamePhase.End to "Reveal the primary op, bonus VP and the winner.",
@@ -190,7 +190,7 @@ fun RunningGame(app: AppState, game: GameState) {
                             Text("(Sets the kill grade row of ${game.players[1 - i].name}.)")
                             Stepper("CP", p.cp, { v -> update(game.updatePlayer(i) { it.copy(cp = v) }) }, 0, 20)
                             Text(if (p.tacOpId != null) "Tac op selected (hidden), equipment ${p.equipment.size}/${ApprovedOps.MAX_EQUIPMENT}" else "No secret selection yet.")
-                            AppButton("Secret selection (tac op, equipment)", { secretFor = i }, kind = ButtonKind.Secondary, size = ButtonSize.L, fullWidth = true)
+                            AppButton(if (app.team(p.teamSlug) != null) "Secret selection (tac op)" else "Secret selection (tac op, equipment)", { secretFor = i }, kind = ButtonKind.Secondary, size = ButtonSize.L, fullWidth = true)
                         }
                     }
                 }
@@ -590,12 +590,26 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
             when (v) {
                 PlayerView.Operatives -> "Operatives (${p.operatives.count { !it.incapacitated }}/${p.operatives.size})"
                 PlayerView.TeamEquipment -> "Other equipment (${p.rosterEquipment.size})"
+                PlayerView.Strategy -> if (p.ployNames.isEmpty()) v.label else "${v.label} (${p.ployNames.size})"
                 else -> v.label
             }
         }, { view = if (view == it) null else it })
 
         when (view) {
-            PlayerView.Strategy -> if (team == null || team.strategyPloys.isEmpty()) Text("-") else team.strategyPloys.forEach { NamedTextCard(it, Palette.StrategyPloy) }
+            PlayerView.Strategy -> if (team == null || team.strategyPloys.isEmpty()) Text("-") else {
+                val (used, rest) = team.strategyPloys.partition { it.name in p.ployNames }
+                used.forEach { ploy ->
+                    val frame = RoundedCornerShape(16.dp)
+                    Column(Modifier.fillMaxWidth().border(2.dp, Palette.Accent, frame).padding(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            "Used this turning point (-${ployCost(ploy.cost)} CP)", Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                            color = Palette.Accent, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge,
+                        )
+                        NamedTextCard(ploy, Palette.StrategyPloy)
+                    }
+                }
+                rest.forEach { NamedTextCard(it, Palette.StrategyPloy) }
+            }
             PlayerView.Firefight -> if (team == null || team.firefightPloys.isEmpty()) Text("-") else team.firefightPloys.forEach { NamedTextCard(it, Palette.FirefightPloy) }
             PlayerView.FactionRule -> when {
                 team == null -> Text("-")

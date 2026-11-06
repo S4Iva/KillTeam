@@ -429,20 +429,22 @@ Ersetzt den Editor aus 4.22 (RW-2 Equipment-Abschnitt mit Chips, RW-4 Abschnitt 
 
 Status 2026-11-04: RE-1 bis RE-11 sind umgesetzt (`ui/TeamsScreen.kt` mit `RosterOverview`, `RosterAddPage`, `RosterUnitPage`, `logic/History.kt` mit `Roster.withEquipmentOn`, `withRemovedAt`, `unassignedEquipment`, `ui/GameScreen.kt`). `:shared:jvmTest` besteht. RE-12 (Abnahme auf dem Gerät) ist noch zu prüfen. Die Spielzeilen aus RW-13 (Equipment als Karten) bleiben gültig; der Text "Equipment (n)" der Spielerkarte heißt jetzt "Other equipment" und enthält nur nicht zugewiesenes Equipment.
 
-### 4.24 Geheime Auswahl mit Roster: nur Tac Op wählbar
+### 4.24 Geheime Auswahl: nur Tac Op wählbar
 
-Ändert GA-1, AT-8 und RW-13. Anlass (Test 2026-11-05): Wird für einen Spieler ein Roster gewählt, soll das Equipment in "Select Operatives" unter "Secret selection" nicht noch einmal von Hand gewählt werden. Es zählt, was im Roster steht. Wählbar bleibt nur die Tac Op.
+Ändert GA-1, AT-8 und RW-13 (Entscheidung 2026-11-06). Anlass (Test 2026-11-05): In "Select Operatives" unter "Secret selection" soll das Equipment nicht von Hand gewählt werden. Es steht entweder im Roster oder wird bei der Teamwahl den gewählten Operatives zugewiesen (4.28). Wählbar bleibt nur die Tac Op, ohne Ausnahme für Roster oder Nicht-Roster.
 
 | ID | Anforderung | Prio |
 | --- | --- | --- |
-| SR-1 | **Roster gewählt:** Ist für den Spieler beim Spielstart ein Roster gewählt, enthält die Seite "Secret selection" (`SecretSelectionPage`) keinen Abschnitt zur Equipment-Wahl (keine Chips für "Faction equipment" und "Universal equipment", kein Feld "Other equipment", kein "Remove"). Der Spieler wählt dort nur die Tac Op. | M |
-| SR-2 | **Anzeige des Roster-Equipments:** Statt der Auswahl zeigt die Seite das Equipment des Rosters schreibgeschützt (Name je Eintrag, Zähler "Equipment n/4") mit dem Hinweis "Equipment comes from the roster". Es ändert sich nicht durch "Confirm and hide". | M |
-| SR-3 | **Kein Roster:** Ohne Roster bleibt die Equipment-Wahl wie bisher (bis zu 4 Einträge, jeder nur einmal, GA-1, AT-8). | M |
-| SR-4 | **Spielstand:** `PlayerState` merkt sich, ob der Spieler mit einem Roster gestartet wurde (neues Feld mit Standard `false`, z. B. `fromRoster`, beim Spielstart in `GameSetup` aus dem gewählten Roster gesetzt). Alte Spielstände laden unverändert und verhalten sich wie "Kein Roster". Ein Roster ohne Equipment gilt als Roster: die Wahl bleibt gesperrt, die Anzeige zeigt "Equipment 0/4". | M |
-| SR-5 | **Schritt 2 "Select Operatives":** Die Zusammenfassung "Tac op selected (hidden), equipment n/4" zeigt bei einem Roster das Roster-Equipment. Der Button "Secret selection (tac op, equipment)" heißt bei einem Roster "Secret selection (tac op)". Die Ein-/Ausklapp-Anzeige des Equipments (RW-13, RE-10) bleibt unverändert. | S |
-| SR-6 | **Sichtbarkeit:** Das Roster-Equipment bleibt für beide Spieler sichtbar (RW-14). Verdeckt bleiben nur die Tac Op und bis zum Aufdecken die Primary Op. | M |
-| SR-7 | **Tests (`jvmTest`):** Spielstart mit Roster setzt `fromRoster` und übernimmt `equipment`; ohne Roster ist `fromRoster` falsch; alter Spielstand ohne das Feld lädt mit `false`; das Bestätigen der geheimen Auswahl mit Roster lässt `equipment` unverändert. | M |
-| SR-8 | **Abnahme:** Auf Android und Desktop: Ein Spiel mit Kasrkin-Roster (2 Equipment) zeigt in "Secret selection" keine Equipment-Auswahl, sondern die beiden Einträge und lässt nur die Tac Op wählen. Ein Spiel ohne Roster bietet weiterhin die volle Equipment-Wahl. | M |
+| SR-1 | **Keine Equipment-Wahl:** Hat der Spieler ein Kill Team, enthält die Seite "Secret selection" (`SecretSelectionPage`) keinen Abschnitt zur Equipment-Wahl (keine Chips für "Faction equipment" und "Universal equipment", kein Feld "Other equipment", kein "Remove"). Das gilt mit und ohne Roster. Der Spieler wählt dort nur die Tac Op. | M |
+| SR-2 | **Anzeige des Equipments:** Statt der Auswahl zeigt die Seite das Equipment des Spielers schreibgeschützt (Name je Eintrag, Zähler "Equipment n/4") mit dem Hinweis "Equipment is set at the operatives". Das sind alle Ausrüstungen der Operatives (`OperativeTrack.equipment`) und das nicht zugewiesene Roster-Equipment (`PlayerState.rosterEquipment`). "Confirm and hide" ändert es nicht. | M |
+| SR-3 | **Ohne Kill Team:** Ist für den Spieler kein Kill Team gewählt, gibt es keine Operatives und kein Roster. Dort bleibt die bisherige freie Equipment-Eingabe der Seite erhalten. | S |
+| SR-4 | **Spielstand:** Es gibt kein neues Feld. Beim Spielstart wird `PlayerState.equipment` mit allen Ausrüstungen des Spielers vorbelegt (Operatives plus nicht zugewiesenes Roster-Equipment), damit die Anzeige "equipment n/4" (AT-8) stimmt. Alte Spielstände laden unverändert. | M |
+| SR-5 | **Schritt 2 "Select Operatives":** Die Zusammenfassung "Tac op selected (hidden), equipment n/4" zeigt das Equipment des Spielers. Der Button "Secret selection (tac op, equipment)" heißt "Secret selection (tac op)". Die Ein-/Ausklapp-Anzeige des Equipments (RW-13, RE-10) bleibt unverändert. | S |
+| SR-6 | **Sichtbarkeit:** Das Equipment bleibt für beide Spieler sichtbar (RW-14). Verdeckt bleiben nur die Tac Op und bis zum Aufdecken die Primary Op. | M |
+| SR-7 | **Tests (`jvmTest`):** Spielstart mit Roster und mit Operative-Auswahl (4.28) setzt `equipment` aus den Operatives; das Bestätigen der geheimen Auswahl lässt `equipment` unverändert; alter Spielstand lädt. | M |
+| SR-8 | **Abnahme:** Auf Android und Desktop: Ein Spiel mit Kasrkin-Roster (2 Equipment) und ein Spiel mit Kasrkin ohne Roster (Operatives gewählt, Equipment zugewiesen) zeigen in "Secret selection" keine Equipment-Auswahl, sondern die zugewiesenen Einträge, und lassen nur die Tac Op wählen. | M |
+
+Status 2026-11-06: SR-1 bis SR-7 sind umgesetzt (`ui/GameSetup.kt` `SecretSelectionPage`, `ui/GameScreen.kt`). SR-8 (Abnahme auf dem Gerät) ist noch zu prüfen.
 
 ### 4.25 Strategy Phase im Turning Point mit Strategy Ploys
 
@@ -465,6 +467,53 @@ Erweitert Phase 4 "Play the Battle" (4.2, 4.17). Bisher zeigt jeder Turning Poin
 | SP-13 | **Auf- und Zuklappen:** Jeder Spieler hat in der Strategy phase eine Karte mit Name, CP-Stand und dem Button "Show strategy ploys" / "Hide strategy ploys" (BT-5). Standardmäßig ist die Karte zugeklappt und zeigt nur Name, CP und die Zusammenfassung "Ploys: n selected" (mit den Namen der gewählten Ploys als Pillen, falls n > 0). Aufgeklappt erscheinen die wählbaren Ploys (SP-2 bis SP-4). Die Spieler klappen unabhängig voneinander auf und zu. Der Zustand gilt nur für die laufende Ansicht und ändert keine Spieldaten (wie RW-9); bei jedem neuen Turning Point sind beide Karten wieder zugeklappt. Das Wählen und Abwählen ändert den Auf-/Zu-Zustand nicht. | M |
 
 Status 2026-11-05: SP-1 bis SP-11 und SP-13 sind umgesetzt (`logic/Game.kt`, `logic/GameFlow.kt` mit `withPloy`, `withoutPloy`, `confirmStrategy`, `reopenStrategy`, `ployCost`; `ui/GameScreen.kt` mit `StrategyPloyPanel`; Tests in `GameFlowTest`). `:shared:jvmTest` besteht. SP-12 (Abnahme auf dem Gerät) ist noch zu prüfen.
+
+### 4.26 Waffenwerte in der Waffenwahl des Roster-Editors
+
+Ergänzt RE-5 (Einheit bearbeiten, Abschnitt "Weapons"). Mock-up: [mockups/roster-weapons.html](mockups/roster-weapons.html).
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| WS-1 | Jede wählbare Waffenkombination hat den Button "Show stats" / "Hide stats" (BT-5), der die Werte der enthaltenen Waffen als Tabelle (Name, Typ Ranged/Melee, Atk, Hit, Dmg, WR) auf- und zuklappt. Standardmäßig sind alle zugeklappt. Die Werte kommen aus den Waffenprofilen der Datenkarte (`Weapon`). Eine Waffe mit mehreren Profilen, z. B. "(standard)" und "(supercharge)", zeigt alle Profile. | M |
+| WS-2 | Dieselbe Darstellung wie in der Datenkarte (`WeaponTable` aus `OperativeDatacard`), keine eigene Variante. Schlüsselwörter in WR sind wie dort antippbar. | M |
+| WS-3 | Das Auf- und Zuklappen einer Kombination ändert die Auswahl nicht, und das Wählen einer Kombination ändert den Auf-/Zu-Zustand nicht. Die Kombinationen klappen unabhängig voneinander. Der Zustand gilt nur für die laufende Ansicht und ändert keine Rosterdaten; beim Verlassen der Einheit ist alles wieder zugeklappt. Die gewählte Kombination ist hervorgehoben. | M |
+| WS-4 | Einheiten ohne Optionstext zeigen "All weapons of the datacard" ebenfalls mit "Show stats" / "Hide stats" (alle Waffen). | S |
+| WS-5 | Die Übersicht des Rosters (RE-3) bleibt bei der Textzeile der gewählten Kombination, ohne Werte. | S |
+
+Status 2026-11-06: WS-1 bis WS-5 sind umgesetzt (`ui/TeamsScreen.kt` `RosterUnitPage`, `ui/DataCard.kt` `WeaponStatsToggle`).
+
+### 4.27 Gewählte Strategy Ploys im Turning Point zuerst und markiert
+
+Ergänzt SP-7 und die Spielerkarte (RW-9). Gilt nur für Strategy ploys; Firefight ploys bleiben unverändert. Mock-up: [mockups/strategy-phase.html](mockups/strategy-phase.html) (Firefight phase).
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| PM-1 | In der Spielerkarte der Firefight phase zeigt der Umschalter "Strategy ploys" die in diesem Turning Point gewählten Ploys (`PlayerState.ployNames`) ganz oben. Darunter folgen die übrigen Ploys des Teams in der bisherigen Reihenfolge. | M |
+| PM-2 | Gewählte Ploys sind markiert: orange Rahmen und das Etikett "Used this turning point" mit den abgezogenen CP. | M |
+| PM-3 | Der Umschalter zeigt die Zahl, z. B. "Strategy ploys (1)". Ohne gewählten Ploy heißt er "Strategy ploys". | S |
+| PM-4 | Im nächsten Turning Point ist die Markierung weg (`ployNames` wird zurückgesetzt, SP-8). | M |
+
+Status 2026-11-06: PM-1 bis PM-4 sind umgesetzt (`ui/GameScreen.kt` `PlayerPanel`).
+
+### 4.28 Kill Team ohne Roster: Operatives und Equipment bei der Teamwahl
+
+Ergänzt RW-8 und RW-12; ersetzt den Hinweis "No operatives: the game was started without a roster". Die Wahl geschieht vor dem Spiel auf der Seite, auf der die Teams gewählt werden (`NewGameScreen`). Mock-up: [mockups/no-roster.html](mockups/no-roster.html).
+
+| ID | Anforderung | Prio |
+| --- | --- | --- |
+| OR-1 | **Liste:** Ist für einen Spieler ein Kill Team, aber kein Roster gewählt ("Roster: None"), erscheint in seiner Karte der Abschnitt "Operatives (n)" mit allen Operatives (Datenkarten) des Teams. Jede Zeile hat Name, Zähler `-` / `+` (gleiche Datenkarten mehrfach möglich) und den Button "Show datacard" / "Hide datacard" (BT-5). Standardmäßig sind alle Karten zugeklappt. Aufgeklappt erscheint die Datenkarte wie im Teams-Tab (`OperativeDatacard`, Werte und Waffen). | M |
+| OR-2 | **Übernahme ins Spiel:** Die gewählten Operatives werden beim Spielstart zu `OperativeTrack`-Einträgen (Name, Wounds, Datenkarte, Waffen, Equipment). Im Turning Point stehen genau diese in der Spielerkarte unter "Operatives" mit aufklappbarer Datenkarte (RW-9, RW-10). Die Teamgröße (Kill-Grade-Zeile des Gegners) folgt der Zahl der gewählten Operatives; bis dahin gilt die Angabe wie bisher. | M |
+| OR-3 | **Waffenwahl:** Hat ein gewählter Operative Waffenoptionen (RW-3), wählt der Spieler die Kombination wie im Roster, mit den Werten aus 4.26. Ohne Wahl gelten alle Waffen (RW-12). | S |
+| OR-4 | **Equipment an Operatives:** Jeder gewählte Operative bekommt Equipment wie im Roster-Editor (RE-5, RE-6): Tabs "Faction" und "Universal", höchstens 4 verschiedene Einträge je Spieler, jeder nur einmal, jeder bei genau einem Operative; Antippen eines Equipments eines anderen Operatives verschiebt es. Im Spiel steht das Equipment als aufklappbare Karte bei der Einheit (RE-10). | M |
+| OR-5 | **Budget und Prüfung:** Wie im Roster-Editor (RE-2, RW-5) zeigt der Abschnitt "Operatives n/erwartet" und "Equipment n/4" und die Meldungen (Größe, Waffen nicht gewählt, mehr als 4 Equipment). Meldungen sperren den Spielstart nicht. | S |
+| OR-6 | **Umsetzung:** Intern wird ein temporäres, nicht gespeichertes `Roster` verwendet, damit Regeln und Prüfungen (`RosterRules`, `withEquipmentOn`, `rosterToTracks`) mit dem Roster-Editor identisch sind. Es erscheint nicht in der Roster-Liste. | M |
+| OR-7 | **Ändern:** Die Wahl lässt sich bis zum Spielstart jederzeit ändern. Wechselt der Spieler Team oder wählt ein Roster, wird die Auswahl verworfen. | M |
+| OR-8 | **Ohne Auswahl:** Wählt der Spieler keine Operatives, startet das Spiel wie bisher ohne Operatives, und der Hinweis "No operatives: the game was started without a roster" bleibt. | S |
+| OR-9 | **Secret selection:** Dort wird nur die Tac Op gewählt (4.24). | M |
+| OR-10 | **Tests (`jvmTest`):** Auswahl mit mehrfachen Datenkarten erzeugt die richtigen `OperativeTrack`-Einträge, Wounds und Datenkarte stimmen, Equipment-Limit 4 und Zuweisung an genau einen Operative, Verwerfen bei Teamwechsel, leere Auswahl startet ohne Operatives. | M |
+| OR-11 | **Abnahme:** Auf Android und Desktop: Kasrkin wählen, kein Roster, Sergeant und zwei Troopers wählen, die Datenkarte des Sergeants aufklappen (Werte sichtbar), zwei Equipment verteilen, das Spiel starten. Im Turning Point stehen genau diese drei Operatives mit aufklappbarer Datenkarte und Equipment. | M |
+
+Status 2026-11-06: OR-1 bis OR-10 sind umgesetzt (`ui/GameRoster.kt` `NoRosterOperatives`, `ui/GameSetup.kt` `NewGameScreen` und `startPlayer`, `RosterUnitPage` für Waffen und Equipment; Tests in `NoRosterStartTest`). `:shared:jvmTest` und `:androidApp:assembleDebug` bestehen. OR-11 (Abnahme auf dem Gerät) ist noch zu prüfen. Die Mehrfach-Auswahl gleicher Datenkarten läuft über den Zähler `-` / `+` je Operative (OR-1), Waffen und Equipment je Einheit über "Weapons and equipment".
 
 ## 5. Nicht-funktionale Anforderungen
 

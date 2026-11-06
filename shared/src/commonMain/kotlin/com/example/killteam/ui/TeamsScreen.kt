@@ -297,7 +297,7 @@ private sealed interface RosterPage {
 
 /** Operatives and equipment budget; shown on every page of the roster editor. */
 @Composable
-private fun RosterBudget(roster: Roster, team: KillTeam?) {
+internal fun RosterBudget(roster: Roster, team: KillTeam?) {
     val expected = team?.let { RosterRules.expectedSize(it) } ?: 0
     val equipment = roster.equipment.size
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -322,7 +322,7 @@ private fun BudgetCell(label: String, value: String, modifier: Modifier, extra: 
 }
 
 @Composable
-private fun Pill(text: String) {
+internal fun Pill(text: String) {
     Text(
         text, Modifier.clip(RoundedCornerShape(12.dp)).background(Palette.Equipment).padding(horizontal = 8.dp, vertical = 3.dp),
         style = MaterialTheme.typography.labelSmall, color = Color.White,
@@ -463,13 +463,16 @@ private fun RosterAddPage(roster: Roster, team: KillTeam?, save: (Roster) -> Uni
 }
 
 @Composable
-private fun RosterUnitPage(roster: Roster, team: KillTeam, slot: Int, save: (Roster) -> Unit, onBack: () -> Unit) {
+internal fun RosterUnitPage(roster: Roster, team: KillTeam, slot: Int, save: (Roster) -> Unit, onBack: () -> Unit) {
     val name = roster.operatives[slot]
     val choices = team.weaponOptions[name]
+    val datacard = team.operatives.firstOrNull { it.name == name }
     val max = ApprovedOps.MAX_EQUIPMENT
     var factionTab by remember(roster.id, slot) { mutableStateOf(true) }
     var custom by remember { mutableStateOf("") }
     var unfolded by remember(roster.id, slot) { mutableStateOf(setOf<String>()) }
+    var statsOpen by remember(roster.id, slot) { mutableStateOf(setOf<String>()) }
+    val toggleStats: (String) -> Unit = { k -> statsOpen = if (k in statsOpen) statsOpen - k else statsOpen + k }
     val factionNames = team.equipment.map { it.name }.sorted()
     val universalNames = ApprovedOps.universalEquipment + roster.equipment.filter { it !in factionNames && it !in ApprovedOps.universalEquipment }
 
@@ -479,9 +482,11 @@ private fun RosterUnitPage(roster: Roster, team: KillTeam, slot: Int, save: (Ros
             SectionCard("Weapons") {
                 if (choices == null) {
                     Text("All weapons of the datacard, no choice needed.", style = MaterialTheme.typography.bodySmall)
+                    if (datacard != null) WeaponStatsToggle("" in statsOpen, { toggleStats("") }, datacard.weapons)
                 } else {
                     choices.forEach { c ->
                         ChoiceRow(roster.optionAt(slot) == c.label, true, c.label, null, null, true) { save(roster.withOption(slot, c.label)) }
+                        if (datacard != null) WeaponStatsToggle(c.label in statsOpen, { toggleStats(c.label) }, datacard.weapons.filter { it.name in c.weapons })
                     }
                 }
             }
