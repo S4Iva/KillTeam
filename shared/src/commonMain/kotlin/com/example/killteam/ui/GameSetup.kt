@@ -68,6 +68,7 @@ fun NewGameScreen(app: AppState, onOpenGenerator: () -> Unit) {
     var picks by remember { mutableStateOf(listOf<Roster?>(null, null)) }
     var editing by remember { mutableStateOf<Pair<Int, Int>?>(null) }
     var sizes by remember { mutableStateOf(listOf(6, 6)) }
+    var openPlayers by remember { mutableStateOf(setOf(0, 1)) }
     val mission = app.mission.value
     val setPick = { i: Int, r: Roster? ->
         picks = picks.toMutableList().also { it[i] = r }
@@ -93,7 +94,15 @@ fun NewGameScreen(app: AppState, onOpenGenerator: () -> Unit) {
         }
         for (i in 0..1) {
             item {
-                SectionCard("Player ${i + 1}") {
+                val open = i in openPlayers
+                SectionCard("Player ${i + 1}", actions = { Chevron(open, { openPlayers = if (open) openPlayers - i else openPlayers + i }, "player") }) {
+                    if (!open) {
+                        Text(
+                            "${names[i].ifBlank { "Player ${i + 1}" }}: ${teams[i]?.name ?: "no kill team"}" + (chosenRoster(i)?.let { ", ${it.operatives.size} operatives" } ?: ""),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        return@SectionCard
+                    }
                     OutlinedTextField(names[i], { v -> names = names.toMutableList().also { it[i] = v } }, Modifier.fillMaxWidth(), label = { Text("Name") }, singleLine = true)
                     Dropdown("Kill team", listOf<KillTeam?>(null) + app.teams, teams[i], { it?.name ?: "None" }, { t ->
                         teams = teams.toMutableList().also { it[i] = t }

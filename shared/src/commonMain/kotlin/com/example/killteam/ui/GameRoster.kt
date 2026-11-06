@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -12,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,6 +27,7 @@ import com.example.killteam.logic.RosterRules
 fun NoRosterOperatives(team: KillTeam, roster: Roster, onChange: (Roster) -> Unit, onEdit: (slot: Int) -> Unit) {
     var openCards by remember(team.slug) { mutableStateOf(setOf<String>()) }
     var statsOpen by remember(team.slug) { mutableStateOf(setOf<String>()) }
+    var openUnits by remember(team.slug) { mutableStateOf(setOf<Int>()) }
     val room = { card: String -> RosterRules.room(team, roster, card) }
 
     Text("Operatives (${roster.operatives.size})", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = Palette.Accent)
@@ -52,7 +55,21 @@ fun NoRosterOperatives(team: KillTeam, roster: Roster, onChange: (Roster) -> Uni
         val choices = team.weaponOptions[roster.operatives[slot]]
         val option = roster.optionAt(slot)
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(roster.slotLabel(slot), fontWeight = FontWeight.Bold)
+            val unitOpen = slot in openUnits
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(roster.slotLabel(slot), Modifier.weight(1f), fontWeight = FontWeight.Bold)
+                Chevron(unitOpen, { openUnits = openUnits.toggledInt(slot) }, "operative")
+            }
+            if (!unitOpen) {
+                Text(
+                    if (choices == null) "All weapons of the datacard" else option.ifBlank { "Choose weapons" },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (choices != null && option.isBlank()) Palette.Highlight else Palette.Text.copy(alpha = 0.7f),
+                )
+                val held = roster.equipmentOf(slot)
+                if (held.isNotEmpty()) FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) { held.forEach { Pill(it) } }
+                return@Column
+            }
             if (choices == null) {
                 Text("All weapons of the datacard", style = MaterialTheme.typography.bodySmall, color = Palette.Text.copy(alpha = 0.7f))
                 if (datacard != null) WeaponStatsToggle("$slot:" in statsOpen, { statsOpen = statsOpen.toggled("$slot:") }, datacard.weapons)
@@ -77,3 +94,5 @@ fun NoRosterOperatives(team: KillTeam, roster: Roster, onChange: (Roster) -> Uni
 }
 
 private fun Set<String>.toggled(key: String) = if (key in this) this - key else this + key
+
+private fun Set<Int>.toggledInt(key: Int) = if (key in this) this - key else this + key

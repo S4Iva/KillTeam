@@ -331,12 +331,12 @@ internal fun Pill(text: String) {
 
 /** Round button with a drawn chevron that turns downwards when [expanded]. */
 @Composable
-private fun Chevron(expanded: Boolean, onClick: () -> Unit) {
+internal fun Chevron(expanded: Boolean, onClick: () -> Unit, what: String = "rules") {
     val angle by animateFloatAsState(if (expanded) 90f else 0f, label = "chevron")
     Box(
         Modifier.size(32.dp).clip(CircleShape).background(Palette.Accent.copy(alpha = 0.18f))
             .clickable(role = Role.Button, onClick = onClick)
-            .semantics { contentDescription = if (expanded) "Hide rules" else "Show rules" },
+            .semantics { contentDescription = if (expanded) "Hide $what" else "Show $what" },
         contentAlignment = Alignment.Center,
     ) {
         Canvas(Modifier.size(14.dp)) {
