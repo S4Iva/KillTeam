@@ -450,7 +450,7 @@ private fun RosterAddPage(roster: Roster, team: KillTeam?, save: (Roster) -> Uni
             SectionCard(name) {
                 val options = team?.weaponOptions?.get(name)?.size ?: 0
                 if (options > 0) Text("$options weapon options", style = MaterialTheme.typography.bodySmall)
-                val room = if (expected > 0) (expected - roster.operatives.size).coerceAtLeast(0) else Int.MAX_VALUE - count
+                val room = if (team != null) RosterRules.room(team, roster, name) else 99
                 Stepper("Selected", count, { v -> save(if (v > count) roster.withAdded(name) else roster.withRemovedLast(name)) }, 0, count + room)
             }
         }

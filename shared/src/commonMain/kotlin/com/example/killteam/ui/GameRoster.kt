@@ -24,8 +24,7 @@ import com.example.killteam.logic.RosterRules
 @Composable
 fun NoRosterOperatives(team: KillTeam, roster: Roster, onChange: (Roster) -> Unit, onEdit: (slot: Int) -> Unit) {
     var openCards by remember(team.slug) { mutableStateOf(setOf<String>()) }
-    val expected = RosterRules.expectedSize(team)
-    val room = if (expected > 0) (expected - roster.operatives.size).coerceAtLeast(0) else 99
+    val room = { card: String -> RosterRules.room(team, roster, card) }
 
     Text("Operatives (${roster.operatives.size})", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = Palette.Accent)
     RosterBudget(roster, team)
@@ -33,7 +32,7 @@ fun NoRosterOperatives(team: KillTeam, roster: Roster, onChange: (Roster) -> Uni
         val count = roster.operatives.count { it == op.name }
         val open = op.name in openCards
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Stepper(op.name, count, { v -> onChange(if (v > count) roster.withAdded(op.name) else roster.withRemovedLast(op.name)) }, 0, count + room)
+            Stepper(op.name, count, { v -> onChange(if (v > count) roster.withAdded(op.name) else roster.withRemovedLast(op.name)) }, 0, count + room(op.name))
             AppButton(
                 if (open) "Hide datacard" else "Show datacard", { openCards = if (open) openCards - op.name else openCards + op.name },
                 kind = ButtonKind.Secondary, size = ButtonSize.S, fullWidth = true,

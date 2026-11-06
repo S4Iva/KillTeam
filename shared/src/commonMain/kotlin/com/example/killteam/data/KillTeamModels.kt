@@ -119,6 +119,9 @@ class KillTeam(
     /** Weapon options per datacard name, read from the composition text (see [WeaponOptions]); operatives without options are missing. */
     val weaponOptionReport: WeaponOptionReport by lazy { WeaponOptions.parse(this) }
     val weaponOptions: Map<String, List<WeaponOption>> get() = weaponOptionReport.options
+
+    /** Per-datacard and combined limits read from the composition text (see [CompositionRules]). */
+    val compositionLimits: CompositionLimits by lazy { CompositionRules.parse(this) }
 }
 
 @Serializable

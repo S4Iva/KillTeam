@@ -102,7 +102,7 @@ object WeaponOptions {
         groups.fold(listOf(emptyList<String>())) { acc, group -> acc.flatMap { prefix -> group.map { prefix + it } } }
 
     /** The datacard of a composition name such as "KASRKIN SERGEANT", "GUNNER" or "IMPERIAL NAVY BREACHER SERGEANT-AT-ARMS". */
-    private fun resolve(team: KillTeam, rawName: String): Operative? {
+    internal fun resolve(team: KillTeam, rawName: String): Operative? {
         val name = rawName.trimEnd('*').trim().lowercase()
         val short = name.removePrefix(team.name.lowercase()).trim()
         // "GUNNER" must find "<Team> Gunner" even when "<Team> Heavy Gunner" also ends with the same word.

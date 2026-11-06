@@ -111,6 +111,14 @@ object RosterRules {
         return size.coerceIn(KillOp.minOperatives, KillOp.maxOperatives)
     }
 
+    /** How many more operatives of this datacard the team size and the composition text still allow (at most 99). */
+    fun room(team: KillTeam, roster: Roster, card: String): Int {
+        val expected = expectedSize(team)
+        val totalRoom = if (expected > 0) (expected - roster.operatives.size).coerceAtLeast(0) else 99
+        val textRoom = team.compositionLimits.room(roster.operatives.groupingBy { it }.eachCount(), card) ?: 99
+        return minOf(totalRoom, textRoom, 99)
+    }
+
     /** Team size derived from composition lines such as "1 KASRKIN SERGEANT operative ..." and "9 KASRKIN operatives ...". */
     fun expectedSize(team: KillTeam): Int =
         team.composition.sumOf { line -> Regex("^(\\d+)\\s").find(line.trim())?.groupValues?.get(1)?.toInt() ?: 0 }
@@ -120,6 +128,7 @@ object RosterRules {
         if (expected > 0 && roster.operatives.size != expected) {
             add("Team needs $expected operatives, selected ${roster.operatives.size}.")
         }
+        addAll(team.compositionLimits.problems(roster.operatives.groupingBy { it }.eachCount()))
         val known = team.operatives.map { it.name }.toSet()
         roster.operatives.filter { it !in known }.distinct().forEach { add("Unknown operative: $it") }
     }
