@@ -463,7 +463,7 @@ private fun RosterAddPage(roster: Roster, team: KillTeam?, save: (Roster) -> Uni
 }
 
 @Composable
-internal fun RosterUnitPage(roster: Roster, team: KillTeam, slot: Int, save: (Roster) -> Unit, onBack: () -> Unit) {
+internal fun RosterUnitPage(roster: Roster, team: KillTeam, slot: Int, save: (Roster) -> Unit, onBack: () -> Unit, showWeapons: Boolean = true) {
     val name = roster.operatives[slot]
     val choices = team.weaponOptions[name]
     val datacard = team.operatives.firstOrNull { it.name == name }
@@ -478,7 +478,7 @@ internal fun RosterUnitPage(roster: Roster, team: KillTeam, slot: Int, save: (Ro
 
     Page(roster.slotLabel(slot), onBack) {
         item { RosterBudget(roster, team) }
-        item {
+        if (showWeapons) item {
             SectionCard("Weapons") {
                 if (choices == null) {
                     Text("All weapons of the datacard, no choice needed.", style = MaterialTheme.typography.bodySmall)

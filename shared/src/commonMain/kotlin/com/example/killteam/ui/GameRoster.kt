@@ -24,6 +24,7 @@ import com.example.killteam.logic.RosterRules
 @Composable
 fun NoRosterOperatives(team: KillTeam, roster: Roster, onChange: (Roster) -> Unit, onEdit: (slot: Int) -> Unit) {
     var openCards by remember(team.slug) { mutableStateOf(setOf<String>()) }
+    var statsOpen by remember(team.slug) { mutableStateOf(setOf<String>()) }
     val room = { card: String -> RosterRules.room(team, roster, card) }
 
     Text("Operatives (${roster.operatives.size})", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = Palette.Accent)
@@ -47,26 +48,32 @@ fun NoRosterOperatives(team: KillTeam, roster: Roster, onChange: (Roster) -> Uni
     }
     Text("Selected operatives", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = Palette.Accent)
     roster.operatives.indices.forEach { slot ->
+        val datacard = team.operatives.firstOrNull { it.name == roster.operatives[slot] }
         val choices = team.weaponOptions[roster.operatives[slot]]
         val option = roster.optionAt(slot)
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(roster.slotLabel(slot), fontWeight = FontWeight.Bold)
             if (choices == null) {
-                Text("Standard weapons", style = MaterialTheme.typography.bodySmall, color = Palette.Text.copy(alpha = 0.7f))
+                Text("All weapons of the datacard", style = MaterialTheme.typography.bodySmall, color = Palette.Text.copy(alpha = 0.7f))
+                if (datacard != null) WeaponStatsToggle("$slot:" in statsOpen, { statsOpen = statsOpen.toggled("$slot:") }, datacard.weapons)
             } else {
                 Text("Weapons", style = MaterialTheme.typography.labelMedium, color = if (option.isBlank()) Palette.Highlight else Palette.Text.copy(alpha = 0.7f))
                 choices.forEach { c ->
                     val chosen = option == c.label
                     val block = if (chosen) null else RosterRules.optionBlock(team, roster, slot, c.label)
                     ChoiceRow(chosen, true, c.label, null, block, block == null) { onChange(roster.withOption(slot, c.label)) }
+                    val key = "$slot:${c.label}"
+                    if (datacard != null) WeaponStatsToggle(key in statsOpen, { statsOpen = statsOpen.toggled(key) }, datacard.weapons.filter { it.name in c.weapons })
                 }
             }
             val carried = roster.equipmentOf(slot)
             if (carried.isEmpty()) Text("No equipment", style = MaterialTheme.typography.labelSmall, color = Palette.Text.copy(alpha = 0.5f))
             else FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) { carried.forEach { Pill(it) } }
-            AppButton("Weapon stats and equipment", { onEdit(slot) }, kind = ButtonKind.Secondary, size = ButtonSize.S, fullWidth = true)
+            AppButton("Equipment", { onEdit(slot) }, kind = ButtonKind.Secondary, size = ButtonSize.S, fullWidth = true)
         }
     }
     RosterRules.problems(team, roster).forEach { Text(it, color = MaterialTheme.colorScheme.error) }
     RosterRules.warnings(team, roster).forEach { Text(it, color = Palette.Highlight) }
 }
+
+private fun Set<String>.toggled(key: String) = if (key in this) this - key else this + key

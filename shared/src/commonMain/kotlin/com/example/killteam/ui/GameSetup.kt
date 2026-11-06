@@ -79,7 +79,7 @@ fun NewGameScreen(app: AppState, onOpenGenerator: () -> Unit) {
         val t = teams[pi]
         val r = picks[pi]
         if (t != null && r != null && slot in r.operatives.indices) {
-            RosterUnitPage(r, t, slot, { setPick(pi, it) }, { editing = null })
+            RosterUnitPage(r, t, slot, { setPick(pi, it) }, { editing = null }, showWeapons = false)
             return
         }
     }
