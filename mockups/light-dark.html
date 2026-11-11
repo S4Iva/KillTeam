@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kill Team Companion - Mock-up Hell/Dunkel</title>
+<style>
+  body { margin: 0; padding: 24px; background: #000; color: #f2f2f2; font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.hint { color: #a0a0a0; margin: 0 0 20px; font-size: 14px; max-width: 900px; line-height: 1.45; }
+  .row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+  .col h2 { font-size: 13px; color: #e8650a; margin: 0 0 8px; text-transform: uppercase; letter-spacing: .08em; }
+  .col small { display: block; color: #a0a0a0; font-size: 12px; margin: -4px 0 8px; max-width: 340px; line-height: 1.4; }
+  .notes { max-width: 340px; font-size: 13px; color: #a0a0a0; line-height: 1.5; }
+  .notes li { margin-bottom: 6px; }
+  * { box-sizing: border-box; }
+
+  /* Theme variables: the whole app area (.app) switches by class. */
+  .app.dark { --bg: #14171a; --surface: #1e2226; --surface2: #2a3036; --line: #3a424a; --accent: #e8650a; --accent-ink: #fff; --text: #f2f2f2; --muted: #a3adb5; --head: #1b2a33; --tabs: #1e2226; --ok: #4caf7a; --warn: #f2c14e; --danger: #e5645a; --rowa: #1f2a32; --rowb: #27343e; --dc: #161e24; --chip-on: #e8650a; --chip-on-ink: #fff; --dctext: #ffffff; --dcmuted: #c3cdd4; }
+  .app.light { --bg: #f4f1ea; --surface: #ffffff; --surface2: #ece7dc; --line: #d6cfbf; --accent: #b84a08; --accent-ink: #fff; --text: #23211c; --muted: #655f52; --head: #2b3640; --tabs: #ffffff; --ok: #2e7d4f; --warn: #9a6b00; --danger: #b3342b; --rowa: #1f2a32; --rowb: #27343e; --dc: #161e24; --chip-on: #b84a08; --chip-on-ink: #fff; --dctext: #ffffff; --dcmuted: #c3cdd4; }
+
+  .phone { width: 340px; height: 700px; border: 8px solid #333; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; background: var(--bg); color: var(--text); transition: background .2s, color .2s; }
+  .top { background: var(--head); color: #fff; padding: 12px 14px; font-weight: 700; font-size: 17px; border-bottom: 2px solid var(--accent); }
+  .body { flex: 1; overflow-y: auto; padding: 12px; scrollbar-width: thin; }
+  .tabs { display: flex; background: var(--tabs); border-top: 1px solid var(--line); }
+  .tabs div { flex: 1; text-align: center; padding: 8px 0 6px; font-size: 10px; color: var(--muted); }
+  .tabs div b { display: block; font-size: 17px; font-weight: 400; }
+  .tabs div.act { color: var(--accent); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 12px; overflow: hidden; }
+  .card .hd { background: var(--head); color: #fff; padding: 9px 12px; font-weight: 700; font-size: 14px; border-left: 6px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
+  .card .bd { padding: 12px; font-size: 13px; line-height: 1.45; }
+  .muted { color: var(--muted); font-size: 12px; }
+  .btn { display: block; width: 100%; padding: 11px; border-radius: 50px; border: 2px solid var(--accent); background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 13px; text-align: center; margin-top: 8px; }
+  .btn.sec { background: transparent; color: var(--accent); }
+  .seg { display: flex; gap: 8px; margin-top: 8px; }
+  .seg div { flex: 1; text-align: center; padding: 10px 0; border-radius: 50px; border: 2px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; cursor: pointer; }
+  .seg div.on { background: var(--accent); color: var(--accent-ink); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .chips div { font-size: 12px; padding: 6px 11px; border-radius: 8px; border: 1px solid var(--line); color: var(--muted); background: var(--surface); }
+  .chips div.on { background: var(--chip-on); border-color: var(--chip-on); color: var(--chip-on-ink); font-weight: 700; }
+  .tile { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin-bottom: 10px; }
+  .tile .ic { width: 36px; height: 36px; background: var(--surface2); border: 1px solid var(--accent); color: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex: none; }
+  .tile .t { flex: 1; font-weight: 600; font-size: 14px; }
+  .tile .t span { display: block; font-weight: 400; font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .field { background: var(--surface2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 13px; margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .field span:first-child { color: var(--muted); }
+  .status { font-size: 13px; font-weight: 700; margin: 6px 0; }
+  .status.bad { color: var(--warn); }
+  .bar { display: flex; gap: 3px; margin: 6px 0; }
+  .bar i { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+  .bar i.on { background: var(--accent); }
+  .bar i.new { background: var(--ok); }
+  .dc { background: var(--dc); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+  .dc .head { background: #1b2a33; color: #fff; padding: 10px 12px; }
+  .dc .nm { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+  .dc .stats { display: flex; gap: 6px; }
+  .dc .stat { flex: 1; background: #0b1115; border-radius: 0 0 10px 10px; text-align: center; padding: 5px 0; font-size: 10px; letter-spacing: .08em; color: #fff; }
+  .dc .stat b { display: block; font-size: 17px; letter-spacing: 0; }
+  .dc table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .dc th { text-align: left; padding: 6px 10px; border-bottom: 2px solid var(--accent); color: var(--dcmuted); font-size: 11px; }
+  .dc td { padding: 7px 10px; color: var(--dctext); }
+  .dc tr:nth-child(odd) td { background: var(--rowa); }
+  .dc tr:nth-child(even) td { background: var(--rowb); }
+  .search { background: var(--surface2); border: 1px solid var(--line); border-radius: 22px; padding: 10px 14px; font-size: 14px; color: var(--muted); }
+  .link { color: var(--accent); text-decoration: underline; }
+  .os { margin-top: 10px; font-size: 12px; color: var(--muted); }
+  .os button { background: transparent; border: 1px solid var(--accent); color: var(--accent); border-radius: 8px; padding: 4px 10px; cursor: pointer; font-size: 12px; margin-left: 6px; }
+  .cmp { display: flex; gap: 0; border-radius: 12px; overflow: hidden; border: 1px solid #444; margin-top: 12px; }
+  .cmp > div { flex: 1; padding: 10px; font-size: 12px; }
+  .cmp .d { background: #14171a; color: #f2f2f2; } .cmp .l { background: #f4f1ea; color: #23211c; }
+  .cmp i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<h1>Mock-up: Hell/Dunkel-Modus</h1>
+<p class="hint">Vorschlag für einen Theme-Schalter unter More (System, Hell, Dunkel). Im ersten Bildschirm wählen, die drei anderen Bildschirme folgen sofort. Bei "System" kann das Betriebssystem simuliert werden. Klickbarer Entwurf; Inhalte sind Platzhalter.</p>
+
+<div class="row" id="root">
+  <div class="col"><h2>1 &middot; More: Darstellung</h2>
+    <small>Neue Karte "Appearance": System / Light / Dark mit Vorschau. Die Wahl wird gespeichert.</small>
+    <div class="phone app" id="p1"></div></div>
+
+  <div class="col"><h2>2 &middot; Game: Firefight</h2>
+    <small>Karten, Chips, Buttons, Status und Leisten in beiden Modi.</small>
+    <div class="phone app" id="p2"></div></div>
+
+  <div class="col"><h2>3 &middot; Teams: Datenkarte</h2>
+    <small>Die Datenkarte bleibt in beiden Modi dunkel (wie ein Datenblatt), alles andere folgt dem Modus.</small>
+    <div class="phone app" id="p3"></div></div>
+
+  <div class="col"><h2>4 &middot; Rules</h2>
+    <small>Suche, Chips, Karten und Links; der Link-Orange ist im hellen Modus dunkler für den Kontrast.</small>
+    <div class="phone app" id="p4"></div></div>
+
+  <div class="col notes">
+    <h2>Hinweise</h2>
+    <ul>
+      <li>Drei Optionen: System (folgt dem Gerät, Standard), Light, Dark. Gespeichert in den Einstellungen, wirkt sofort ohne Neustart.</li>
+      <li>Der Akzent ist im hellen Modus dunkler (#B84A08 statt #E8650A), damit Text und Links auf hellem Grund ausreichend Kontrast haben (mindestens 4,5:1).</li>
+      <li>Titelleisten, Datenkarten-Kopf und Marken-Elemente bleiben dunkel; so wirkt die App in beiden Modi wie dieselbe App.</li>
+      <li>Statusfarben (ok, Warnung, Fehler) haben je Modus eine passende Variante.</li>
+      <li>Technisch: ein zweites `ColorScheme` und eine zweite `Palette`-Ausprägung (Objekt `Palette` wird zu einer Klasse über `CompositionLocal`).</li>
+    </ul>
+    <div class="cmp"><div class="d"><i style="background:#e8650a"></i>Dunkel</div><div class="l"><i style="background:#b84a08"></i>Hell</div></div>
+  </div>
+</div>
+
+<script>
+  const S = { mode: "system", os: "dark" };
+  const eff = () => (S.mode === "system" ? S.os : S.mode);
+  const tabs = a => `<div class="tabs">${["Generator", "Game", "Teams", "Rules", "More"].map((t, i) => `<div class="${i === a ? "act" : ""}"><b>${["&#9876;", "&#9654;", "&#9733;", "&#9776;", "&#8230;"][i]}</b>${t}</div>`).join("")}</div>`;
+
+  function p1() {
+    return `<div class="top">More</div><div class="body">
+      <div class="card"><div class="hd"><span>Appearance</span></div><div class="bd">
+        <div class="muted">Choose how the app looks.</div>
+        <div class="seg">${[["system", "System"], ["light", "Light"], ["dark", "Dark"]].map(([k, l]) => `<div class="${S.mode === k ? "on" : ""}" onclick="setMode('${k}')">${l}</div>`).join("")}</div>
+        ${S.mode === "system" ? `<div class="os">Device is set to <b>${S.os}</b><button onclick="toggleOs()">Simulate ${S.os === "dark" ? "light" : "dark"}</button></div>` : ""}
+      </div></div>
+      <div class="tile"><div class="ic">&#9998;</div><div class="t">Notes<span>Teams, rules, ops</span></div><span class="muted">&#9654;</span></div>
+      <div class="tile"><div class="ic">&#8635;</div><div class="t">History and statistics<span>12 games</span></div><span class="muted">&#9654;</span></div>
+      <div class="card"><div class="hd"><span>Access</span><span style="color:#8fe0b0">active</span></div><div class="bd">Time limited code: 4 days 3 hours left.<div class="muted" style="margin-top:6px">v1.4.0.a &middot; Data: 2026-11-02</div></div></div>
+    </div>${tabs(4)}`;
+  }
+  function p2() {
+    return `<div class="top">Game - Turning Point 2/4 - Firefight phase</div><div class="body">
+      <div class="card"><div class="hd"><span>Turning point 2/4</span></div><div class="bd"><div class="bar"><i class="on"></i><i class="on"></i><i></i></div><div class="muted">1. Strategy &middot; <b style="color:var(--accent)">2. Firefight</b> &middot; 3. Score</div></div></div>
+      <div class="card"><div class="hd"><span>Player 1 - Kasrkin</span><span>CP 3</span></div><div class="bd">
+        <div class="chips"><div class="on">Operatives (3/3)</div><div>Strategy ploys (1)</div><div>Firefight ploys</div><div>Faction rules</div></div>
+        <div class="status">8/9 W [wounded]</div>
+        <div class="field"><span>Equipment</span><span>Frag grenades</span></div>
+        <div class="btn sec">-1 W</div><div class="btn">Show datacard</div></div></div>
+      <div class="card"><div class="hd"><span>Score</span><span>4 VP</span></div><div class="bd"><div class="bar"><i class="on"></i><i class="on"></i><i class="new"></i><i></i><i></i><i></i></div><div class="muted">Orange: earlier turns. <span style="color:var(--ok);font-weight:700">+1 this turning point</span></div></div></div>
+    </div>${tabs(1)}`;
+  }
+  function p3() {
+    return `<div class="top">Kasrkin</div><div class="body">
+      <div class="dc"><div class="head"><div class="nm">Kasrkin Sergeant</div><div class="stats"><div class="stat">APL<b>3</b></div><div class="stat">MOVE<b>6"</b></div><div class="stat">SAVE<b>4+</b></div><div class="stat">WOUNDS<b>9</b></div></div></div>
+        <table><tr><th>Weapon</th><th>Atk</th><th>Hit</th><th>Dmg</th></tr><tr><td>Bolt pistol</td><td>4</td><td>3+</td><td>3/4</td></tr><tr><td>Power weapon</td><td>4</td><td>3+</td><td>4/6</td></tr><tr><td>Plasma pistol</td><td>4</td><td>3+</td><td>3/5</td></tr></table></div>
+      <div class="card"><div class="hd"><span>Faction rule</span></div><div class="bd">Hot-shot weapons: a ranged weapon that includes <span class="link">hot-shot</span> in its name.</div></div>
+    </div>${tabs(2)}`;
+  }
+  function p4() {
+    return `<div class="top">Rules</div><div class="body">
+      <div class="seg"><div class="on">Rules</div><div>Glossary</div></div>
+      <div class="search" style="margin-top:12px">Search rules and keywords</div>
+      <div class="muted" style="margin:12px 0 4px">COMMON KEYWORDS</div>
+      <div class="chips"><div>Piercing</div><div>Blast</div><div>Cover</div><div>Engage</div></div>
+      <div class="card"><div class="hd"><span>Quick reference</span></div><div class="bd"><b>Shoot</b><div class="muted">Select a ranged weapon and a valid target ...</div><div style="margin-top:8px">Remove X dice with <span class="link">Piercing</span>.</div></div></div>
+    </div>${tabs(3)}`;
+  }
+  function draw() {
+    ["p1", "p2", "p3", "p4"].forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.className = "phone app " + eff();
+      el.innerHTML = [p1, p2, p3, p4][i]();
+    });
+  }
+  function setMode(m) { S.mode = m; draw(); }
+  function toggleOs() { S.os = S.os === "dark" ? "light" : "dark"; draw(); }
+  draw();
+</script>
+</body>
+</html>

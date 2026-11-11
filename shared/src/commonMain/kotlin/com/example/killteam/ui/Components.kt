@@ -1,6 +1,7 @@
 package com.example.killteam.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -67,16 +68,23 @@ import killteam.shared.generated.resources.ic_nav_top
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
-/** Own dark theme (anthracite and Kill-Team orange); the exact orange value is still to be matched with the official look. */
+/** Own theme (anthracite or paper with Kill-Team orange). Colors that differ by mode read [dark], so composables recompose when it changes; headers stay dark in both modes. */
 object Palette {
-    val Accent = Color(0xFFE8650A)
-    val Danger = Color(0xFFE5645A)
-    val Highlight = Color(0xFFF2C14E)
+    /** Set once per composition by the app shell from the Appearance option. */
+    var dark: Boolean by mutableStateOf(true)
+
+    val Accent get() = if (dark) Color(0xFFE8650A) else Color(0xFFB84A08)
+    val Danger get() = if (dark) Color(0xFFE5645A) else Color(0xFFB3342B)
+    val Highlight get() = if (dark) Color(0xFFF2C14E) else Color(0xFF9A6B00)
     val Header = Color(0xFF1F1F1F)
-    val Card = Color(0xFF1E1E1E)
-    val Background = Color(0xFF121212)
-    val Text = Color(0xFFF2F2F2)
-    val Link = Color(0xFF6FB6FF)
+    val OnHeader = Color(0xFFF2F2F2)
+    val Card get() = if (dark) Color(0xFF1E1E1E) else Color(0xFFFFFFFF)
+    val CardHigh get() = if (dark) Color(0xFF2A2A2A) else Color(0xFFECE7DC)
+    val CardLine = Color(0xFFD6CFBF)
+    val Background get() = if (dark) Color(0xFF121212) else Color(0xFFF4F1EA)
+    val Text get() = if (dark) Color(0xFFF2F2F2) else Color(0xFF23211C)
+    val Link get() = if (dark) Color(0xFF6FB6FF) else Color(0xFF0B63B5)
+    val LinkOnDark = Color(0xFF6FB6FF)
     val Infiltration = Color(0xFF5E7C9A)
     val Recon = Color(0xFFC98A2B)
     val Security = Color(0xFF3F6FB5)
@@ -196,6 +204,7 @@ fun SectionCard(
         modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(containerColor = Palette.Card),
+        border = if (Palette.dark) null else BorderStroke(1.dp, Palette.CardLine),
     ) {
         Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min).background(Palette.Header), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.width(6.dp).fillMaxHeight().background(headerColor))

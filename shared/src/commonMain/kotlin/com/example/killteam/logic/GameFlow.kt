@@ -1,5 +1,7 @@
 package com.example.killteam.logic
 
+import com.example.killteam.data.ApprovedOps
+
 /** Game flow rules as pure state transitions: initiative roll-off, Ready step and the end of the battle. */
 
 val GameState.rollOffResolved get() = rollOffWinner != null
@@ -83,7 +85,34 @@ fun GameState.withoutPloy(player: Int, name: String, cost: Int): GameState {
 
 fun GameState.confirmStrategy(): GameState = copy(strategyDone = true)
 
-fun GameState.reopenStrategy(): GameState = copy(strategyDone = false)
+fun GameState.reopenStrategy(): GameState = copy(strategyDone = false, firefightDone = false)
+
+/** Ends the Firefight phase and opens the Score step; only possible after the Strategy phase. */
+fun GameState.confirmFirefight(): GameState = if (strategyDone) copy(firefightDone = true) else this
+
+fun GameState.reopenFirefight(): GameState = copy(firefightDone = false)
+
+/** VP a player scored with each op in the current turning point. */
+fun GameState.tpCrit(player: Int): Int = (players[player].critVp - players[player].critVpBase).coerceAtLeast(0)
+
+fun GameState.tpTac(player: Int): Int = (players[player].tacVp - players[player].tacVpBase).coerceAtLeast(0)
+
+fun GameState.tpKill(player: Int): Int = (Scoring.killVp(players[player], players[1 - player], false) - players[player].killVpBase).coerceAtLeast(0)
+
+/** Most Tac op VP the chosen tac op allows in one turning point; null when it has no such limit. */
+fun PlayerState.tacMaxPerTurningPoint(): Int? = ApprovedOps.tacOps.firstOrNull { it.id == tacOpId }?.maxVpPerTurningPoint
+
+/** Changes the Crit op VP of this turning point; never below what was scored before and never above the op maximum. */
+fun GameState.changeTpCrit(player: Int, delta: Int): GameState = updatePlayer(player) { p ->
+    p.copy(critVp = (p.critVp + delta).coerceIn(p.critVpBase, maxOf(p.critVpBase, ApprovedOps.MAX_VP_PER_OP)))
+}
+
+/** Changes the Tac op VP of this turning point; additionally capped by the tac op's limit per turning point. */
+fun GameState.changeTpTac(player: Int, delta: Int): GameState = updatePlayer(player) { p ->
+    val perTp = p.tacMaxPerTurningPoint()
+    val top = minOf(ApprovedOps.MAX_VP_PER_OP, if (perTp != null) p.tacVpBase + perTp else ApprovedOps.MAX_VP_PER_OP)
+    p.copy(tacVp = (p.tacVp + delta).coerceIn(p.tacVpBase, maxOf(p.tacVpBase, top)))
+}
 
 /** Setting up the battle: the player with initiative picks a drop zone, the opponent holds the Re-roll card. */
 fun GameState.chooseSetupInitiative(player: Int): GameState =

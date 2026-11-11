@@ -12,11 +12,11 @@ Die App hat fünf Tabs:
 - **Game:** Assistent durch die fünf Schritte eines Approved-Ops-Spiels mit Phasenübersicht, Score-Tabelle und Initiative-Verwaltung. Jede neue Phase beginnt oben im Bild. Bei der Teamwahl ergeben sich Teamgröße und wählbare Tac Ops aus den Team-Regeln. In "Select Operatives" wählt jeder Spieler geheim eine Tac Op (Karten wie im Generator) und bis zu 4 Ausrüstungen aus Team- und allgemeiner Ausrüstung. Die Zahl der Incapacitated ist auf die Teamgröße begrenzt. Dazu Spielverlauf, Turniere und Statistiken.
 - **Teams:** alle 48 Kill Teams alphabetisch, mit Wortsuche über Teams, Operatives, Regeln, Ploys und Ausrüstung. Zusammensetzung (Pfeile, Optionen und Auswahllisten, Ausrüstungsoptionen eingerückt), Datacards, Fraktionsregeln, Ploys, Equipment und Marker. Dazu Favoriten, Notizen und Rosters.
 - **Rules:** Regelseiten von Wahapedia mit Suche und Favoriten (Schalter ALL / Favorites, der Favoriten-Modus listet auch markierte Teams, Crit Ops und Tac Ops).
-- **More:** weitere Hilfen und Einstellungen, ganz unten die Version mit Datenstand (z. B. `v1.4.0.a - Daten: 2026-11-02`). Die Kamera-Messfunktion ist pausiert (`FeatureFlags.MEASURE` in `logic/AppInfo.kt`).
+- **More:** weitere Hilfen und Einstellungen, "Options" vor "Data sources" mit dem Schalter für das Erscheinungsbild (System, Light, Dark), ganz unten die Version mit Datenstand (z. B. `v1.4.0.a - Daten: 2026-11-02`). Die Kamera-Messfunktion ist pausiert (`FeatureFlags.MEASURE` in `logic/AppInfo.kt`).
 
 Schlüsselbegriffe in den Texten sind antippbar. Ein Popup zeigt die Definition und führt zur passenden Regel.
 
-Das Design ist bewusst eigenständig (anthrazitfarbenes Dunkel-Theme mit Kill-Team-Orange in `ui/Components.kt`, Objekt `Palette`).
+Das Design ist bewusst eigenständig (anthrazitfarbenes Dunkel-Theme mit Kill-Team-Orange, dazu ein helles Theme; beide in `ui/Components.kt`, Objekt `Palette`). Unter More > Options lässt sich zwischen System, Light und Dark wählen.
 
 ## Projektstruktur
 
@@ -49,10 +49,21 @@ Beim Start fragt die App nach einem Zugangscode (109 Zeichen in 5er-Gruppen, zum
 Nach der Eingabe zeigt ein Dialog einmalig den Ablauf. Unter **More** steht dauerhaft, ob der Code unbegrenzt ist oder wie lange die App noch nutzbar ist.
 
 Codes erzeugen (extern, am PC):
+ powershell -ExecutionPolicy Bypass -File tools\generate-access-code.ps1 -NewKey -Force
 
 - Dauer ab jetzt: `powershell -ExecutionPolicy Bypass -File tools\generate-access-code.ps1 -d 7 -h 12`
 - Festes Ablaufdatum (UTC, nur Datum = bis Ende des Tages): `... -Until "2026-12-24 18:00"`
 - Unbegrenzt: `... -Unlimited`
+
+v1.4.b
+Code: 0000E-V03S8-7FWNB-NK0KT-4555W-KVR2M-45YBH-C77EP-57PSZ-V9Z2B-3QF28-1QGCK-ASR6J-04F7P-RGEKE-AJKC2-DF0Q0-ZHZDW-VK71F-0XJJS-MT11Z-HCGY
+Gueltigkeit: unbegrenzt
+
+Code: 08CGX-A109G-Y81K8-AW86T-ZF9JN-8VNPD-1947W-WAZSH-15NZ8-ZGNHM-MMJ5M-WD851-FC5CP-JSDFB-SJH3W-XQAH8-J4RQ7-B80VJ-1GPNH-5TJM4-QKH11-Y102
+Gueltig bis: 2026-12-25 00:00 UTC
+
+
+v1.3.b
 Code: 00009-SWRKF-WTDH1-A3458-SEB96-H0HJJ-QY0T2-2V4VT-6G49P-MDVJ1-N15AT-BKSXJ-6W7G2-1T0VZ-H68PT-WTJHS-GSJHJ-5YGVG-FMDBW-GPRCC-2SP3X-W20M
 
 Code: 07F8H-0GA18-JYGWR-VEXWQ-WN78K-PSQQT-09GQJ-G56TZ-MWA0F-CSVPG-ZGYHT-C49FW-W05XX-4N2K8-JX32G-BEEJ7-MD6E6-WK5BQ-S0M82-HTZS3-GW81N-CGGA

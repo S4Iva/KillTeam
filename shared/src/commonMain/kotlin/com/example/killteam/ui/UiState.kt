@@ -31,6 +31,7 @@ enum class MorePage(val label: String) {
     Tournament("Tournament mode"),
     Dice("Dice and damage calculator"),
     Measure("Measure distances (camera)"),
+    Options("Options"),
     About("Data sources"),
     Terms("Terms of use"),
     Privacy("Privacy"),
@@ -63,6 +64,12 @@ class UiState {
     /** Rules tab: switch ALL / Favorites. */
     var rulesFavoritesOnly: Boolean by mutableStateOf(false)
 
+    /** Rules tab: 0 = Rules (start page and search), 1 = Glossary. */
+    var rulesTab: Int by mutableStateOf(0)
+    var rulesQuickTab: Int by mutableStateOf(0)
+    var rulesQuickOpen: String? by mutableStateOf(null)
+    var glossaryQuery: String by mutableStateOf("")
+
     var morePage: MorePage? by mutableStateOf(null)
     var tournamentOpen: Long? by mutableStateOf(null)
 
@@ -83,7 +90,7 @@ class UiState {
         key == "generator" -> Tab.Generator
         key == "game" || key == "new-game" -> Tab.Game
         key == "teams" || key.startsWith("team:") -> Tab.Teams
-        key == "rules-index" || key.startsWith("rules:") -> Tab.Rules
+        key == "rules-index" || key == "rules-glossary" || key.startsWith("rules:") -> Tab.Rules
         key == "more" -> Tab.More
         else -> null
     }
@@ -107,6 +114,10 @@ class UiState {
             Tab.Rules -> {
                 closeRulesPage()
                 rulesQuery = ""
+                rulesTab = 0
+                rulesQuickTab = 0
+                rulesQuickOpen = null
+                glossaryQuery = ""
             }
             Tab.More -> {
                 morePage = null

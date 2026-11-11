@@ -16,9 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,12 +50,21 @@ private val RowLight = Color(0xFF27343E)
 private val StatBackground = Color(0xFF0B1115)
 private val Muted = Color(0xFFC3CDD4)
 
-/** Operative datacard in our own style (header with stats, weapon table, abilities, keywords). */
+/** Operative datacard in our own style (header with stats, weapon table, abilities, keywords); dark in both modes, so text and links are light. */
 @Composable
-fun OperativeDatacard(o: Operative) {
+fun OperativeDatacard(o: Operative, showHeader: Boolean = true) {
+    CompositionLocalProvider(LocalContentColor provides Palette.OnHeader, LocalLinkColor provides Palette.LinkOnDark) {
+        DatacardContent(o, showHeader)
+    }
+}
+
+@Composable
+private fun DatacardContent(o: Operative, showHeader: Boolean) {
     Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(CardBackground)) {
-        CardHeader(o)
-        HorizontalDivider(thickness = 2.dp, color = Palette.Accent)
+        if (showHeader) {
+            CardHeader(o)
+            HorizontalDivider(thickness = 2.dp, color = Palette.Accent)
+        }
         WeaponTable(o.weapons)
         if (o.blocks.isNotEmpty()) {
             Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -65,7 +76,7 @@ fun OperativeDatacard(o: Operative) {
 }
 
 @Composable
-private fun CardHeader(o: Operative) {
+internal fun CardHeader(o: Operative, title: String = o.name) {
     BoxWithConstraints(Modifier.fillMaxWidth().background(Palette.Header)) {
         val wide = maxWidth >= 560.dp
         val stats: @Composable () -> Unit = {
@@ -78,7 +89,7 @@ private fun CardHeader(o: Operative) {
         }
         val title: @Composable (Modifier) -> Unit = { m ->
             Column(m, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text(o.name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Color.White)
                 if (o.flavor.isNotBlank()) Text(o.flavor, style = MaterialTheme.typography.bodySmall, fontStyle = FontStyle.Italic, color = Muted)
             }
         }

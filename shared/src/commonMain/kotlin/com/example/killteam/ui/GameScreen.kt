@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,19 +48,29 @@ import com.example.killteam.logic.MissionState
 import com.example.killteam.logic.Scoring
 import com.example.killteam.logic.advanceTurningPoint
 import com.example.killteam.logic.changeOperative
+import com.example.killteam.logic.changeTpCrit
+import com.example.killteam.logic.changeTpTac
 import com.example.killteam.logic.chooseInitiative
 import com.example.killteam.logic.chooseSetupInitiative
+import com.example.killteam.logic.confirmFirefight
 import com.example.killteam.logic.confirmStrategy
 import com.example.killteam.logic.finish
 import com.example.killteam.logic.ployCost
 import com.example.killteam.logic.readyGains
 import com.example.killteam.logic.readyStep
+import com.example.killteam.logic.reopenFirefight
 import com.example.killteam.logic.reopenRollOff
 import com.example.killteam.logic.reopenStrategy
 import com.example.killteam.logic.resolveRollOff
 import com.example.killteam.logic.rollOffResolved
 import com.example.killteam.logic.setIncapacitated
+import com.example.killteam.logic.step
+import com.example.killteam.logic.tacMaxPerTurningPoint
 import com.example.killteam.logic.toResult
+import com.example.killteam.logic.tpCrit
+import com.example.killteam.logic.tpKill
+import com.example.killteam.logic.tpTac
+import com.example.killteam.logic.TurningPointStep
 import com.example.killteam.logic.useModifier
 import com.example.killteam.logic.useReroll
 import com.example.killteam.logic.withEnemyStart
@@ -121,7 +133,7 @@ fun RunningGame(app: AppState, game: GameState) {
     var equipmentOpen by remember(game.id) { mutableStateOf(setOf<Int>()) }
 
     // Every new phase or turning point starts at the top of the screen (not when only switching back to this tab).
-    val position = "${game.id}:${game.phase}:${game.turningPoint}:${game.strategyDone}"
+    val position = "${game.id}:${game.phase}:${game.turningPoint}:${game.step}"
     LaunchedEffect(position) {
         if (ui.gameScrollKey != null && ui.gameScrollKey != position) listState.scrollToItem(0)
         ui.gameScrollKey = position
@@ -137,7 +149,7 @@ fun RunningGame(app: AppState, game: GameState) {
     primaryFor?.let { PrimaryOpDialog(app, game, it) { primaryFor = null } }
     confirm?.let { c -> ConfirmDialog(c.text, c.label, c.action, onDismiss = { confirm = null }, danger = c.danger) }
 
-    Page("Game - Turning Point ${game.turningPoint}/${ApprovedOps.TURNING_POINTS}" + if (game.phase == GamePhase.Play) (if (game.strategyDone) " - Firefight phase" else " - Strategy phase") else "", listState = listState) {
+    Page("Game - Turning Point ${game.turningPoint}/${ApprovedOps.TURNING_POINTS}" + if (game.phase == GamePhase.Play) " - ${game.step.label}" + (if (game.step == TurningPointStep.Score) "" else " phase") else "", listState = listState) {
         item {
             SectionCard("Phase") {
                 PhaseProgress(game)
@@ -217,7 +229,8 @@ fun RunningGame(app: AppState, game: GameState) {
             GamePhase.SetUpOperatives -> Unit
 
             GamePhase.Play -> {
-                if (!game.strategyDone) {
+                item { TurningPointSteps(game) }
+                if (game.step == TurningPointStep.Strategy) {
                     item { InitiativePanel(game, update) }
                     item { ReadyStepPanel(game, update) }
                     if (game.turningPoint == 1) {
@@ -243,7 +256,7 @@ fun RunningGame(app: AppState, game: GameState) {
                             ) { update(game.confirmStrategy()) }
                         }, fullWidth = true)
                     }
-                } else {
+                } else if (game.step == TurningPointStep.Firefight) {
                     item {
                         SectionCard("Strategy phase") {
                             Text("Initiative: ${game.players[game.initiative].name}")
@@ -255,16 +268,19 @@ fun RunningGame(app: AppState, game: GameState) {
                     }
                     game.players.forEachIndexed { i, _ -> item { PlayerPanel(app, game, i) } }
                     item { MissionCard(game, showMission) { showMission = it } }
+                    item { AppButton("Next: Score", { update(game.confirmFirefight()) }, fullWidth = true) }
+                } else {
+                    item {
+                        SectionCard("Score the turning point") {
+                            Text("Change the VP scored in this turning point. Kill VP follow the operatives that were put out.", style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                    game.players.forEachIndexed { i, _ -> item { ScorePanel(app, game, i) } }
                     item {
                         val last = game.turningPoint >= ApprovedOps.TURNING_POINTS
-                        AppButton(if (last) "End the battle" else "Next turning point (${game.turningPoint + 1})", {
-                            if (game.readyDone) update(game.advanceTurningPoint())
-                            else confirm = PendingConfirm(
-                                "The Ready step was not done in this turning point: no CP were gained and expended operatives were not readied. Continue anyway?",
-                                if (last) "End the battle" else "Next turning point",
-                            ) { update(game.advanceTurningPoint()) }
-                        }, fullWidth = true)
+                        AppButton(if (last) "Confirm scoring: End the battle" else "Confirm scoring: Next turning point (${game.turningPoint + 1})", { update(game.advanceTurningPoint()) }, fullWidth = true)
                     }
+                    item { AppButton("Back to firefight phase", { update(game.reopenFirefight()) }, kind = ButtonKind.Secondary, fullWidth = true) }
                 }
             }
 
@@ -356,6 +372,111 @@ private fun ResultCard(finished: GameState, onSave: () -> Unit) {
         }
         Text("Saving reveals both primary ops, so their bonus is included.", style = MaterialTheme.typography.bodySmall)
         AppButton("Save result and close game", onSave, kind = ButtonKind.Primary, size = ButtonSize.L, fullWidth = true)
+    }
+}
+
+/** Strategy, Firefight and Score of the current turning point; finished steps and the current one are orange. */
+@Composable
+private fun TurningPointSteps(game: GameState) {
+    val step = game.step
+    SectionCard("Turning point ${game.turningPoint}/${ApprovedOps.TURNING_POINTS}") {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            TurningPointStep.entries.forEach { s ->
+                Box(
+                    Modifier.weight(1f).height(6.dp).clip(RoundedCornerShape(3.dp))
+                        .background(if (s.ordinal <= step.ordinal) Palette.Accent else Palette.Text.copy(alpha = 0.2f)),
+                )
+            }
+        }
+        Row(Modifier.fillMaxWidth()) {
+            TurningPointStep.entries.forEach { s ->
+                Text(
+                    "${s.ordinal + 1}. ${s.label}", Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelMedium,
+                    fontWeight = if (s == step) FontWeight.Bold else FontWeight.Normal,
+                    color = if (s == step) Palette.Accent else Palette.Text.copy(alpha = 0.6f),
+                )
+            }
+        }
+    }
+}
+
+private val CritColor = Color(0xFF4A90D9)
+private val KillColor = Color(0xFFD9534F)
+private val TacColor = Color(0xFF5CB85C)
+private val NewVpColor = Color(0xFF4CAF7A)
+
+/** One op of the Score step: coloured dot, title and note, an action on the right and a bar (earlier VP orange, this turning point's VP green). */
+@Composable
+private fun ScoreOpRow(color: Color, title: String, note: String, before: Int, now: Int, segments: Int, trailing: @Composable () -> Unit) {
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Box(Modifier.size(10.dp).clip(CircleShape).background(color))
+            Column(Modifier.weight(1f)) {
+                Text(title, fontWeight = FontWeight.SemiBold)
+                Text(note, style = MaterialTheme.typography.bodySmall, color = Palette.Text.copy(alpha = 0.7f))
+            }
+            trailing()
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+            repeat(segments) { i ->
+                Box(
+                    Modifier.weight(1f).height(6.dp).clip(RoundedCornerShape(3.dp))
+                        .background(if (i < before) Palette.Accent else if (i < before + now) NewVpColor else Palette.Text.copy(alpha = 0.2f)),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DeltaStepper(value: Int, canMinus: Boolean, canPlus: Boolean, onMinus: () -> Unit, onPlus: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        AppButton("-", onMinus, kind = ButtonKind.Secondary, size = ButtonSize.S, enabled = canMinus)
+        Text("+$value", fontWeight = FontWeight.Bold)
+        AppButton("+", onPlus, kind = ButtonKind.Secondary, size = ButtonSize.S, enabled = canPlus)
+    }
+}
+
+/** Score step of a player: Crit and Tac VP of this turning point by hand, Kill VP follow the incapacitated enemy operatives. */
+@Composable
+private fun ScorePanel(app: AppState, game: GameState, index: Int) {
+    val p = game.players[index]
+    val opponent = game.players[1 - index]
+    val team = app.team(p.teamSlug)
+    val score = Scoring.score(game, index)
+    val update: (GameState) -> Unit = { app.game.update(it) }
+    val tacMax = p.tacMaxPerTurningPoint()
+    val tacName = ApprovedOps.tacOps.firstOrNull { it.id == p.tacOpId }?.takeIf { p.tacRevealed }?.name
+
+    SectionCard(
+        "${p.name}${team?.let { " - ${it.name}" } ?: ""}",
+        actions = { Text("${score.total} VP", color = Color.White, fontWeight = FontWeight.Bold) },
+    ) {
+        ScoreOpRow(CritColor, "Crit op", "${p.critVp}/${ApprovedOps.MAX_VP_PER_OP} total", p.critVpBase, game.tpCrit(index), ApprovedOps.MAX_VP_PER_OP) {
+            DeltaStepper(
+                game.tpCrit(index), game.tpCrit(index) > 0, p.critVp < ApprovedOps.MAX_VP_PER_OP,
+                { update(game.changeTpCrit(index, -1)) }, { update(game.changeTpCrit(index, 1)) },
+            )
+        }
+        HorizontalDivider(color = Palette.Text.copy(alpha = 0.15f))
+        ScoreOpRow(KillColor, "Kill op (auto)", "Grade ${p.killGrade}/5, ${p.kills} enemy operatives out", p.killVpBase, game.tpKill(index), 5) {
+            Text("+${game.tpKill(index)} this turning point", style = MaterialTheme.typography.labelMedium, color = NewVpColor, fontWeight = FontWeight.Bold)
+        }
+        if (opponent.operatives.isEmpty()) {
+            Stepper("Enemy operatives out", p.kills, { v -> update(game.updatePlayer(index) { it.copy(kills = v) }) }, 0, p.enemyStartCount)
+        }
+        Text(
+            "Grade thresholds: ${KillOp.thresholds(p.enemyStartCount).joinToString(" / ")}. At the end of the battle +1 VP if the grade is higher than the opponent's.",
+            style = MaterialTheme.typography.bodySmall, color = Palette.Text.copy(alpha = 0.7f),
+        )
+        HorizontalDivider(color = Palette.Text.copy(alpha = 0.15f))
+        val tacNote = "${p.tacVp}/${ApprovedOps.MAX_VP_PER_OP} total" + (tacMax?.let { ", max. $it VP per turning point" } ?: "") + (tacName?.let { " ($it)" } ?: "")
+        ScoreOpRow(TacColor, "Tac op", if (p.tacOpId == null) "No tac op selected" else tacNote, p.tacVpBase, game.tpTac(index), ApprovedOps.MAX_VP_PER_OP) {
+            DeltaStepper(
+                game.tpTac(index), game.tpTac(index) > 0, game.changeTpTac(index, 1).players[index].tacVp > p.tacVp,
+                { update(game.changeTpTac(index, -1)) }, { update(game.changeTpTac(index, 1)) },
+            )
+        }
     }
 }
 
@@ -556,20 +677,25 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
     val update: (GameState) -> Unit = { app.game.update(it) }
     val score = Scoring.score(game, index)
     var openGear by remember(game.id, index) { mutableStateOf(setOf<Int>()) }
-    var view by remember(game.id, index) { mutableStateOf<PlayerView?>(null) }
+    var view by remember(game.id, index) { mutableStateOf<PlayerView?>(PlayerView.Operatives) }
+    var open by remember(game.id, game.turningPoint, index) { mutableStateOf(true) }
     var showTac by remember(game.id, index) { mutableStateOf(false) }
     var openCards by remember(game.id, index) { mutableStateOf(setOf<Int>()) }
     var allWeapons by remember(game.id, index) { mutableStateOf(setOf<Int>()) }
     val tac = p.tacOpId?.let { id -> ApprovedOps.tacOps.firstOrNull { it.id == id } }
     val team = app.team(p.teamSlug)
 
-    SectionCard("${p.name}${team?.let { " - ${it.name}" } ?: ""}  |  ${score.total} VP") {
-        Stepper("Crit op VP", p.critVp, { v -> update(game.updatePlayer(index) { it.copy(critVp = v) }) }, 0, ApprovedOps.MAX_VP_PER_OP)
-        Text("Kill op: grade ${p.killGrade}/5 = ${score.kill} VP (+1 VP at the end if higher than the opponent's grade)")
-        Stepper("Enemy start", p.enemyStartCount, { v -> update(game.withEnemyStart(index, v)) }, KillOp.minOperatives, KillOp.maxOperatives)
-        Stepper("Incapacitated", p.kills, { v -> update(game.updatePlayer(index) { it.copy(kills = v) }) }, 0, p.enemyStartCount)
-        Text("Grade thresholds: ${KillOp.thresholds(p.enemyStartCount).joinToString(" / ")}")
-        Stepper("Tac op VP", p.tacVp, { v -> update(game.updatePlayer(index) { it.copy(tacVp = v) }) }, 0, ApprovedOps.MAX_VP_PER_OP)
+    SectionCard(
+        "${p.name}${team?.let { " - ${it.name}" } ?: ""}  |  ${score.total} VP",
+        actions = { Chevron(open, { open = !open }, "player") },
+    ) {
+        if (!open) {
+            Text(
+                "${p.operatives.count { !it.incapacitated }}/${p.operatives.size} operatives, ${p.operatives.sumOf { it.wounds }} W left, CP ${p.cp}. Strategy ploys used: ${p.ployNames.joinToString().ifEmpty { "none" }}",
+                style = MaterialTheme.typography.bodySmall,
+            )
+            return@SectionCard
+        }
         if (tac != null) {
             if (p.tacRevealed) {
                 Text("Tac op: ${tac.name}" + (tac.maxVpPerTurningPoint?.let { " (max. $it VP per turning point)" } ?: ""), fontWeight = FontWeight.Bold)
@@ -624,16 +750,19 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
             if (p.operatives.isEmpty()) Text("No operatives: the game was started without a roster.")
             else {
                 p.operatives.forEachIndexed { oi, o ->
-                    Column(Modifier.fillMaxWidth()) {
-                        Text(
-                            "${o.name}  ${o.wounds}/${o.maxWounds} W" + if (o.incapacitated) "  [incapacitated]" else if (o.injured) "  [injured]" else if (o.wounded) "  [wounded]" else "",
-                            fontWeight = FontWeight.Bold,
-                        )
+                    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        val datacard = team?.operatives?.firstOrNull { it.name == o.card }
+                        val status = "${o.wounds}/${o.maxWounds} W" + if (o.incapacitated) "  [incapacitated]" else if (o.injured) "  [injured]" else if (o.wounded) "  [wounded]" else ""
+                        if (datacard != null) {
+                            Box(Modifier.clip(RoundedCornerShape(14.dp))) { CardHeader(datacard, o.name) }
+                            Text(status, fontWeight = FontWeight.Bold)
+                        } else {
+                            Text("${o.name}  $status", fontWeight = FontWeight.Bold)
+                        }
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             val s = ButtonSize.S
                             AppButton("-1 W", { update(game.changeOperative(index, oi) { it.copy(wounds = (it.wounds - 1).coerceAtLeast(0)) }) }, kind = ButtonKind.Secondary, size = s)
                             AppButton("+1 W", { update(game.changeOperative(index, oi) { it.copy(wounds = (it.wounds + 1).coerceAtMost(it.maxWounds)) }) }, kind = ButtonKind.Secondary, size = s)
-                            AppButton(if (o.expended) "Expended" else "Ready", { update(game.changeOperative(index, oi) { it.copy(expended = !it.expended) }) }, kind = ButtonKind.Secondary, size = s)
                             AppButton(
                                 if (o.incapacitated) "Revive" else "Out", { update(game.setIncapacitated(index, oi, !o.incapacitated)) },
                                 kind = if (o.incapacitated) ButtonKind.Secondary else ButtonKind.Danger, size = s,
@@ -647,7 +776,6 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
                             )
                             if (open) EquipmentCards(app, team, o.equipment)
                         }
-                        val datacard = team?.operatives?.firstOrNull { it.name == o.card }
                         if (datacard != null) {
                             val open = oi in openCards
                             AppButton(
@@ -656,7 +784,7 @@ private fun PlayerPanel(app: AppState, game: GameState, index: Int) {
                             )
                             if (open) {
                                 val showAll = o.weapons.isEmpty() || oi in allWeapons
-                                OperativeDatacard(if (showAll) datacard else datacard.withWeapons(o.weapons))
+                                OperativeDatacard(if (showAll) datacard else datacard.withWeapons(o.weapons), showHeader = false)
                                 if (o.weapons.isNotEmpty()) {
                                     AppButton(
                                         if (showAll) "Show chosen weapons" else "Show all weapons", { allWeapons = if (showAll) allWeapons - oi else allWeapons + oi },

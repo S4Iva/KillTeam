@@ -1,5 +1,7 @@
 package com.example.killteam.ui
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -32,6 +34,9 @@ class KeywordContext(val matcher: TermMatcher?, val openRule: (RuleRef) -> Unit)
 
 val LocalKeywords = compositionLocalOf { KeywordContext(null) {} }
 
+/** Link color of keywords inside dark surfaces (datacards) in the light mode; null = the normal [Palette.Link]. */
+val LocalLinkColor = compositionLocalOf<Color?> { null }
+
 private val CapsRun = Regex("[A-Z][A-Z0-9.*'-]+(?: [A-Z][A-Z0-9.*'-]*)*")
 
 /** Appends plain text; when [accent] is set, capitalised keywords become bold and the accent phrase orange. */
@@ -63,7 +68,7 @@ fun KeywordText(
     style: TextStyle = LocalTextStyle.current,
     color: Color = Color.Unspecified,
     boldPrefix: String = "",
-    linkColor: Color = Palette.Link,
+    linkColor: Color = LocalLinkColor.current ?: Palette.Link,
     capsAccent: String? = null,
 ) {
     val ctx = LocalKeywords.current
@@ -88,25 +93,36 @@ fun KeywordText(
     Text(annotated, modifier, style = style, color = color)
 
     selected.value?.let { term ->
-        AlertDialog(
-            onDismissRequest = { selected.value = null },
-            title = { Text(term.title.ifBlank { term.phrase }.uppercase()) },
-            text = {
-                val scroll = rememberScrollState()
+        KeywordDialog(term, { selected.value = null }, { ctx.openRule(it) })
+    }
+}
+
+/** Popup with the definition of a keyword; its button opens the rule. With [pinned] set it also offers to pin the keyword to the Rules start page. */
+@Composable
+fun KeywordDialog(term: LookupTerm, onDismiss: () -> Unit, onOpenRule: (RuleRef) -> Unit, pinned: Boolean? = null, onTogglePin: () -> Unit = {}) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(term.title.ifBlank { term.phrase }.uppercase()) },
+        text = {
+            val scroll = rememberScrollState()
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     term.text.ifBlank { "No description available." },
                     Modifier.heightIn(max = 320.dp).dragToScroll(scroll).verticalScroll(scroll),
                 )
-            },
-            confirmButton = {
-                if (term.hasRule) {
-                    AppButton("Open rule", {
-                        selected.value = null
-                        ctx.openRule(RuleRef(term.page!!, term.anchor!!))
-                    })
+                if (pinned != null) {
+                    AppButton(if (pinned) "Unpin" else "Pin to Rules start", onTogglePin, kind = ButtonKind.Secondary, size = ButtonSize.S)
                 }
-            },
-            dismissButton = { AppButton("Close", { selected.value = null }, kind = ButtonKind.Text) },
-        )
-    }
+            }
+        },
+        confirmButton = {
+            if (term.hasRule) {
+                AppButton("Open rule", {
+                    onDismiss()
+                    onOpenRule(RuleRef(term.page!!, term.anchor!!))
+                })
+            }
+        },
+        dismissButton = { AppButton("Close", onDismiss, kind = ButtonKind.Text) },
+    )
 }

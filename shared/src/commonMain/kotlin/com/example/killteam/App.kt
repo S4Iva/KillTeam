@@ -23,7 +23,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.example.killteam.logic.AccessGate
 import com.example.killteam.logic.AccessResult
 import com.example.killteam.logic.AccessStatus
+import com.example.killteam.logic.Appearance
 import com.example.killteam.logic.formatLocalDateTime
 import com.example.killteam.logic.formatRemaining
 import com.example.killteam.logic.AppState
@@ -62,23 +66,32 @@ import com.russhwolf.settings.Settings
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 
-private val KillTeamColors = darkColorScheme(
-    primary = Palette.Accent,
-    onPrimary = Color.White,
-    secondary = Palette.Link,
-    background = Palette.Background,
-    surface = Palette.Background,
-    surfaceVariant = Palette.Card,
-    onSurface = Palette.Text,
-    onSurfaceVariant = Palette.Text,
-    onBackground = Palette.Text,
-    error = Color(0xFFFF5252),
-)
+/** Material color scheme from the [Palette] (call after [Palette.dark] is set). */
+private fun killTeamColors(dark: Boolean): ColorScheme =
+    if (dark) {
+        darkColorScheme(
+            primary = Palette.Accent, onPrimary = Color.White, secondary = Palette.Link,
+            background = Palette.Background, surface = Palette.Background, surfaceVariant = Palette.Card,
+            onSurface = Palette.Text, onSurfaceVariant = Palette.Text, onBackground = Palette.Text, error = Color(0xFFFF5252),
+            surfaceContainer = Palette.Card, surfaceContainerHigh = Palette.CardHigh, surfaceContainerHighest = Palette.CardHigh,
+        )
+    } else {
+        lightColorScheme(
+            primary = Palette.Accent, onPrimary = Color.White, secondary = Palette.Link,
+            background = Palette.Background, surface = Palette.Background, surfaceVariant = Palette.Card,
+            onSurface = Palette.Text, onSurfaceVariant = Palette.Text, onBackground = Palette.Text, error = Palette.Danger,
+            surfaceContainer = Palette.Card, surfaceContainerHigh = Palette.CardHigh, surfaceContainerHighest = Palette.CardHigh,
+        )
+    }
 
 @Composable
 @Preview
 fun App() {
     val gate = remember { AccessGate(Settings()) }
+    val appearance = remember { Appearance(Settings()) }
+    val dark = appearance.isDark(isSystemInDarkTheme())
+    Palette.dark = dark
+    val colors = killTeamColors(dark)
     var unlocked by remember { mutableStateOf(gate.isUnlocked()) }
     var notice by remember { mutableStateOf<AccessStatus?>(null) }
     // A limited code can run out while the app stays open.
@@ -89,9 +102,9 @@ fun App() {
         }
     }
     if (unlocked) {
-        KillTeamApp(gate)
+        KillTeamApp(gate, appearance, colors)
         notice?.let { n ->
-            MaterialTheme(colorScheme = KillTeamColors) {
+            MaterialTheme(colorScheme = colors) {
                 AlertDialog(
                     onDismissRequest = { notice = null },
                     title = { Text("Access code accepted") },
@@ -108,7 +121,7 @@ fun App() {
             }
         }
     } else {
-        MaterialTheme(colorScheme = KillTeamColors) {
+        MaterialTheme(colorScheme = colors) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                 LockScreen(gate.lockReason()) { code ->
                     gate.attempt(code).also {
@@ -125,7 +138,7 @@ fun App() {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun KillTeamApp(gate: AccessGate) {
+private fun KillTeamApp(gate: AccessGate, appearance: Appearance, colors: ColorScheme) {
     val app = remember { AppState() }
     val ui = remember { UiState() }
     var tab by remember { mutableStateOf(Tab.Generator) }
@@ -149,7 +162,7 @@ private fun KillTeamApp(gate: AccessGate) {
         }
     }
 
-    MaterialTheme(colorScheme = KillTeamColors) {
+    MaterialTheme(colorScheme = colors) {
         val touchTarget = if (isDesktop) 56.dp else 48.dp
         val keywords = remember(app.matcher) {
             KeywordContext(app.matcher) { ref ->
@@ -171,7 +184,7 @@ private fun KillTeamApp(gate: AccessGate) {
                                 Tab.Game -> GameScreen(app, onOpenGenerator = { tab = Tab.Generator })
                                 Tab.Teams -> TeamsScreen(app)
                                 Tab.Rules -> RulesScreen(app)
-                                Tab.More -> MoreScreen(app, gate)
+                                Tab.More -> MoreScreen(app, gate, appearance)
                             }
                         }
                     }
@@ -183,9 +196,9 @@ private fun KillTeamApp(gate: AccessGate) {
                                 label = { Text(t.label) },
                                 colors = NavigationBarItemDefaults.colors(
                                     selectedIconColor = Palette.Accent,
-                                    unselectedIconColor = Palette.Text,
+                                    unselectedIconColor = Palette.OnHeader,
                                     selectedTextColor = Palette.Accent,
-                                    unselectedTextColor = Palette.Text,
+                                    unselectedTextColor = Palette.OnHeader,
                                     indicatorColor = Color(0xFF3C3C3C),
                                 ),
                             )

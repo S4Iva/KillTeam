@@ -24,7 +24,7 @@ import com.example.killteam.data.AbilityPara
 import com.example.killteam.data.KillTeam
 import com.example.killteam.data.compositionLevels
 
-private val Muted = Color(0xFFBBBBBB)
+private val Muted get() = Palette.Text.copy(alpha = 0.65f)
 
 /** Rule text: green triangle for effects, red diamond for conditions, accent squares for lists. */
 @Composable

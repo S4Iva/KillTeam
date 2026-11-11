@@ -2,6 +2,7 @@ package com.example.killteam.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,12 +27,14 @@ import com.example.killteam.data.ApprovedOps
 import com.example.killteam.logic.AccessGate
 import com.example.killteam.logic.AccessStatus
 import com.example.killteam.logic.AppInfo
+import com.example.killteam.logic.Appearance
 import com.example.killteam.logic.AppState
 import com.example.killteam.logic.DamageCalc
 import com.example.killteam.logic.FeatureFlags
 import com.example.killteam.logic.GameResult
 import com.example.killteam.logic.Pairing
 import com.example.killteam.logic.Statistics
+import com.example.killteam.logic.ThemeMode
 import com.example.killteam.logic.TPlayer
 import com.example.killteam.logic.TRound
 import com.example.killteam.logic.Tournament
@@ -43,7 +46,7 @@ import com.example.killteam.logic.nowMillis
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun MoreScreen(app: AppState, gate: AccessGate) {
+fun MoreScreen(app: AppState, gate: AccessGate, appearance: Appearance) {
     val ui = LocalUi.current
     val back = { ui.morePage = null }
     when (ui.morePage) {
@@ -61,14 +64,37 @@ fun MoreScreen(app: AppState, gate: AccessGate) {
                 )
             }
         }
+        
         MorePage.History -> HistoryPage(app, back)
         MorePage.Tournament -> TournamentPage(app, back)
         MorePage.Dice -> DicePage(back)
         MorePage.Notes -> NotesPage(app, back)
         MorePage.Measure -> MeasureScreen(app, back)
+        MorePage.Options -> OptionsPage(appearance, back)
         MorePage.About -> AboutPage(app, back)
         MorePage.Terms -> TermsPage(back)
         MorePage.Privacy -> PrivacyPage(back)
+    }
+}
+
+@Composable
+private fun OptionsPage(appearance: Appearance, onBack: () -> Unit) {
+    val systemDark = isSystemInDarkTheme()
+    Page("Options", onBack) {
+        item {
+            SectionCard("Appearance") {
+                Text("Choose how the app looks.", style = MaterialTheme.typography.bodySmall)
+                SegmentedChoice(ThemeMode.entries, appearance.mode, { it.label }, { appearance.set(it) })
+                Text(
+                    when (appearance.mode) {
+                        ThemeMode.System -> "Follows the device setting (now ${if (systemDark) "dark" else "light"})."
+                        ThemeMode.Light -> "Light background, dark text."
+                        ThemeMode.Dark -> "Dark background, light text."
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
     }
 }
 

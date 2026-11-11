@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kill Team Companion - Mock-up Turning Point: Strategy, Firefight, Score</title>
+<style>
+  :root { --bg: #121212; --surface: #1e1e1e; --surface2: #2a2a2a; --line: #3a3a3a; --orange: #e8650a; --text: #f2f2f2; --muted: #a0a0a0; --ok: #4caf7a; --warn: #f2c14e; --danger: #e5645a; --crit: #4a90d9; --kill: #d9534f; --tac: #5cb85c; --ploy: #3f6f63; --head: #1b2a33; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #000; color: var(--text); font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.hint { color: var(--muted); margin: 0 0 24px; font-size: 14px; max-width: 900px; line-height: 1.45; }
+  .row { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+  .col h2 { font-size: 14px; color: var(--orange); margin: 0 0 4px; text-transform: uppercase; letter-spacing: .08em; }
+  .col small { display: block; color: var(--muted); font-size: 12px; margin: 0 0 10px; max-width: 360px; line-height: 1.4; }
+  .notes { max-width: 320px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .notes li { margin-bottom: 6px; }
+  .notes button { background: transparent; color: var(--orange); border: 2px solid var(--orange); border-radius: 8px; padding: 8px 12px; font-weight: 700; cursor: pointer; }
+
+  .phone { width: 360px; height: 760px; background: var(--bg); border: 8px solid #333; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+  .topbar { background: var(--surface); border-bottom: 2px solid var(--orange); padding: 10px 14px; }
+  .topbar .title { font-weight: 700; font-size: 16px; }
+  .topbar .sub { font-size: 12px; color: var(--orange); margin-top: 2px; }
+  .steps { display: flex; gap: 4px; margin-top: 8px; }
+  .steps i { flex: 1; height: 5px; border-radius: 3px; background: var(--line); }
+  .steps i.on { background: var(--orange); }
+  .steplabels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-top: 3px; }
+  .steplabels span.cur { color: var(--orange); font-weight: 700; }
+  .content { flex: 1; overflow-y: auto; padding: 12px 14px 16px; scrollbar-width: thin; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+  .card h3 { margin: 0 0 8px; font-size: 15px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .card h3 b { color: var(--orange); font-size: 17px; white-space: nowrap; }
+  .cp { font-size: 13px; font-weight: 700; color: var(--orange); background: var(--surface2); border-radius: 12px; padding: 2px 10px; white-space: nowrap; }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 12px 0 6px; }
+  .muted { color: var(--muted); font-size: 12px; line-height: 1.4; }
+  .done-line { font-size: 13px; color: var(--ok); }
+
+  .btn { display: block; width: 100%; padding: 12px; border-radius: 8px; border: 2px solid var(--orange); background: var(--orange); color: #000; font-weight: 700; font-size: 14px; text-align: center; cursor: pointer; margin-top: 8px; }
+  .btn.sec { background: transparent; color: var(--orange); }
+  .btn.small { padding: 7px; font-size: 12px; margin-top: 6px; }
+  .btn.danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+  .btn.off { opacity: .4; pointer-events: none; }
+  .actions { display: flex; gap: 6px; margin-top: 6px; }
+  .actions .btn { margin-top: 0; }
+
+  .pill { display: inline-block; font-size: 11px; border: 1px solid var(--orange); color: var(--orange); border-radius: 12px; padding: 2px 8px; margin: 2px 4px 2px 0; }
+  .ploy { border: 1px solid var(--ploy); border-left: 4px solid var(--ploy); border-radius: 8px; background: var(--surface2); padding: 10px; margin-bottom: 8px; cursor: pointer; }
+  .ploy .head { display: flex; align-items: center; gap: 10px; }
+  .ploy .box { width: 22px; height: 22px; border: 2px solid var(--orange); border-radius: 5px; flex: none; display: flex; align-items: center; justify-content: center; font-size: 15px; color: transparent; }
+  .ploy.on { border-color: var(--orange); background: #2f2318; }
+  .ploy.on .box { background: var(--orange); color: #000; }
+  .ploy .name { font-weight: 700; font-size: 14px; flex: 1; }
+  .ploy .cost { font-size: 12px; color: var(--orange); font-weight: 700; }
+  .ploy .txt { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+  .ploy.locked { opacity: .45; cursor: not-allowed; }
+  .used { border: 2px solid var(--orange); border-radius: 8px; background: #2f2318; padding: 10px; margin-bottom: 8px; }
+  .used .tag { font-size: 11px; font-weight: 700; color: #000; background: var(--orange); border-radius: 10px; padding: 1px 8px; margin-left: 6px; }
+  .used .name { font-weight: 700; font-size: 14px; }
+
+  /* datacard header (firefight) */
+  .dc { border-radius: 14px; overflow: hidden; background: #161e24; margin-bottom: 6px; }
+  .dc .head { background: var(--head); padding: 10px 12px; }
+  .dc .head .nm { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+  .dc .stats { display: flex; gap: 6px; }
+  .dc .stat { flex: 1; background: #0b1115; border-radius: 0 0 10px 10px; text-align: center; padding: 5px 0; font-size: 10px; letter-spacing: .08em; }
+  .dc .stat b { display: block; font-size: 17px; letter-spacing: 0; }
+  .dc table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .dc th { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--orange); color: var(--muted); }
+  .dc td { padding: 5px 8px; background: #1f2a32; }
+  .dc tr:nth-child(even) td { background: #27343e; }
+  .unit { margin-bottom: 14px; }
+  .chev { width: 32px; height: 32px; border-radius: 50%; background: rgba(232,101,10,.18); color: var(--orange); display: inline-flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; flex: none; transition: transform .15s; }
+  .chev.open { transform: rotate(90deg); }
+  .hdr { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .hdr .t { flex: 1; }
+  .chipbar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .chipbar div { font-size: 12px; padding: 6px 10px; border-radius: 16px; border: 1px solid var(--line); color: var(--muted); cursor: pointer; }
+  .chipbar div.act { background: var(--orange); border-color: var(--orange); color: #000; font-weight: 700; }
+  .rule { border-left: 4px solid var(--orange); background: var(--surface2); border-radius: 8px; padding: 10px; margin-bottom: 8px; }
+  .rule.fire { border-left-color: #c9a227; } .rule.eq { border-left-color: #4a5562; }
+  .rule .name { font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; gap: 8px; }
+  .rule .name span { color: var(--orange); font-size: 12px; }
+  .rule .txt { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+  .status { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .status.bad { color: var(--warn); }
+  .status.out { color: var(--danger); }
+
+  /* score */
+  .op { padding: 8px 0; border-top: 1px solid var(--line); }
+  .op:first-of-type { border-top: 0; }
+  .oprow { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .dot.crit { background: var(--crit); } .dot.kill { background: var(--kill); } .dot.tac { background: var(--tac); }
+  .opname { flex: 1; font-size: 13px; font-weight: 600; }
+  .opname span { display: block; font-size: 11px; font-weight: 400; color: var(--muted); }
+  .auto { font-size: 10px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; padding: 1px 6px; font-weight: 400; display: inline !important; }
+  .step { display: flex; align-items: center; gap: 6px; }
+  .step button { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--orange); background: transparent; color: var(--orange); font-size: 16px; cursor: pointer; }
+  .step span { min-width: 22px; text-align: center; font-weight: 700; }
+  .bar { display: flex; gap: 3px; margin-top: 6px; }
+  .bar i { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+  .bar i.on { background: var(--orange); }
+  .bar i.new { background: var(--ok); }
+  .delta { font-size: 11px; color: var(--ok); font-weight: 700; }
+  .scoreline { display: flex; gap: 8px; margin-bottom: 12px; }
+  .scoreline div { flex: 1; text-align: center; background: var(--surface2); border-radius: 8px; padding: 8px; font-size: 11px; color: var(--muted); }
+  .scoreline b { display: block; font-size: 22px; color: var(--orange); }
+</style>
+</head>
+<body>
+<h1>Mock-up: Turning Point in drei Schritten (Strategy, Firefight, Score)</h1>
+<p class="hint">Variante A des Game Wizards. Die drei Bildschirme teilen sich einen Zustand: CP aus der Strategy phase, Wounds und "Out" aus der Firefight phase fließen automatisch in die Score-Seite (Kill op). Klickbarer Entwurf, keine App-Logik; Zahlen und Texte sind Platzhalter.</p>
+
+<div class="row">
+  <div class="col">
+    <h2>1 &middot; Strategy phase</h2>
+    <small>Initiative und Ready step, dann die Strategy ploys je Spieler (zugeklappt, CP wird abgezogen). Bestätigen öffnet die Firefight phase.</small>
+    <div class="phone">
+      <div class="topbar"><div class="title">Turning Point 2/4</div><div class="sub">Step 1 of 3: Strategy</div>
+        <div class="steps"><i class="on"></i><i></i><i></i></div>
+        <div class="steplabels"><span class="cur">Strategy</span><span>Firefight</span><span>Score</span></div></div>
+      <div class="content" id="s1"></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2>2 &middot; Firefight phase</h2>
+    <small>Jede Spielerkarte lässt sich mit dem Pfeil auf- und zuklappen (zugeklappt: Operatives, übrige Wounds, genutzte Ploys). Aufgeklappt je Spieler eine Chip-Leiste: Operatives, Strategy ploys (gewählte zuerst und markiert), Firefight ploys und Faction rules. Pro Operative der Datenkartenkopf mit den Werten, "Equipment" mit den Regeln der Ausrüstung und "Show datacard" für die Waffenwerte. "Out" zählt für die Kill op des Gegners.</small>
+    <div class="phone">
+      <div class="topbar"><div class="title">Turning Point 2/4</div><div class="sub">Step 2 of 3: Firefight</div>
+        <div class="steps"><i class="on"></i><i class="on"></i><i></i></div>
+        <div class="steplabels"><span>Strategy</span><span class="cur">Firefight</span><span>Score</span></div></div>
+      <div class="content" id="s2"></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2>3 &middot; Score (Ende des Turning Points)</h2>
+    <small>Pro Spieler Crit, Kill (automatisch aus "Out") und Tac. Grün = VP dieses Turning Points, orange = frühere. Bestätigen startet den nächsten Turning Point.</small>
+    <div class="phone">
+      <div class="topbar"><div class="title">Turning Point 2/4</div><div class="sub">Step 3 of 3: Score</div>
+        <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+        <div class="steplabels"><span>Strategy</span><span>Firefight</span><span class="cur">Score</span></div></div>
+      <div class="content" id="s3"></div>
+    </div>
+  </div>
+
+  <div class="col notes">
+    <h2>Hinweise</h2>
+    <ul>
+      <li>Keine Ready/Expended-Schalter mehr bei den Operatives.</li>
+      <li>Firefight: statt "Name &gt;" der Datenkartenkopf mit APL, Move, Save, Wounds; die Waffen stehen erst im aufgeklappten Datenblatt.</li>
+      <li>Strategy ploys: gewählte stehen in der Spielerkarte oben und markiert.</li>
+      <li>Firefight phase: Die Spielerkarten haben einen Pfeil zum Auf- und Zuklappen (hier beide anfangs offen).</li>
+      <li>Firefight phase: Strategy ploys, Firefight ploys und Faction rules sind über die Chips je Spieler erreichbar, das Equipment steht bei der Einheit (Button "Equipment: ..."). Ein Tipp auf den aktiven Chip klappt den Bereich zu.</li>
+      <li>Score: Kill VP sind automatisch, Tac zeigt das Limit je Turning Point, jede Op höchstens 6 VP.</li>
+      <li>Zum Ausprobieren: erst Ploy wählen und bestätigen, dann bei Player 2 einen Operative auf "Out" setzen und die Score-Seite ansehen.</li>
+    </ul>
+    <button onclick="reset()">Zurücksetzen</button>
+  </div>
+</div>
+
+<script>
+  const ploys = [
+    { name: "Cut Them Down", cost: 1, text: "Until the end of the turning point, re-roll one attack die against a wounded enemy operative." },
+    { name: "Hold the Line", cost: 1, text: "Until the end of the turning point, friendly operatives within 3\" of an objective marker have +1 APL." },
+  ];
+  const firePloys = [
+    { name: "Suppressing Fire", cost: 1, text: "Use when a friendly operative is shooting: the target cannot Counteract until the end of the activation." },
+    { name: "Rapid Advance", cost: 1, text: "Use when a friendly operative is activated: it can perform a free Dash action." },
+  ];
+  const factionRules = [
+    { name: "Hot-shot weapons", text: "Some KASRKIN rules refer to a hot-shot weapon: a ranged weapon that includes hot-shot in its name." },
+    { name: "Elite Warriors", text: "Once per turning point, a friendly operative can ignore one APL penalty." },
+  ];
+  const gear = {
+    "Frag grenades": "Once per battle, 1AP: a ranged attack against a visible enemy operative within 6\" (Atk 4, Hit 4+, Dmg 2/3, Blast 2\").",
+    "Ammo cache": "Once per battle: one friendly operative gets a re-roll of one attack die for one shooting attack.",
+    "Grenade pack": "Up to 2 grenades for the battle (placeholder rules text).",
+  };
+  const fresh = () => ({
+    confirmed: false, openPloys: [false, false], openCard: {}, openGear: {}, view: ["ops", "ops"], openPlayer: [true, true],
+    p: [
+      { name: "Player 1", team: "Kasrkin", cp: 3, used: [], crit: [1, 0], tac: [0, 0],
+        ops: [{ n: "Sergeant", apl: 3, move: '6"', save: "4+", w: 9, max: 9, out: false, eq: ["Frag grenades"], wp: [["Bolt pistol", "4", "3+", "3/4"], ["Power weapon", "4", "3+", "4/6"]] },
+              { n: "Trooper 1", apl: 2, move: '6"', save: "4+", w: 8, max: 8, out: false, eq: ["Ammo cache"], wp: [["Hot-shot lasgun", "4", "3+", "3/4"], ["Rifle butt", "3", "4+", "2/3"]] }] },
+      { name: "Player 2", team: "Nemesis Claw", cp: 4, used: [], crit: [0, 0], tac: [1, 0],
+        ops: [{ n: "Visionary", apl: 3, move: '6"', save: "3+", w: 12, max: 12, out: false, eq: ["Grenade pack"], wp: [["Bolt pistol", "4", "3+", "3/4"], ["Power fist", "5", "3+", "5/6"]] },
+              { n: "Warrior 1", apl: 2, move: '6"', save: "3+", w: 10, max: 10, out: false, eq: [], wp: [["Boltgun", "4", "3+", "3/4"], ["Fists", "3", "4+", "3/4"]] }] },
+    ],
+  });
+  let s = fresh();
+  const outs = i => s.p[i].ops.filter(o => o.out).length;   // operatives of player i that are out
+  const kill = i => Math.min(5, outs(1 - i));              // placeholder grade: one step per operative of the opponent that is out
+
+  function toggle(p, k) {
+    const pl = s.p[p], has = pl.used.includes(k), c = ploys[k].cost;
+    if (s.confirmed) return;
+    if (has) { pl.used = pl.used.filter(x => x !== k); pl.cp += c; }
+    else if (pl.cp >= c) { pl.used.push(k); pl.cp -= c; }
+    draw();
+  }
+  function fold(p) { s.openPloys[p] = !s.openPloys[p]; draw(); }
+  function confirmStrategy() { s.confirmed = true; draw(); }
+  function back() { s.confirmed = false; draw(); }
+  function wound(p, o, d) { const op = s.p[p].ops[o]; op.w = Math.max(0, Math.min(op.max, op.w + d)); draw(); }
+  function out(p, o) { const op = s.p[p].ops[o]; op.out = !op.out; draw(); }
+  function card(p, o) { const k = p + ":" + o; s.openCard[k] = !s.openCard[k]; draw(); }
+  function ployView(p, v) { s.view[p] = s.view[p] === v ? null : v; draw(); }
+  function foldPlayer(p) { s.openPlayer[p] = !s.openPlayer[p]; draw(); }
+  function gearToggle(p, o) { const k = p + ":" + o; s.openGear[k] = !s.openGear[k]; draw(); }
+  function step(p, key, d) { const pl = s.p[p], cap = key === "tac" ? 2 : 6; pl[key][1] = Math.max(0, Math.min(Math.min(cap, 6 - pl[key][0]), pl[key][1] + d)); draw(); }
+  function reset() { s = fresh(); draw(); }
+
+  function drawS1() {
+    const rows = [0, 1].map(p => { const pl = s.p[p]; return `
+      <div class="card"><h3><span>${pl.name} - ${pl.team}</span><span class="cp">CP ${pl.cp}</span></h3>
+        <div class="muted">Ploys: ${pl.used.length} selected ${pl.used.map(k => `<span class="pill">${ploys[k].name}</span>`).join("")}</div>
+        ${s.openPloys[p] ? ploys.map((x, k) => { const on = pl.used.includes(k), poor = !on && pl.cp < x.cost;
+          return `<div class="ploy ${on ? "on" : ""} ${poor || s.confirmed ? "locked" : ""}" onclick="toggle(${p},${k})"><div class="head"><div class="box">&#10003;</div><div class="name">${x.name}</div><div class="cost">-${x.cost} CP</div></div><div class="txt">${x.text}</div>${poor ? '<div class="muted" style="color:var(--warn)">not enough CP</div>' : ""}</div>`; }).join("") : ""}
+        <div class="btn sec small" onclick="fold(${p})">${s.openPloys[p] ? "Hide strategy ploys" : "Show strategy ploys"}</div>
+      </div>`; }).join("");
+    document.getElementById("s1").innerHTML = `
+      <div class="card"><h3>Initiative</h3><div class="done-line">Player 1 has initiative (roll-off done).</div></div>
+      <div class="card"><h3>Ready step</h3><div class="done-line">Done. Player 1 +1 CP, Player 2 +2 CP.</div></div>
+      <div class="label">Strategy ploys</div>${rows}
+      ${s.confirmed ? '<div class="btn off">Strategy phase confirmed</div><div class="btn sec" onclick="back()">Back to strategy phase</div>' : '<div class="btn" onclick="confirmStrategy()">Confirm strategy phase</div>'}`;
+  }
+
+  function unitHtml(p, o) {
+    const op = s.p[p].ops[o], k = p + ":" + o;
+    const state = op.out ? "[incapacitated]" : op.w * 2 < op.max ? "[injured]" : op.w < op.max ? "[wounded]" : "";
+    return `<div class="unit">
+      <div class="dc"><div class="head"><div class="nm">${op.n}</div>
+        <div class="stats"><div class="stat">APL<b>${op.apl}</b></div><div class="stat">MOVE<b>${op.move}</b></div><div class="stat">SAVE<b>${op.save}</b></div><div class="stat">WOUNDS<b>${op.max}</b></div></div></div>
+        ${s.openCard[k] ? `<table><tr><th>Weapon</th><th>Atk</th><th>Hit</th><th>Dmg</th></tr>${op.wp.map(w => `<tr><td>${w[0]}</td><td>${w[1]}</td><td>${w[2]}</td><td>${w[3]}</td></tr>`).join("")}</table>` : ""}
+      </div>
+      <div class="status ${op.out ? "out" : state ? "bad" : ""}">${op.w}/${op.max} W ${state}</div>
+      <div class="actions"><div class="btn sec small" onclick="wound(${p},${o},-1)">-1 W</div><div class="btn sec small" onclick="wound(${p},${o},1)">+1 W</div><div class="btn ${op.out ? "sec" : "danger"} small" onclick="out(${p},${o})">${op.out ? "Revive" : "Out"}</div></div>
+      ${op.eq.length ? `<div class="btn sec small" onclick="gearToggle(${p},${o})">${s.openGear[k] ? "Hide equipment: " : "Equipment: "}${op.eq.join(", ")}</div>${s.openGear[k] ? op.eq.map(e => `<div class="rule eq" style="margin-top:6px"><div class="name">${e}<span>Equipment</span></div><div class="txt">${gear[e]}</div></div>`).join("") : ""}` : ""}
+      <div class="btn sec small" onclick="card(${p},${o})">${s.openCard[k] ? "Hide datacard" : "Show datacard"}</div></div>`;
+  }
+
+  function drawS2() {
+    if (!s.confirmed) { document.getElementById("s2").innerHTML = '<div class="card"><h3>Strategy phase first</h3><div class="muted">Confirm the strategy phase to open the firefight phase.</div></div>'; return; }
+    document.getElementById("s2").innerHTML = [0, 1].map(p => { const pl = s.p[p];
+      const used = ploys.filter((x, k) => pl.used.includes(k)), rest = ploys.filter((x, k) => !pl.used.includes(k));
+      return `<div class="card"><div class="hdr" onclick="foldPlayer(${p})"><span class="chev ${s.openPlayer[p] ? "open" : ""}">&#9654;</span><span class="t">${pl.name} - ${pl.team}</span><span class="cp">CP ${pl.cp}</span></div>
+        ${!s.openPlayer[p] ? `<div class="muted">${pl.ops.filter(o => !o.out).length}/${pl.ops.length} operatives, ${pl.ops.reduce((n, o) => n + o.w, 0)} W left. Ploys used: ${pl.used.length ? pl.used.map(k => `<span class="pill">${ploys[k].name}</span>`).join("") : "none"}</div>` : `
+        <div class="chipbar">${[["ops", `Operatives (${pl.ops.filter(o => !o.out).length}/${pl.ops.length})`], ["strategy", `Strategy ploys${pl.used.length ? ` (${pl.used.length})` : ""}`], ["fire", "Firefight ploys"], ["faction", "Faction rules"]]
+          .map(([v, label]) => `<div class="${s.view[p] === v ? "act" : ""}" onclick="ployView(${p},'${v}')">${label}</div>`).join("")}</div>
+        ${s.view[p] === "strategy" ? used.map(x => `<div class="used"><div class="name">${x.name}<span class="tag">Used this turning point (-${x.cost} CP)</span></div><div class="txt muted">${x.text}</div></div>`).join("") + rest.map(x => `<div class="rule"><div class="name">${x.name}<span>${x.cost} CP</span></div><div class="txt">${x.text}</div></div>`).join("") : ""}
+        ${s.view[p] === "fire" ? firePloys.map(x => `<div class="rule fire"><div class="name">${x.name}<span>${x.cost} CP</span></div><div class="txt">${x.text}</div></div>`).join("") : ""}
+        ${s.view[p] === "faction" ? factionRules.map(x => `<div class="rule"><div class="name">${x.name}</div><div class="txt">${x.text}</div></div>`).join("") : ""}
+        ${s.view[p] === "ops" ? pl.ops.map((o, i) => unitHtml(p, i)).join("") : ""}`}
+      </div>`; }).join("") + '<div class="btn" onclick="document.getElementById(\'s3\').scrollIntoView()">Next: Score</div><div class="btn sec" onclick="back()">Back to strategy phase</div>';
+  }
+
+  function bar(before, now, max) { return `<div class="bar">${Array.from({ length: max }, (_, i) => `<i class="${i < before ? "on" : i < before + now ? "new" : ""}"></i>`).join("")}</div>`; }
+  const total = i => { const p = s.p[i]; return p.crit[0] + p.crit[1] + p.tac[0] + p.tac[1] + kill(i); };
+
+  function drawS3() {
+    document.getElementById("s3").innerHTML = `<div class="scoreline"><div><b>${total(0)}</b>Player 1</div><div><b>${total(1)}</b>Player 2</div></div>` +
+      s.p.map((p, i) => `<div class="card"><h3><span>${p.name} - ${p.team}</span><b>${total(i)} VP</b></h3>
+        <div class="op"><div class="oprow"><span class="dot crit"></span><div class="opname">Crit op<span>${p.crit[0] + p.crit[1]}/6 total</span></div>
+          <div class="step"><button onclick="step(${i},'crit',-1)">-</button><span>+${p.crit[1]}</span><button onclick="step(${i},'crit',1)">+</button></div></div>${bar(p.crit[0], p.crit[1], 6)}</div>
+        <div class="op"><div class="oprow"><span class="dot kill"></span><div class="opname">Kill op <span class="auto">auto</span><span>Grade ${kill(i)}/5 &middot; ${outs(1 - i)} enemy operatives out</span></div>
+          <div class="delta">+${kill(i)} this TP</div></div>${bar(0, kill(i), 5)}</div>
+        <div class="op"><div class="oprow"><span class="dot tac"></span><div class="opname">Tac op<span>${p.tac[0] + p.tac[1]}/6 &middot; max. 2 VP per turning point</span></div>
+          <div class="step"><button onclick="step(${i},'tac',-1)">-</button><span>+${p.tac[1]}</span><button onclick="step(${i},'tac',1)">+</button></div></div>${bar(p.tac[0], p.tac[1], 6)}</div>
+      </div>`).join("") +
+      '<div class="btn">Confirm scoring: Next turning point (3)</div><div class="muted" style="margin-top:8px">Green = VP of this turning point, orange = earlier turning points.</div>';
+  }
+
+  function draw() { drawS1(); drawS2(); drawS3(); }
+  draw();
+</script>
+</body>
+</html>

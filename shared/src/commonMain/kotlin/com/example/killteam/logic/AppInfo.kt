@@ -2,7 +2,7 @@ package com.example.killteam.logic
 
 /** v<feature>.<extension>.<bug>.<stage>, stage b = beta, a = alpha. */
 object AppInfo {
-    const val VERSION = "1.4.0.a"
+    const val VERSION = "1.4.0.b"
 }
 
 object FeatureFlags {

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kill Team Companion - Mock-up More und Options</title>
+<style>
+  body { margin: 0; padding: 24px; background: #000; color: #f2f2f2; font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  * { box-sizing: border-box; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.hint { color: #a0a0a0; margin: 0 0 16px; font-size: 14px; max-width: 900px; line-height: 1.45; }
+  .row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+  .col h2 { font-size: 13px; color: #e8650a; margin: 0 0 4px; text-transform: uppercase; letter-spacing: .08em; }
+  .col small { display: block; color: #a0a0a0; font-size: 12px; margin: 0 0 8px; max-width: 340px; line-height: 1.4; }
+  .notes { max-width: 340px; font-size: 13px; color: #a0a0a0; line-height: 1.5; }
+  .notes li { margin-bottom: 6px; }
+  .modes { display: flex; gap: 8px; margin-bottom: 18px; }
+  .modes button { background: transparent; color: #e8650a; border: 2px solid #e8650a; border-radius: 8px; padding: 8px 14px; font-weight: 700; cursor: pointer; font-size: 13px; }
+  .modes button.act { background: #e8650a; color: #000; }
+
+  .app.dark { --bg: #121212; --card: #1e1e1e; --card2: #2a2a2a; --line: #3a3a3a; --accent: #e8650a; --text: #f2f2f2; --muted: #a3adb5; --ok: #4caf7a; }
+  .app.light { --bg: #f4f1ea; --card: #ffffff; --card2: #ece7dc; --line: #d6cfbf; --accent: #b84a08; --text: #23211c; --muted: #655f52; --ok: #2e7d4f; }
+  .phone { width: 340px; height: 700px; border: 8px solid #333; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; background: var(--bg); color: var(--text); }
+  .top { background: #1f1f1f; color: #fff; padding: 12px 14px; font-weight: 700; font-size: 17px; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 8px; }
+  .top .back { color: var(--accent); font-size: 14px; font-weight: 600; }
+  .body { flex: 1; overflow-y: auto; padding: 12px; scrollbar-width: thin; }
+  .nav { display: flex; background: #1f1f1f; }
+  .nav div { flex: 1; text-align: center; padding: 8px 0 6px; font-size: 10px; color: #f2f2f2; }
+  .nav div b { display: block; font-size: 17px; font-weight: 400; }
+  .nav div.act { color: var(--accent); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 12px; overflow: hidden; }
+  .card .hd { background: #1f1f1f; color: #fff; padding: 9px 12px; font-weight: 700; font-size: 14px; border-left: 6px solid var(--accent); }
+  .card .bd { padding: 12px; font-size: 13px; line-height: 1.45; }
+  .muted { color: var(--muted); font-size: 12px; line-height: 1.4; }
+  .btn { display: block; width: 100%; padding: 12px; border-radius: 50px; border: 2px solid var(--accent); background: transparent; color: var(--accent); font-weight: 700; font-size: 14px; text-align: center; margin-bottom: 10px; }
+  .seg { display: flex; gap: 8px; margin: 10px 0; }
+  .seg div { flex: 1; text-align: center; padding: 11px 0; border-radius: 50px; border: 2px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 13px; cursor: pointer; }
+  .seg div.on { background: var(--accent); color: #fff; }
+  .swatches { display: flex; gap: 8px; margin-top: 8px; }
+  .sw { flex: 1; border-radius: 10px; padding: 8px; font-size: 11px; border: 2px solid var(--line); }
+  .sw.d { background: #121212; color: #f2f2f2; } .sw.l { background: #f4f1ea; color: #23211c; }
+  .sw.on { border-color: var(--accent); }
+  .sw i { display: block; height: 6px; width: 60%; border-radius: 3px; margin-top: 6px; background: #e8650a; } .sw.l i { background: #b84a08; }
+  .ver { text-align: center; font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .later { border: 1px dashed var(--line); border-radius: 14px; padding: 12px; color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<h1>Mock-up: More und Options</h1>
+<p class="hint">Unter More steht der neue Eintrag "Options" direkt vor "Data sources". Dort sitzt der Schalter für das Erscheinungsbild (System, Light, Dark). Die Knöpfe oben schalten die Darstellung der beiden Bildschirme um; in Options lässt sich die Wahl direkt ausprobieren. Klickbarer Entwurf ohne App-Logik.</p>
+
+<div class="modes"><button data-m="dark" class="act">Vorschau: dunkel</button><button data-m="light">Vorschau: hell</button></div>
+
+<div class="row">
+  <div class="col"><h2>1 &middot; More</h2>
+    <small>Wie bisher: Karte "App access", dann die Seiten als Buttons. Neu: "Options" direkt vor "Data sources".</small>
+    <div class="phone app dark" id="p1">
+      <div class="top">More</div>
+      <div class="body">
+        <div class="card"><div class="hd">App access</div><div class="bd">Limited access code.<br><b>Remaining: 4 days 3 hours</b><div class="muted">Valid until 2026-11-16 01:00 (device time).</div></div></div>
+        <div class="btn">Game history and statistics</div>
+        <div class="btn">Notes</div>
+        <div class="btn">Tournament mode</div>
+        <div class="btn">Dice and damage calculator</div>
+        <div class="btn" style="background:rgba(232,101,10,.12)">Options</div>
+        <div class="btn">Data sources</div>
+        <div class="btn">Terms of use</div>
+        <div class="btn">Privacy</div>
+        <div class="ver">v1.4.0.a - Daten: 2026-11-02</div>
+      </div>
+      <div class="nav"><div><b>&#9876;</b>Generator</div><div><b>&#9654;</b>Game</div><div><b>&#9733;</b>Teams</div><div><b>&#9776;</b>Rules</div><div class="act"><b>&#8230;</b>More</div></div>
+    </div></div>
+
+  <div class="col"><h2>2 &middot; Options</h2>
+    <small>Karte "Appearance" mit Umschaltung und kleiner Vorschau; ein Hinweis zeigt, was gerade gilt. Weitere Optionen können später darunter folgen.</small>
+    <div class="phone app dark" id="p2"></div></div>
+
+  <div class="col notes">
+    <h2>Hinweise</h2>
+    <ul>
+      <li>Standard ist "System": die App folgt der Einstellung des Geräts und wechselt mit ihr.</li>
+      <li>Die Wahl gilt sofort, ohne Neustart, und bleibt gespeichert.</li>
+      <li>Die Titelleisten, die untere Leiste und die Datenkarten bleiben in beiden Modi dunkel.</li>
+      <li>Im hellen Modus ist das Orange dunkler (#B84A08) für den Kontrast.</li>
+      <li>Der Sperrbildschirm folgt der Wahl ebenfalls (die Wahl liegt nicht in den App-Daten, sondern in den Einstellungen).</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  const S = { mode: "system", os: "dark", preview: "dark" };
+  const effective = () => (S.mode === "system" ? S.os : S.mode);
+  function draw() {
+    const mode = effective();
+    document.getElementById("p1").className = "phone app " + mode;
+    const p2 = document.getElementById("p2");
+    p2.className = "phone app " + mode;
+    p2.innerHTML = `
+      <div class="top"><span class="back">&lt; Back</span>Options</div>
+      <div class="body">
+        <div class="card"><div class="hd">Appearance</div><div class="bd">
+          <div class="muted">Choose how the app looks.</div>
+          <div class="seg">${[["system", "System"], ["light", "Light"], ["dark", "Dark"]].map(([k, l]) => `<div class="${S.mode === k ? "on" : ""}" onclick="setMode('${k}')">${l}</div>`).join("")}</div>
+          <div class="muted">${S.mode === "system" ? `Follows the device setting (now ${S.os}). <span style="color:var(--accent);cursor:pointer;text-decoration:underline" onclick="toggleOs()">Simulate ${S.os === "dark" ? "light" : "dark"}</span>` : S.mode === "light" ? "Light background, dark text." : "Dark background, light text."}</div>
+          <div class="swatches"><div class="sw d ${mode === "dark" ? "on" : ""}">Dark<i></i></div><div class="sw l ${mode === "light" ? "on" : ""}">Light<i></i></div></div>
+        </div></div>
+        <div class="later">More options can follow here, for example screen on during games.</div>
+      </div>
+      <div class="nav"><div><b>&#9876;</b>Generator</div><div><b>&#9654;</b>Game</div><div><b>&#9733;</b>Teams</div><div><b>&#9776;</b>Rules</div><div class="act"><b>&#8230;</b>More</div></div>`;
+  }
+  function setMode(m) { S.mode = m; draw(); }
+  function toggleOs() { S.os = S.os === "dark" ? "light" : "dark"; draw(); }
+  document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => {
+    S.mode = b.dataset.m; document.querySelectorAll(".modes button").forEach(x => x.classList.toggle("act", x === b)); draw();
+  }));
+  draw();
+</script>
+</body>
+</html>

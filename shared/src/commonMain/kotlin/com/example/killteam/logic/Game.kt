@@ -69,6 +69,10 @@ data class PlayerState(
     val operatives: List<OperativeTrack> = emptyList(),
     /** Strategy ploys used in the current turning point. */
     val ployNames: List<String> = emptyList(),
+    /** VP of each op at the start of the current turning point; the difference to now is what was scored in this turning point. */
+    val critVpBase: Int = 0,
+    val tacVpBase: Int = 0,
+    val killVpBase: Int = 0,
 ) {
     val killGrade get() = KillOp.grade(enemyStartCount, kills)
 }
@@ -94,6 +98,8 @@ data class GameState(
     val readyDone: Boolean = false,
     /** The Strategy phase of the current turning point is confirmed; the Firefight phase is open. */
     val strategyDone: Boolean = false,
+    /** The Firefight phase of the current turning point is finished; the Score step is open. */
+    val firefightDone: Boolean = false,
 ) {
     fun updatePlayer(index: Int, change: (PlayerState) -> PlayerState) =
         copy(players = players.mapIndexed { i, p -> if (i == index) change(p) else p })
@@ -170,5 +176,21 @@ fun GameState.advanceTurningPoint(): GameState =
         initiativeChosen = false,
         readyDone = false,
         strategyDone = false,
-        players = players.map { p -> p.copy(ployNames = emptyList(), operatives = p.operatives.map { it.copy(expended = false) }) },
+        firefightDone = false,
+        players = players.mapIndexed { i, p ->
+            p.copy(
+                ployNames = emptyList(), operatives = p.operatives.map { it.copy(expended = false) },
+                critVpBase = p.critVp, tacVpBase = p.tacVp, killVpBase = Scoring.killVp(p, players[1 - i], false),
+            )
+        },
     )
+
+/** The three steps of a turning point in the Play phase. */
+enum class TurningPointStep(val label: String) { Strategy("Strategy"), Firefight("Firefight"), Score("Score") }
+
+val GameState.step: TurningPointStep
+    get() = when {
+        !strategyDone -> TurningPointStep.Strategy
+        !firefightDone -> TurningPointStep.Firefight
+        else -> TurningPointStep.Score
+    }

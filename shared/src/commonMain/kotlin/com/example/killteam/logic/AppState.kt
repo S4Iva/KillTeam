@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.killteam.data.KillTeam
 import com.example.killteam.data.KillTeamData
+import com.example.killteam.data.LookupTerm
 import com.example.killteam.data.RulesData
 import com.example.killteam.data.TermMatcher
 import com.example.killteam.data.loadKillTeamData
@@ -31,12 +32,16 @@ class AppState(settings: Settings = Settings()) {
     val history = Persisted(settings, "history", ListSerializer(GameResult.serializer()), emptyList())
     val tournaments = Persisted(settings, "tournaments", ListSerializer(Tournament.serializer()), emptyList())
     val measure = Persisted(settings, "measure", MeasureSettings.serializer(), MeasureSettings())
+    val rulesRecent = Persisted(settings, "rulesRecent", ListSerializer(String.serializer()), emptyList())
+    val rulesPinned = Persisted(settings, "rulesPinned", ListSerializer(String.serializer()), emptyList())
 
     var teamData: KillTeamData? by mutableStateOf(null)
         private set
     var rules: RulesData? by mutableStateOf(null)
         private set
     var matcher: TermMatcher? by mutableStateOf(null)
+        private set
+    var lookup: List<LookupTerm> by mutableStateOf(emptyList())
         private set
     var loadError: String? by mutableStateOf(null)
         private set
@@ -54,9 +59,11 @@ class AppState(settings: Settings = Settings()) {
             coroutineScope {
                 val teams = async(Dispatchers.Default) { loadKillTeamData() }
                 val rulesData = async(Dispatchers.Default) { loadRulesData() }
-                val matcherData = async(Dispatchers.Default) { TermMatcher(loadLookupData().terms) }
+                val termData = async(Dispatchers.Default) { loadLookupData().terms }
+                val matcherData = async(Dispatchers.Default) { TermMatcher(termData.await()) }
                 teamData = teams.await().let { d -> KillTeamData(d.source, d.importedAt, d.teams.sortedBy { it.name.lowercase() }) }
                 rules = rulesData.await()
+                lookup = termData.await()
                 matcher = matcherData.await()
             }
         } catch (e: CancellationException) {
@@ -81,4 +88,19 @@ class AppState(settings: Settings = Settings()) {
 
     fun setNote(key: String, text: String) =
         notes.update(if (text.isBlank()) notes.value - key else notes.value + (key to text))
+
+    /** Remembers a rules search (newest first, no duplicates, at most [MAX_RECENT]). */
+    fun addRecentSearch(query: String) {
+        val q = query.trim()
+        if (q.length < 3) return
+        rulesRecent.update((listOf(q) + rulesRecent.value.filterNot { it.equals(q, ignoreCase = true) }).take(MAX_RECENT))
+    }
+
+    /** Pins or unpins a keyword (by title) for the start page of the Rules tab. */
+    fun togglePinned(title: String) =
+        rulesPinned.update(if (title in rulesPinned.value) rulesPinned.value - title else rulesPinned.value + title)
+
+    companion object {
+        const val MAX_RECENT = 6
+    }
 }

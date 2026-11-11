@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kill Team Companion - Design-Vorschläge</title>
+<style>
+  /* Three themes share the same markup; only the variables change. */
+  body[data-theme="a"] {
+    --bg: #14171a; --surface: #1e2226; --surface2: #2a3036; --line: #3a424a; --accent: #e8650a; --accent-ink: #000; --text: #f2f2f2; --muted: #a3adb5; --head: #1b2a33;
+    --radius: 14px; --radius-s: 8px; --btn-radius: 50px; --head-font: "Segoe UI", Roboto, Arial, sans-serif; --card-shadow: none; --card-border: 1px solid var(--line);
+    --stripe: 6px; --label-transform: none; --label-spacing: 0; --pat: none;
+  }
+  body[data-theme="b"] {
+    --bg: #0b0f0d; --surface: #121a16; --surface2: #1a2620; --line: #2c4a3b; --accent: #4cf2a0; --accent-ink: #04140c; --text: #dff7ea; --muted: #7fa896; --head: #0f1f18;
+    --radius: 3px; --radius-s: 2px; --btn-radius: 2px; --head-font: "Consolas", "Courier New", monospace; --card-shadow: 0 0 0 1px rgba(76,242,160,.08) inset; --card-border: 1px solid var(--line);
+    --stripe: 3px; --label-transform: uppercase; --label-spacing: .14em; --pat: repeating-linear-gradient(0deg, rgba(76,242,160,.04) 0 1px, transparent 1px 3px);
+  }
+  body[data-theme="c"] {
+    --bg: #f1ede4; --surface: #fffdf8; --surface2: #ebe5d8; --line: #d3c9b5; --accent: #c2500a; --accent-ink: #fff; --text: #25221c; --muted: #6d6556; --head: #2b2a27;
+    --radius: 10px; --radius-s: 6px; --btn-radius: 8px; --head-font: Georgia, "Times New Roman", serif; --card-shadow: 0 2px 6px rgba(60,45,20,.15); --card-border: 1px solid var(--line);
+    --stripe: 0px; --label-transform: none; --label-spacing: 0; --pat: none;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #000; color: #f2f2f2; font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.hint { color: #a0a0a0; margin: 0 0 16px; font-size: 14px; max-width: 900px; line-height: 1.45; }
+  .switch { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .switch button { background: transparent; color: #e8650a; border: 2px solid #e8650a; border-radius: 8px; padding: 9px 14px; font-weight: 700; cursor: pointer; font-size: 13px; }
+  .switch button.act { background: #e8650a; color: #000; }
+  .desc { max-width: 900px; color: #a0a0a0; font-size: 13px; line-height: 1.5; margin: 0 0 20px; min-height: 40px; }
+  .row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+  .col h2 { font-size: 13px; color: #e8650a; margin: 0 0 8px; text-transform: uppercase; letter-spacing: .08em; }
+
+  .phone { width: 340px; height: 700px; background: var(--bg); background-image: var(--pat); color: var(--text); border: 8px solid #333; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; font-family: var(--head-font); }
+  .top { background: var(--head); color: #fff; padding: 12px 14px; font-weight: 700; font-size: 17px; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 8px; }
+  .top .mark { width: 22px; height: 22px; background: var(--accent); clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); flex: none; }
+  .body { flex: 1; overflow-y: auto; padding: 12px; scrollbar-width: thin; }
+  .tabs { display: flex; background: var(--surface); border-top: 1px solid var(--line); }
+  .tabs div { flex: 1; text-align: center; padding: 8px 0 6px; font-size: 10px; color: var(--muted); letter-spacing: var(--label-spacing); text-transform: var(--label-transform); }
+  .tabs div b { display: block; font-size: 17px; font-weight: 400; }
+  .tabs div.act { color: var(--accent); }
+
+  .card { background: var(--surface); border: var(--card-border); border-radius: var(--radius); box-shadow: var(--card-shadow); margin-bottom: 12px; overflow: hidden; }
+  .card .hd { background: var(--head); color: #fff; padding: 9px 12px; font-weight: 700; font-size: 14px; border-left: var(--stripe) solid var(--accent); letter-spacing: var(--label-spacing); text-transform: var(--label-transform); display: flex; justify-content: space-between; }
+  .card .bd { padding: 12px; font-size: 13px; line-height: 1.45; }
+  .muted { color: var(--muted); font-size: 12px; }
+  .pill { display: inline-block; font-size: 11px; border: 1px solid var(--accent); color: var(--accent); border-radius: var(--btn-radius); padding: 2px 9px; margin: 2px 4px 2px 0; }
+  .btn { display: block; width: 100%; padding: 12px; border-radius: var(--btn-radius); border: 2px solid var(--accent); background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 14px; text-align: center; margin-top: 8px; font-family: var(--head-font); letter-spacing: var(--label-spacing); text-transform: var(--label-transform); }
+  .btn.sec { background: transparent; color: var(--accent); }
+  .field { background: var(--surface2); border: 1px solid var(--line); border-radius: var(--radius-s); padding: 10px 12px; font-size: 13px; color: var(--text); margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .field span:first-child { color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0; }
+  .stat { background: var(--surface2); border-radius: 0 0 var(--radius-s) var(--radius-s); text-align: center; padding: 5px 0; font-size: 10px; letter-spacing: .08em; color: var(--muted); border-top: 2px solid var(--accent); }
+  .stat b { display: block; font-size: 17px; color: var(--text); letter-spacing: 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; padding: 5px 6px; border-bottom: 1px solid var(--accent); color: var(--muted); font-weight: 600; letter-spacing: var(--label-spacing); text-transform: var(--label-transform); font-size: 11px; }
+  td { padding: 6px; border-bottom: 1px solid var(--line); }
+  .tile { display: flex; align-items: center; gap: 12px; background: var(--surface); border: var(--card-border); border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 12px; margin-bottom: 10px; }
+  .tile .ic { width: 36px; height: 36px; background: var(--surface2); border: 1px solid var(--accent); color: var(--accent); border-radius: var(--radius-s); display: flex; align-items: center; justify-content: center; font-size: 18px; flex: none; }
+  .tile .t { flex: 1; font-weight: 600; font-size: 14px; }
+  .tile .t span { display: block; font-weight: 400; font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .code { background: var(--surface2); border: 1px solid var(--line); border-radius: var(--radius-s); padding: 12px; font-family: "Consolas", monospace; font-size: 12px; letter-spacing: .08em; color: var(--text); line-height: 1.8; }
+  .code i { font-style: normal; color: var(--accent); }
+  .center { text-align: center; }
+  .logo { width: 72px; height: 72px; margin: 40px auto 14px; background: var(--accent); clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); display: flex; align-items: center; justify-content: center; color: var(--accent-ink); font-weight: 900; font-size: 24px; }
+  .err { color: #e5645a; font-size: 12px; margin-top: 6px; }
+  .ok { color: #4caf7a; }
+  .bar { display: flex; gap: 3px; margin-top: 6px; }
+  .bar i { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+  .bar i.on { background: var(--accent); }
+</style>
+</head>
+<body data-theme="a">
+<h1>Design-Vorschläge: Kill Team Companion</h1>
+<p class="hint">Dieselben fünf Bildschirme in drei Stilrichtungen. Mit den Knöpfen oben umschalten; Inhalte und Zahlen sind Platzhalter, der Zugangscode im Sperrbildschirm ist ein Muster.</p>
+
+<div class="switch">
+  <button class="act" data-t="a">A &middot; Kill-Team-Orange (verfeinert)</button>
+  <button data-t="b">B &middot; Taktisches HUD (grün, eckig)</button>
+  <button data-t="c">C &middot; Feldhandbuch (hell, Papier)</button>
+</div>
+<div class="desc" id="desc"></div>
+
+<div class="row">
+  <div class="col"><h2>1 &middot; Sperrbildschirm</h2>
+    <div class="phone">
+      <div class="body center">
+        <div class="logo">KT</div>
+        <div style="font-size:20px;font-weight:700">Kill Team Companion</div>
+        <div class="muted" style="margin:6px 0 18px">Enter your access code</div>
+        <div class="code">XXXXX-XXXXX-XXXXX-<i>XXXXX</i>-XXXXX<br>XXXXX-XXXXX-XXXXX-XXXXX-XXXXX</div>
+        <div class="err">Code not valid. Check the groups and try again.</div>
+        <div class="btn">Unlock</div>
+        <div class="btn sec">Paste from clipboard</div>
+        <div class="muted" style="margin-top:18px">The code carries its expiry. Time limited codes lock the app when they run out.</div>
+      </div>
+    </div></div>
+
+  <div class="col"><h2>2 &middot; Generator</h2>
+    <div class="phone">
+      <div class="top"><span class="mark"></span>Generator</div>
+      <div class="body">
+        <div class="card"><div class="hd"><span>Mission</span><span>Crit op 3</span></div><div class="bd">
+          <div style="font-size:16px;font-weight:700;margin-bottom:6px">Secure the Datastacks</div>
+          <span class="pill">Killzone: Gallowdark</span><span class="pill">Map 4</span>
+          <div class="btn">Random mission</div><div class="btn sec">Choose manually</div></div></div>
+        <div class="card"><div class="hd"><span>Kill op</span><span>grade table</span></div><div class="bd">
+          <table><tr><th>Team</th><th>1 VP</th><th>2 VP</th><th>3 VP</th></tr><tr><td>6</td><td>1</td><td>2</td><td>3</td></tr><tr><td>10</td><td>2</td><td>4</td><td>6</td></tr></table></div></div>
+        <div class="card"><div class="hd"><span>Tac ops</span><span>Security</span></div><div class="bd"><span class="pill">Seek &amp; Destroy</span><span class="pill">Security</span><span class="pill">Recon</span></div></div>
+      </div>
+      <div class="tabs"><div class="act"><b>&#9876;</b>Generator</div><div><b>&#9654;</b>Game</div><div><b>&#9733;</b>Teams</div><div><b>&#9776;</b>Rules</div><div><b>&#8230;</b>More</div></div>
+    </div></div>
+
+  <div class="col"><h2>3 &middot; Game: Teamwahl</h2>
+    <div class="phone">
+      <div class="top"><span class="mark"></span>Game</div>
+      <div class="body">
+        <div class="card"><div class="hd"><span>Mission</span></div><div class="bd">Secure the Datastacks <div class="muted">Gallowdark, map 4</div><div class="btn sec">Change mission</div></div></div>
+        <div class="card"><div class="hd"><span>Player 1</span><span>&#9654;</span></div><div class="bd">
+          <div class="field"><span>Name</span><span>Player 1</span></div>
+          <div class="field"><span>Kill team</span><span>Kasrkin</span></div>
+          <div class="field"><span>Roster</span><span>None</span></div>
+          <div class="muted">Operatives 3/10 &middot; Equipment 2/4</div><div class="bar"><i class="on"></i><i class="on"></i><i></i><i></i></div></div></div>
+        <div class="card"><div class="hd"><span>Player 2</span><span>&#9654;</span></div><div class="bd"><div class="field"><span>Kill team</span><span>Nemesis Claw</span></div></div></div>
+        <div class="btn">Start game</div>
+      </div>
+      <div class="tabs"><div><b>&#9876;</b>Generator</div><div class="act"><b>&#9654;</b>Game</div><div><b>&#9733;</b>Teams</div><div><b>&#9776;</b>Rules</div><div><b>&#8230;</b>More</div></div>
+    </div></div>
+
+  <div class="col"><h2>4 &middot; Teams: Datenkarte</h2>
+    <div class="phone">
+      <div class="top"><span class="mark"></span>Kasrkin</div>
+      <div class="body">
+        <div class="card"><div class="hd"><span>Kasrkin Sergeant</span><span>&#9733;</span></div><div class="bd">
+          <div class="grid"><div class="stat">APL<b>3</b></div><div class="stat">MOVE<b>6"</b></div><div class="stat">SAVE<b>4+</b></div><div class="stat">WOUNDS<b>9</b></div></div>
+          <table><tr><th>Weapon</th><th>Atk</th><th>Hit</th><th>Dmg</th></tr><tr><td>Bolt pistol</td><td>4</td><td>3+</td><td>3/4</td></tr><tr><td>Power weapon</td><td>4</td><td>3+</td><td>4/6</td></tr></table>
+          <div class="btn sec">Show abilities</div></div></div>
+        <div class="card"><div class="hd"><span>Faction rule</span></div><div class="bd">Hot-shot weapons: a ranged weapon that includes hot-shot in its name.</div></div>
+      </div>
+      <div class="tabs"><div><b>&#9876;</b>Generator</div><div><b>&#9654;</b>Game</div><div class="act"><b>&#9733;</b>Teams</div><div><b>&#9776;</b>Rules</div><div><b>&#8230;</b>More</div></div>
+    </div></div>
+
+  <div class="col"><h2>5 &middot; More</h2>
+    <div class="phone">
+      <div class="top"><span class="mark"></span>More</div>
+      <div class="body">
+        <div class="tile"><div class="ic">&#9998;</div><div class="t">Notes<span>Teams, rules, ops</span></div><span class="muted">&#9654;</span></div>
+        <div class="tile"><div class="ic">&#8635;</div><div class="t">History and statistics<span>12 games</span></div><span class="muted">&#9654;</span></div>
+        <div class="tile"><div class="ic">&#9819;</div><div class="t">Tournaments<span>2 open</span></div><span class="muted">&#9654;</span></div>
+        <div class="tile"><div class="ic">&#167;</div><div class="t">Legal<span>Sources and notices</span></div><span class="muted">&#9654;</span></div>
+        <div class="card" style="margin-top:16px"><div class="hd"><span>Access</span><span class="ok">active</span></div><div class="bd">Time limited code: 4 days 3 hours left.<div class="muted" style="margin-top:6px">v1.4.0.a &middot; Data: 2026-11-02</div></div></div>
+      </div>
+      <div class="tabs"><div><b>&#9876;</b>Generator</div><div><b>&#9654;</b>Game</div><div><b>&#9733;</b>Teams</div><div><b>&#9776;</b>Rules</div><div class="act"><b>&#8230;</b>More</div></div>
+    </div></div>
+</div>
+
+<script>
+  const text = {
+    a: "<b>A &middot; Kill-Team-Orange (verfeinert):</b> Weiterentwicklung des heutigen Designs: anthrazit, orange Akzent, runde Karten und Pillen-Buttons, dunkle Titelleisten mit farbigem Streifen. Vertraut, ruhig, gut lesbar bei wenig Licht.",
+    b: "<b>B &middot; Taktisches HUD:</b> Schwarzgrün mit Signalgrün, eckige Karten, Großbuchstaben-Beschriftungen, Monospace-Schrift und feines Scanlinien-Muster. Wirkt wie eine Einsatzanzeige, passt zum Kill-Team-Thema, braucht aber kontrastreiche Farben und mehr Pflege bei der Lesbarkeit.",
+    c: "<b>C &middot; Feldhandbuch:</b> Helles Papier mit Serifenschrift, dunkler Titelleiste und rostorangem Akzent, Karten mit weichem Schatten. Besser lesbar im hellen Raum und am Spieltisch, weniger Akkuverbrauch auf OLED spricht allerdings für Dunkel (als Zweit-Theme denkbar)."
+  };
+  const desc = document.getElementById("desc");
+  function setTheme(t) {
+    document.body.dataset.theme = t;
+    desc.innerHTML = text[t];
+    document.querySelectorAll(".switch button").forEach(b => b.classList.toggle("act", b.dataset.t === t));
+  }
+  document.querySelectorAll(".switch button").forEach(b => b.addEventListener("click", () => setTheme(b.dataset.t)));
+  setTheme("a");
+</script>
+</body>
+</html>

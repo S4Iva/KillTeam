@@ -1,13 +1,6 @@
 {
     "terms":  [
                   {
-                      "phrase":  "Wahapedian Detachment",
-                      "title":  "Wahapedian Detachment",
-                      "text":  "The soldiers of the Wahapedian Detachment make up the vast bulk of the Imperial war machine. It is they who lay down their lives on every battlefront to hold the line against tides of mutants, monsters and heretics. Yet even amongst the tragically expendable masses of the Imperial Guard, there are elite warriors that stand ready to deploy.\nThose Wahapedia users who have pledged themselves (donated) to build a better future for the Warhammer gaming community, and those who gave their blood (money) to uphold data servitors are worthy of a special honour as part of the Regiment of the site (and N...",
-                      "page":  "about",
-                      "anchor":  "Wahapedian-Detachment"
-                  },
-                  {
                       "phrase":  "dice (D6)",
                       "title":  "Dice (D6, D3)",
                       "text":  "Use 6-sided dice to determine the outcome of various rules. This will often require x+, where x is the lowest possible result, e.g. 3+. Sometimes a result within a range will be required, e.g. 1-3. Some rare rules require you to roll a D3. To do so, roll one D6 and halve the result (rounding up). Some require xD6 or xD3 (e.g. 2D6 or 3D3). Roll x number of dice and add the results together. Some require D6+x or D3+x (e.g. D6+2 or D3+3). Roll that dice and add x to the result.\nSome rules allow you to re-roll a dice roll. You can never re-roll a dice roll more than once, and you cannot select the original result, even if the new result is worse. If it’s an attack or defence dice, you re-roll before it’s retained or discarded. If you can re-roll multiple different dice, you can do this in any order, including seeing the result of one re-roll before deciding on the next. If multiple players can re-roll dice at the same time (e.g. during a Fight action), they alternate either re-rolling a dice or passing until they both pass in succession, starting with the player with initiative (this takes precedence over initiative and rules that would happen at the same time).\nFor example, if a 4+ is required, a dice result of 4, 5 or 6 fulfils this, and if a 1-4 is required, a dice result of 1, 2, 3 or 4 fulfils this.",
@@ -2150,6 +2143,27 @@
                       "anchor":  "Dice-D6-D3-"
                   },
                   {
+                      "phrase":  "Marksman",
+                      "title":  "MARKSMAN",
+                      "text":  "This NPO will move to an ideal position to shoot the enemy. When activated, if it’s a NEMESIS NPO or will perform the Shoot action during that activation, give it an Engage order. Otherwise, give it a Conceal order.\nFall Back. If possible, to a location where there’s a valid target that isn’t obscured, if not, to a location that’s appropriate for the NPOs to better win the mission.\nShoot.\nReposition. If possible, to a location where there’s a valid target that isn’t obscured, if not, to a location that’s appropriate for the NPOs to better win the mission (a subsequent Dash action can fulfil these).\nDash. If possible, to a location where there’s a valid target that isn’t obscured, if not, to a location that’s appropriate for the NPOs to better win the mission.",
+                      "page":  "the-missions",
+                      "anchor":  "Marksman"
+                  },
+                  {
+                      "phrase":  "Battler",
+                      "title":  "BATTLER",
+                      "text":  "This NPO will move towards the enemy to fight them, but will seek cover on its way, and will shoot if the need arises. When activated, if it’s a NEMESIS NPO or will perform the Fight, Charge or Shoot action during that activation, give it an Engage order. Otherwise, give it a Conceal order.\nFight.\nCharge the closest player operative via the shortest possible route.\nReposition towards the closest player operative, to cover if possible (a subsequent Dash action can fulfil this).\nShoot.\nDash towards the closest player operative, to cover if possible.",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "BATTLER"
+                  },
+                  {
+                      "phrase":  "Guardian",
+                      "title":  "GUARDIAN",
+                      "text":  "This NPO will shoot the enemy as a priority, but will fight if the need arises. When activated, if it’s a NEMESIS NPO or will perform the Fight, Charge or Shoot action during that activation, give it an Engage order. Otherwise, give it a Conceal order.\nFight.\nShoot.\nCharge the closest player operative that’s within 4\" of it via the shortest possible route.\nReposition. If possible, to a location where there’s a valid target that isn’t obscured, if not, to a location that’s appropriate for the NPOs to better win the mission (a subsequent Dash action can fulfil these).\nDash. If possible, to a location where there’s a valid target that isn’t obscured, if not, to a location that’s appropriate for the NPOs to better win the mission.",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "GUARDIAN"
+                  },
+                  {
                       "phrase":  "Sabotage Nexus",
                       "title":  "Sabotage Nexus",
                       "text":  "SABOTAGE NEXUS1AP\nOne objective marker the active operative controls is sabotaged until the end of the turning point. If this is the third time this action has been performed during this turning point, you gain 1 Sabotage point. Whenever an NPO activation card is drawn, you can spend 1 of your Sabotage points to discard that card without resolving its effects and skip that NPO activation.\nAn operative cannot perform this action during the first turning point, while within control range of an enemy operative, or if that objective marker has already been sabotaged during this turning point.",
@@ -2197,6 +2211,48 @@
                       "text":  "SIPHON POWER1AP\nOne objective marker the active operative controls is siphoned. Note that whenever an operative finishes performing this action, you must draw a card from the Intruder deck unless it’s empty.\nAn operative cannot perform this action during the first turning point, while within control range of an enemy operative, or if that objective marker has already been siphoned during this turning point.",
                       "page":  "core-rules",
                       "anchor":  "Markers"
+                  },
+                  {
+                      "phrase":  "Brawler",
+                      "title":  "BRAWLER",
+                      "text":  "This NPO will move towards the enemy to fight them, but will seek cover on its way. When activated, if it’s a NEMESIS NPO or will perform the Fight or Charge action during that activation, give it an Engage order. Otherwise, give it a Conceal order.\nFight.\nCharge the closest player operative via the shortest possible route.\nReposition towards the closest player operative, to cover if possible (a subsequent Dash action can fulfil this).\nDash towards the closest player operative, to cover if possible.",
+                      "page":  "the-missions",
+                      "anchor":  "Brawler"
+                  },
+                  {
+                      "phrase":  "Minimum Range 8\"*",
+                      "title":  "*Minimum Range 8\"",
+                      "text":  "Only operatives more than 8\" from this NPO can be valid targets.",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
+                      "phrase":  "Shield*",
+                      "title":  "*Shield",
+                      "text":  "Whenever this NPO is fighting or retaliating with this weapon, each of its blocks can be allocated to block two unresolved successes (instead of one). Whenever an operative is shooting this NPO, weapons that have the Piercing 1 weapon rule have the Piercing Crits 1 weapon rule instead.",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
+                      "phrase":  "Range 12\"",
+                      "title":  "Range x",
+                      "text":  "Only operatives within x of the active operative can be valid targets, e.g. Range 9\".",
+                      "page":  "appendix",
+                      "anchor":  "Range-x"
+                  },
+                  {
+                      "phrase":  "Range 3\"",
+                      "title":  "Range x",
+                      "text":  "Only operatives within x of the active operative can be valid targets, e.g. Range 9\".",
+                      "page":  "appendix",
+                      "anchor":  "Range-x"
+                  },
+                  {
+                      "phrase":  "Limited 1",
+                      "title":  "Limited x",
+                      "text":  "After an operative uses this weapon a number of times in the battle equal to x, they no longer have it. If it’s used multiple times in one action (e.g. Blast), treat this as one use.",
+                      "page":  "appendix",
+                      "anchor":  "Limited-x"
                   },
                   {
                       "phrase":  "step 5",
@@ -2297,13 +2353,6 @@
                       "anchor":  "Keywords"
                   },
                   {
-                      "phrase":  "Marksman",
-                      "title":  "MARKSMAN",
-                      "text":  "This NPO will move to an ideal position to shoot the enemy. When activated, if it’s a NEMESIS NPO or will perform the Shoot action during that activation, give it an Engage order. Otherwise, give it a Conceal order.\nFall Back. If possible, to a location where there’s a valid target that isn’t obscured, if not, to a location that’s appropriate for the NPOs to better win the mission.\nShoot.\nReposition. If possible, to a location where there’s a valid target that isn’t obscured, if not, to a location that’s appropriate for the NPOs to better win the mission (a subsequent Dash action can fulfil th...",
-                      "page":  "nemesis-operatives",
-                      "anchor":  "MARKSMAN"
-                  },
-                  {
                       "phrase":  "Defenders of the Imperium",
                       "title":  "5. Traits",
                       "text":  "Alongside weapons, traits differentiate your NEMESIS operative from others. First, your NEMESIS operative has one allegiance trait determined by its selected allegiance keyword. These rules can be found on the relevant allegiance card:\nAELDARI: Arrogant Superiority\nCHAOS: Let the Galaxy Burn\nIMPERIUM: Defenders of the Imperium\nLEAGUES OF VOTANN: Acquisition at All Costs\nNECRON: Living Metal\nORK: Waaagh!\nT’AU EMPIRE: Supporting Fire\nTYRANID: Will of the Hive Mind\nYou then select one nemesis trait for your NEMESIS operative (see table below). This is best selected to capture the narrative of the...",
@@ -2346,13 +2395,6 @@
                       "anchor":  "5.-Traits"
                   },
                   {
-                      "phrase":  "Battler",
-                      "title":  "BATTLER",
-                      "text":  "This NPO will move towards the enemy to fight them, but will seek cover on its way, and will shoot if the need arises. When activated, if it’s a NEMESIS NPO or will perform the Fight, Charge or Shoot action during that activation, give it an Engage order. Otherwise, give it a Conceal order.\nFight.\nCharge the closest player operative via the shortest possible route.\nReposition towards the closest player operative, to cover if possible (a subsequent Dash action can fulfil this).\nShoot.\nDash towards the closest player operative, to cover if possible.",
-                      "page":  "nemesis-operatives",
-                      "anchor":  "BATTLER"
-                  },
-                  {
                       "phrase":  "paired weapon",
                       "title":  "4. Weapons",
                       "text":  "Select a number of weapons for the operative up to the quantity permitted by its size. Weapons with the Selection x weapon rule count as x selections instead (e.g. a weapon with Selection 2 counts as two of your permitted selections). Any selections you don’t use grant you an extra nemesis trait selection in the Traits step. We have provided a list of common weapons and their potential alternatives in this section, but if a weapon you have in mind isn’t present, simply use the one that feels most appropriate – even if they belonged to different allegiances, many weapons would share common stat...",
@@ -2372,13 +2414,6 @@
                       "text":  "Alongside weapons, traits differentiate your NEMESIS operative from others. First, your NEMESIS operative has one allegiance trait determined by its selected allegiance keyword. These rules can be found on the relevant allegiance card:\nAELDARI: Arrogant Superiority\nCHAOS: Let the Galaxy Burn\nIMPERIUM: Defenders of the Imperium\nLEAGUES OF VOTANN: Acquisition at All Costs\nNECRON: Living Metal\nORK: Waaagh!\nT’AU EMPIRE: Supporting Fire\nTYRANID: Will of the Hive Mind\nYou then select one nemesis trait for your NEMESIS operative (see table below). This is best selected to capture the narrative of the...",
                       "page":  "nemesis-operatives",
                       "anchor":  "5.-Traits"
-                  },
-                  {
-                      "phrase":  "Guardian",
-                      "title":  "GUARDIAN",
-                      "text":  "This NPO will shoot the enemy as a priority, but will fight if the need arises. When activated, if it’s a NEMESIS NPO or will perform the Fight, Charge or Shoot action during that activation, give it an Engage order. Otherwise, give it a Conceal order.\nFight.\nShoot.\nCharge the closest player operative that’s within 4\" of it via the shortest possible route.\nReposition. If possible, to a location where there’s a valid target that isn’t obscured, if not, to a location that’s appropriate for the NPOs to better win the mission (a subsequent Dash action can fulfil these).\nDash. If possible, to a loc...",
-                      "page":  "nemesis-operatives",
-                      "anchor":  "GUARDIAN"
                   },
                   {
                       "phrase":  "Implacable",
@@ -2570,13 +2605,6 @@
                       "anchor":  "Decaying-Generatorium"
                   },
                   {
-                      "phrase":  "Brawler",
-                      "title":  "BRAWLER",
-                      "text":  "This NPO will move towards the enemy to fight them, but will seek cover on its way. When activated, if it’s a NEMESIS NPO or will perform the Fight or Charge action during that activation, give it an Engage order. Otherwise, give it a Conceal order.\nFight.\nCharge the closest player operative via the shortest possible route.\nReposition towards the closest player operative, to cover if possible (a subsequent Dash action can fulfil this).\nDash towards the closest player operative, to cover if possible.",
-                      "page":  "nemesis-operatives",
-                      "anchor":  "Brawler"
-                  },
-                  {
                       "phrase":  "Archivist",
                       "title":  "The Archivist Datacard",
                       "text":  "",
@@ -2626,9 +2654,135 @@
                       "anchor":  "Sarcophagus-And-Debris-Light-Terrain-"
                   },
                   {
+                      "phrase":  "Kabalite Warrior",
+                      "title":  "Kabalite Warrior",
+                      "text":  "|\n| APL2\n|\n| MOVE7\"\n|\n| SAVE4+\n|\n| WOUNDS8\n|\n| POINTS2\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Blaster* |\n| | Blaster* | 4\n| 3+\n| 4/5\n| Piercing 2 | Piercing 2 |\n| Dark lance* |\n| | Dark lance* | 4\n| 3+\n| 6/7\n| Heavy (Dash only), Piercing 2 | Heavy (Dash only), Piercing 2 |\n| Shredder* |\n| | Shredder* | 4\n| 3+\n| 4/5\n| Rending, Torrent 2\" | Rending, Torrent 2\" |\n| Splinter cannon (focused) |\n| | Splinter cannon (focused) | 5\n| 3+\n| 3/5\n| Heavy (Dash only), Lethal 5+ | Heavy (Dash only), Lethal 5+ |\n| Splinter cannon (sweeping)* |\n| | Splinter cannon (sweeping)* | 4\n| 3+\n| 3/5\n| Heavy (Dash only), L...",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Kabalite-Warrior"
+                  },
+                  {
+                      "phrase":  "Wych",
+                      "title":  "Wych",
+                      "text":  "|\n| APL2\n|\n| MOVE7\"\n|\n| SAVE5+\n|\n| WOUNDS8\n|\n| POINTS2\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Splinter pistol |\n| | Splinter pistol | 4\n| 3+\n| 2/4\n| Range 8\", Lethal 5+ | Range 8\", Lethal 5+ |\n| Hekatarii blade |\n| | Hekatarii blade | 4\n| 3+\n| 3/5\n| Lethal 5+ | Lethal 5+ |\n| Hydra gauntlets* |\n| | Hydra gauntlets* | 5\n| 3+\n| 4/6\n| - |\n| Razorflails* |\n| | Razorflails* | 5\n| 3+\n| 3/5\n| Brutal | Brutal |\n| Shardnet \u0026 impaler* |\n| | Shardnet \u0026 impaler* | 4\n| 3+\n| 4/5\n| Brutal | Brutal |\nBehaviour: Battler, or Brawler if this NPO has a weapon marked with an asterisk (*).\nWeapon Options: This NPO has ...",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Wych"
+                  },
+                  {
+                      "phrase":  "Chaos Cultist",
+                      "title":  "Chaos Cultist",
+                      "text":  "|\n| APL2\n|\n| MOVE6\"\n|\n| SAVE5+\n|\n| WOUNDS7\n|\n| POINTS1\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Pistol |\n| | Pistol | 4\n| 4+\n| 2/3\n| Range 8\" | Range 8\" |\n| Close combat weapon |\n| | Close combat weapon | 4\n| 4+\n| 2/3\n| - |\nBehaviour: Battler.\nMob: Whenever this NPO is within 3\" of any other friendly CULTIST NPOs, add 1 to both Dmg stats of this NPO’s weapons and they have the Accurate 1 weapon rule.\nCHAOS, CULTIST\n|\n⌀25mm |",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Chaos-Cultist"
+                  },
+                  {
+                      "phrase":  "Legionary",
+                      "title":  "Legionary",
+                      "text":  "|\n| APL3\n|\n| MOVE6\"\n|\n| SAVE3+\n|\n| WOUNDS14\n|\n| POINTS3\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Bolt pistol |\n| | Bolt pistol | 4\n| 3+\n| 3/4\n| Range 8\" | Range 8\" |\n| Boltgun |\n| | Boltgun | 4\n| 3+\n| 3/4\n| - |\n| Flamer* |\n| | Flamer* | 4\n| 2+\n| 3/3\n| Range 8\", Saturate, Torrent 2\" | Range 8\", Saturate, Torrent 2\" |\n| Heavy bolter (focused) |\n| | Heavy bolter (focused) | 5\n| 3+\n| 4/5\n| Heavy (Reposition only), Piercing Crits 1 | Heavy (Reposition only), Piercing Crits 1 |\n| Heavy bolter (sweeping)* |\n| | Heavy bolter (sweeping)* | 4\n| 3+\n| 4/5\n| Heavy (Reposition only), Piercing Crits 1, Torrent 1\"...",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Legionary"
+                  },
+                  {
+                      "phrase":  "Lesser Daemon",
+                      "title":  "Lesser Daemon",
+                      "text":  "|\n| APL2\n|\n| MOVE6\"\n|\n| SAVE4+\n|\n| WOUNDS10\n|\n| POINTS2\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Daemonic weapon |\n| | Daemonic weapon | 4\n| 3+\n| 4/5\n| Lethal 5+ | Lethal 5+ |\nBehaviour: Brawler.\nCHAOS, LESSER DAEMON\n|\n⌀25/32mm |",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Lesser-Daemon"
+                  },
+                  {
+                      "phrase":  "Battle Sister",
+                      "title":  "Battle Sister",
+                      "text":  "|\n| APL2\n|\n| MOVE6\"\n|\n| SAVE3+\n|\n| WOUNDS9\n|\n| POINTS2\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Boltgun |\n| | Boltgun | 4\n| 3+\n| 3/4\n| - |\n| Flamer* |\n| | Flamer* | 4\n| 2+\n| 3/3\n| Range 8\", Saturate, Torrent 2\" | Range 8\", Saturate, Torrent 2\" |\n| Heavy bolter (focused) |\n| | Heavy bolter (focused) | 5\n| 3+\n| 4/5\n| Heavy (Dash only), Piercing Crits 1 | Heavy (Dash only), Piercing Crits 1 |\n| Heavy bolter (sweeping)* |\n| | Heavy bolter (sweeping)* | 4\n| 3+\n| 4/5\n| Heavy (Dash only), Piercing Crits 1, Torrent 1\" | Heavy (Dash only), Piercing Crits 1, Torrent 1\" |\n| Heavy flamer* |\n| | Heavy flamer* |...",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Battle-Sister"
+                  },
+                  {
+                      "phrase":  "Cadian Shock Trooper",
+                      "title":  "Cadian Shock Trooper",
+                      "text":  "|\n| APL2\n|\n| MOVE6\"\n|\n| SAVE5+\n|\n| WOUNDS7\n|\n| POINTS1\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Flamer* |\n| | Flamer* | 4\n| 2+\n| 3/3\n| Range 8\", Saturate, Torrent 2\" | Range 8\", Saturate, Torrent 2\" |\n| Grenade launcher (frag) |\n| | Grenade launcher (frag) | 4\n| 4+\n| 2/4\n| Blast 2\" | Blast 2\" |\n| Grenade launcher (krak)* |\n| | Grenade launcher (krak)* | 4\n| 4+\n| 4/5\n| Piercing 1 | Piercing 1 |\n| Lasgun |\n| | Lasgun | 4\n| 4+\n| 2/3\n| - |\n| Meltagun* |\n| | Meltagun* | 4\n| 4+\n| 6/3\n| Range 6\", Devastating 4, Piercing 2 | Range 6\", Devastating 4, Piercing 2 |\n| Plasma gun (standard) |\n| | Plasma gun (st...",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Cadian-Shock-Trooper"
+                  },
+                  {
+                      "phrase":  "Intercessor",
+                      "title":  "Intercessor",
+                      "text":  "|\n| APL3\n|\n| MOVE6\"\n|\n| SAVE3+\n|\n| WOUNDS14\n|\n| POINTS3\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Bolt rifle |\n| | Bolt rifle | 4\n| 3+\n| 3/4\n| Piercing Crits 1 | Piercing Crits 1 |\n| Heavy bolt pistol |\n| | Heavy bolt pistol | 4\n| 3+\n| 3/4\n| Range 8\", Piercing Crits 1 | Range 8\", Piercing Crits 1 |\n| Chainsword |\n| | Chainsword | 5\n| 3+\n| 4/5\n| - |\n| Fists |\n| | Fists | 4\n| 3+\n| 3/4\n| - |\nBehaviour: Guardian, or Battler if this NPO has a heavy bolt pistol and chainsword.\nWeapon Options: This NPO has either a bolt rifle and fists or a heavy bolt pistol and chainsword.\nAstartes: This NPO can perform t...",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Intercessor"
+                  },
+                  {
+                      "phrase":  "Hearthkyn Warrior",
+                      "title":  "Hearthkyn Warrior",
+                      "text":  "|\n| APL2\n|\n| MOVE5\"\n|\n| SAVE3+\n|\n| WOUNDS8\n|\n| POINTS2\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Autoch-pattern bolter |\n| | Autoch-pattern bolter | 4\n| 4+\n| 3/4\n| Accurate 1 | Accurate 1 |\n| EtaCarn plasma beamer* |\n| | EtaCarn plasma beamer* | 5\n| 4+\n| 4/5\n| Piercing 1 | Piercing 1 |\n| HYLas auto rifle* |\n| | HYLas auto rifle* | 4\n| 4+\n| 4/5\n| Ceaseless, Rending | Ceaseless, Rending |\n| HYLas rotary cannon (focused) |\n| | HYLas rotary cannon (focused) | 5\n| 4+\n| 4/5\n| Ceaseless, Heavy (Reposition only), Saturate | Ceaseless, Heavy (Reposition only), Saturate |\n| HYLas rotary cannon (sweeping)* |\n|...",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Hearthkyn-Warrior"
+                  },
+                  {
+                      "phrase":  "Boy",
+                      "title":  "Boy",
+                      "text":  "|\n| APL2\n|\n| MOVE6\"\n|\n| SAVE5+\n|\n| WOUNDS10\n|\n| POINTS2\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Big shoota* |\n| | Big shoota* | 5\n| 5+\n| 4/5\n| Heavy (Reposition only), Punishing, Torrent 1\" | Heavy (Reposition only), Punishing, Torrent 1\" |\n| Rokkit launcha* |\n| | Rokkit launcha* | 6\n| 5+\n| 4/5\n| Blast 1\" | Blast 1\" |\n| Shoota |\n| | Shoota | 4\n| 5+\n| 3/4\n| Punishing | Punishing |\n| Slugga |\n| | Slugga | 4\n| 5+\n| 3/4\n| Range 8\", Punishing | Range 8\", Punishing |\n| Choppa |\n| | Choppa | 4\n| 3+\n| 4/5\n| - |\n| Fists |\n| | Fists | 3\n| 3+\n| 3/4\n| - |\nBehaviour: Battler, or Guardian if this NPO has a weap...",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Boy"
+                  },
+                  {
+                      "phrase":  "Gretchin",
+                      "title":  "Gretchin",
+                      "text":  "|\n| APL2\n|\n| MOVE6\"\n|\n| SAVE6+\n|\n| WOUNDS5\n|\n| POINTS0.5\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Grot blasta |\n| | Grot blasta | 4\n| 4+\n| 2/3\n| Range 8\" | Range 8\" |\n| Grot knife |\n| | Grot knife | 3\n| 5+\n| 2/3\n| - |\nBehaviour: Marksman.\nSmall: Whenever this NPO has a Conceal order and is in cover, it cannot be selected as a valid target, taking precedence over all other rules (e.g. Seek, Vantage terrain) except being within 2\".\nORK, GRETCHIN\n|\n⌀25mm |",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Gretchin"
+                  },
+                  {
+                      "phrase":  "Nob",
+                      "title":  "Nob",
+                      "text":  "|\n| APL3\n|\n| MOVE6\"\n|\n| SAVE5+\n|\n| WOUNDS16\n|\n| POINTS3\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Kustom shoota |\n| | Kustom shoota | 5\n| 5+\n| 3/4\n| Relentless | Relentless |\n| Big choppa |\n| | Big choppa | 5\n| 3+\n| 5/6\n| - |\n| Power klaw |\n| | Power klaw | 4\n| 3+\n| 5/7\n| Brutal, Shock | Brutal, Shock |\nBehaviour: Battler.\nWeapon Options: This NPO has a kustom shoota and either a big choppa or a power klaw.\nNobz: This NPO can perform two Fight or two Shoot actions during each of its activations.\nORK, NOB\n|\n⌀40mm |",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Nob"
+                  },
+                  {
+                      "phrase":  "Fire Warrior",
+                      "title":  "Fire Warrior",
+                      "text":  "|\n| APL2\n|\n| MOVE6\"\n|\n| SAVE4+\n|\n| WOUNDS7\n|\n| POINTS1\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Pulse blaster |\n| | Pulse blaster | 4\n| 3+\n| 4/4\n| Range 8\" | Range 8\" |\n| Pulse rifle (stationary) |\n| | Pulse rifle (stationary) | 4\n| 4+\n| 4/5\n| Balanced, Heavy | Balanced, Heavy |\n| Pulse rifle (mobile) |\n| | Pulse rifle (mobile) | 4\n| 4+\n| 4/5\n| - |\n| Gun butt |\n| | Gun butt | 3\n| 5+\n| 2/3\n| - |\nBehaviour: Marksman.\nWeapon Options: This NPO has a gun butt and either a pulse blaster or a pulse rifle.\nT’AU EMPIRE, FIRE WARRIOR\n|\n⌀25mm |",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Fire-Warrior"
+                  },
+                  {
+                      "phrase":  "XV26 Stealth Battlesuit",
+                      "title":  "XV26 Stealth Battlesuit",
+                      "text":  "|\n| APL3\n|\n| MOVE6\"\n|\n| SAVE3+\n|\n| WOUNDS12\n|\n| POINTS3\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Burst cannon (focused) |\n| | Burst cannon (focused) | 5\n| 4+\n| 3/4\n| Ceaseless | Ceaseless |\n| Burst cannon (sweeping) |\n| | Burst cannon (sweeping) | 4\n| 4+\n| 3/4\n| Ceaseless, Torrent 1\" | Ceaseless, Torrent 1\" |\n| Fusion blaster (short range) |\n| | Fusion blaster (short range) | 4\n| 4+\n| 6/3\n| Range 6\", Devastating 4, Piercing 2 | Range 6\", Devastating 4, Piercing 2 |\n| Fusion blaster (long range) |\n| | Fusion blaster (long range) | 4\n| 4+\n| 4/5\n| Range 12\", Piercing 1 | Range 12\", Piercing 1 |\n| Fist...",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "XV26-Stealth-Battlesuit"
+                  },
+                  {
+                      "phrase":  "Acolyte Hybrid",
+                      "title":  "Acolyte Hybrid",
+                      "text":  "|\n| APL2\n|\n| MOVE6\"\n|\n| SAVE4+\n|\n| WOUNDS9\n|\n| POINTS2\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Autopistol |\n| | Autopistol | 4\n| 4+\n| 2/3\n| Range 8\" | Range 8\" |\n| Demolition charge |\n| | Demolition charge | 4\n| 3+\n| 4/6\n| Range 3\", Blast 2\", Heavy (Reposition only), Limited 1, Piercing 1, Saturate | Range 3\", Blast 2\", Heavy (Reposition only), Limited 1, Piercing 1, Saturate |\n| Hand flamer |\n| | Hand flamer | 4\n| 2+\n| 3/3\n| Range 6\", Saturate, Torrent 1\" | Range 6\", Saturate, Torrent 1\" |\n| Cult claws \u0026 knife |\n| | Cult claws \u0026 knife | 4\n| 3+\n| 3/5\n| Rending | Rending |\n| Heavy mining tool |\n| |...",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Acolyte-Hybrid"
+                  },
+                  {
+                      "phrase":  "Genestealer",
+                      "title":  "Genestealer",
+                      "text":  "|\n| APL2\n|\n| MOVE7\"\n|\n| SAVE5+\n|\n| WOUNDS9\n|\n| POINTS2\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Rending claws |\n| | Rending claws | 4\n| 3+\n| 4/5\n| Rending | Rending |\nBehaviour: Brawler.\nLightning Reflexes: Whenever this NPO is fighting, worsen the Hit stat of the enemy operative’s weapons by 1 (to a minimum of 5+).\nTYRANID, GENESTEALER\n|\n⌀32mm |",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Genestealer"
+                  },
+                  {
+                      "phrase":  "Neophyte Hybrid",
+                      "title":  "Neophyte Hybrid",
+                      "text":  "|\n| APL2\n|\n| MOVE6\"\n|\n| SAVE5+\n|\n| WOUNDS7\n|\n| POINTS1\n|\n| NAME\n| ATK\n| HIT\n| DMG\n| WR\n|\n| Autogun |\n| | Autogun | 4\n| 4+\n| 2/3\n| - |\n| Flamer* |\n| | Flamer* | 4\n| 2+\n| 3/3\n| Range 8\", Saturate, Torrent 2\" | Range 8\", Saturate, Torrent 2\" |\n| Grenade launcher (frag) |\n| | Grenade launcher (frag) | 4\n| 4+\n| 2/4\n| Blast 2\" | Blast 2\" |\n| Grenade launcher (krak)* |\n| | Grenade launcher (krak)* | 4\n| 4+\n| 4/5\n| Piercing 1 | Piercing 1 |\n| Heavy stubber (focused) |\n| | Heavy stubber (focused) | 5\n| 4+\n| 4/5\n| Heavy (Dash only) | Heavy (Dash only) |\n| Heavy stubber (sweeping)* |\n| | Heavy stubber (s...",
+                      "page":  "nemesis-operatives",
+                      "anchor":  "Neophyte-Hybrid"
+                  },
+                  {
                       "phrase":  "INSPIRING",
                       "title":  "Inspiration",
                       "text":  "Veteran Celestians of the Orders Militant lead by example, inspiring their sisters by throwing themselves into the heaviest fighting against the deadliest of enemies.\nWhenever a friendly CELESTIAN INSIDIANT operative:\nIncapacitates an enemy operative that has a Wounds stat of 6 or more, that friendly operative becomes INSPIRING.\nPerforms the Charge action, before it moves, it becomes INSPIRING.\nWhenever a friendly CELESTIAN INSIDIANT operative is INSPIRING, weapons on its datacard have the Severe weapon rule.",
+                      "page":  "core-rules",
+                      "anchor":  "Damage"
+                  },
+                  {
+                      "phrase":  "Martyrdom",
+                      "title":  "Martyrdom",
+                      "text":  "Vaunted veterans of the Orders Militant, Celestian Insidiants hunt witches with extreme prejudice. Those struck down in the course of their duties become martyrs, their deaths only serving to harden the resolve of their surviving sisters.\nWhenever an INSPIRING friendly CELESTIAN INSIDIANT operative is incapacitated, before it’s removed from the killzone, select one other friendly CELESTIAN INSIDIANT operative that operative is visible to or within 6\" of.\nThen, that selected operative gains one BENEDICTION (incapacitated operatives cannot be selected for a BENEDICTION).",
                       "page":  "core-rules",
                       "anchor":  "Damage"
                   },
@@ -2645,20 +2799,6 @@
                       "text":  "SMOKE GRENADE 1AP\nPlace one of your Smoke Grenade markers within 6\" of this operative. It must be visible to this operative, or on Vantage terrain of a terrain feature that’s visible to this operative. The marker creates an area of smoke 1\" horizontally and unlimited height vertically from (but not below) it.\nWhile an operative is wholly within an area of smoke, it’s obscured to operatives more than 2\" from it, and vice versa. In addition, whenever an operative is shooting an enemy operative wholly within an area of smoke, weapons with the Piercing 2 or Piercing Crits 2 weapon rule have the Piercing 1 or Piercing Crits 1 weapon rule (respectively) instead, unless they’re within 2\" of each other\nIn the Ready step of the next Strategy phase, roll one D3. Remove that Smoke Grenade marker after a number of activations equal to that D3 have been completed or at the end of the turning point (whichever comes first).\nAn operative cannot perform this action while within control range of an enemy operative, or if you have reached the total number of times your kill team can perform it.\nSTUN GRENADE 1AP\nSelect one enemy operative visible to and within 6\" of this operative. That operative and each other operative within 1\" of it takes a stun test. For an operative to take a stun test, roll one D6: on a 3+, subtract 1 from its APL stat until the end of its next activation.\nAn operative cannot perform this action while within control range of an enemy operative, or if you have reached the total number of times your kill team can perform it.",
                       "page":  "core-rules",
                       "anchor":  "Markers"
-                  },
-                  {
-                      "phrase":  "Martyrdom",
-                      "title":  "Martyrdom",
-                      "text":  "Vaunted veterans of the Orders Militant, Celestian Insidiants hunt witches with extreme prejudice. Those struck down in the course of their duties become martyrs, their deaths only serving to harden the resolve of their surviving sisters.\nWhenever an INSPIRING friendly CELESTIAN INSIDIANT operative is incapacitated, before it’s removed from the killzone, select one other friendly CELESTIAN INSIDIANT operative that operative is visible to or within 6\" of.\nThen, that selected operative gains one BENEDICTION (incapacitated operatives cannot be selected for a BENEDICTION).",
-                      "page":  "core-rules",
-                      "anchor":  "Damage"
-                  },
-                  {
-                      "phrase":  "Range 3\"",
-                      "title":  "Range x",
-                      "text":  "Only operatives within x of the active operative can be valid targets, e.g. Range 9\".",
-                      "page":  "appendix",
-                      "anchor":  "Range-x"
                   },
                   {
                       "phrase":  "Anti-PSYKER*",
@@ -2714,7 +2854,7 @@
                       "title":  "Whip Into Frenzy",
                       "text":  "WHIP INTO FRENZY1AP\nSelect one other friendly NOVITIATE operative (excluding SUPERIOR) visible to and within 3\" of this operative that isn’t currently benefitting from the effects of this action. Until the end of that operative’s next activation, add 1 to its APL stat, add 1\" to its Move stat, and it can perform two Fight actions during its next activation.\nThis operative cannot perform this action while within control range of an enemy operative.",
                       "page":  "core-rules",
-                      "anchor":  "Firefight-Phase"
+                      "anchor":  "Visible"
                   },
                   {
                       "phrase":  "Faith points",
@@ -2748,6 +2888,13 @@
                       "phrase":  "Glorious Martyrdom",
                       "title":  "Glorious Martyrdom",
                       "text":  "GLORIOUS MARTYRDOM",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
+                      "phrase":  "Icon of Faith",
+                      "title":  "Icon of Faith",
+                      "text":  "ICON OF FAITH",
                       "page":  null,
                       "anchor":  null
                   },
@@ -2789,7 +2936,7 @@
                   {
                       "phrase":  "counteracted",
                       "title":  "Counteract",
-                      "text":  "When you would activate a ready friendly operative, if all your operatives are expended but your opponent still has ready operatives, you can select an expended friendly operative with an Engage order to perform a 1AP action (excluding Guard) for free. Each operative can only counteract once per turning point. That operative cannot move more than 2\", or must be set up wholly within 2\" if it’s removed and set up again, while counteracting (this is not a change to its Move stat, and takes precedence over all other rules). Counteracting is optional, so you can choose not to. In either case, activation alternates back to your opponent afterwards.\nCounteracting isn’t an activation, it’s instead of activating. This difference is important; for instance, it means action restrictions won\u0027t apply.",
+                      "text":  "When you would activate a ready friendly operative, if all your operatives are expended but your opponent still has ready operatives, you can select an expended friendly operative with an Engage order to perform a 1AP action (excluding Guard) for free. Each operative can only counteract once per turning point. That operative cannot move more than or be removed and set up more than 2\" away while counteracting (this is not a change to its Move stat, and takes precedence over all other rules). Counteracting is optional, so you can choose not to. In either case, activation alternates back to your opponent afterwards.\nCounteracting isn’t an activation, it’s instead of activating. This difference is important; for instance, it means action restrictions won\u0027t apply.",
                       "page":  "core-rules",
                       "anchor":  "Counteract"
                   },
@@ -2836,11 +2983,25 @@
                       "anchor":  "Range-x"
                   },
                   {
+                      "phrase":  "Rad-Saturation",
+                      "title":  "Rad-Saturation",
+                      "text":  "Whenever an enemy operative is within 2\" of friendly HUNTER CLADE VANGUARD operatives, worsen the Hit stat of that enemy operative’s weapons by 1. This isn’t cumulative with being injured.",
+                      "page":  "core-rules",
+                      "anchor":  "Damage"
+                  },
+                  {
                       "phrase":  "DOCTRINA IMPERATIVE",
                       "title":  "Doctrina Imperatives",
                       "text":  "Tech-Priests dictate protocols for the Hunter Clade to follow as they move through their mission, straining the programming of the Skitarii and Sicarians in order to optimise their current status, to the detriment of all else.\nAt the end of the Select Operatives step, select one DOCTRINA IMPERATIVE to be a Primary Mode for your kill team until the end of the battle (note that selecting a Primary Mode doesn’t automatically give you the effects of that DOCTRINA IMPERATIVE for the battle; you must still select it as a STRATEGIC GAMBIT, as below).\nSTRATEGIC GAMBIT. Select one DOCTRINA IMPERATIVE for friendly HUNTER CLADE operatives to have until the Ready step of the next Strategy phase. Each DOCTRINA IMPERATIVE has both an Optimisation and a Deprecation rule. Both are in effect while your kill team has that DOCTRINA IMPERATIVE. Once per battle, when you select the DOCTRINA IMPERATIVE that’s your kill team’s Primary Mode, you can ignore its Deprecation rule.\nProtector Imperative |\nOptimisation: Friendly HUNTER CLADE operatives’ ranged weapons have the Ceaseless weapon rule.\nDeprecation: Worsen the Hit stat of friendly HUNTER CLADE operatives’ melee weapons by 1. This isn’t cumulative with being injured. |\n|\nConqueror Imperative |\nOptimisation: Friendly HUNTER CLADE operatives’ melee weapons have the Ceaseless weapon rule.\nDeprecation: Worsen the Hit stat of friendly HUNTER CLADE operatives’ ranged weapons by 1. This isn’t cumulative with being injured. |\n|\nBulwark Imperative |\nOptimisation: Normal Dmg of 3 or more inflicts 1 less damage on friendly HUNTER CLADE operatives.\nDeprecation: Subtract 1\" from the Move stat of friendly HUNTER CLADE operatives. |\n|\nAggressor Imperative |\nOptimisation: Add 1\" to the Move stat of friendly HUNTER CLADE operatives.\nDeprecation: Worsen the Save stat of friendly HUNTER CLADE operatives by 1. |\n|\nNeutral Imperative |\nOptimisation: None.\nDeprecation: None. |\n|",
                       "page":  "appendix",
                       "anchor":  "GAME-SEQUENCE"
+                  },
+                  {
+                      "phrase":  "climb up",
+                      "title":  "Climbing",
+                      "text":  "An operative must be within 1\" horizontally and 3\" vertically of terrain that’s visible to them to climb it. Each climb is treated as a minimum of 2\" vertically (e.g. a 1\" distance is treated as 2\").",
+                      "page":  "killzones",
+                      "anchor":  "Climbing"
                   },
                   {
                       "phrase":  "Control Edict",
@@ -2927,11 +3088,11 @@
                       "anchor":  "MARKER-TOKEN-GUIDE"
                   },
                   {
-                      "phrase":  "Range 12\"",
-                      "title":  "Range x",
-                      "text":  "Only operatives within x of the active operative can be valid targets, e.g. Range 9\".",
-                      "page":  "appendix",
-                      "anchor":  "Range-x"
+                      "phrase":  "System Jam",
+                      "title":  "System Jam",
+                      "text":  "SYSTEM JAM1AP\nSelect one enemy operative that’s a valid target for this operative and that doesn’t have one of your System Jam tokens; it gains one. Until the end of the battle, whenever an enemy operative has one of your System Jam tokens, it cannot be activated until each enemy operative without one is expended. When an enemy operative that has one of your System Jam tokens is activated, remove that token.\nThis operative cannot perform this action while within control range of an enemy operative.",
+                      "page":  "core-rules",
+                      "anchor":  "Firefight-Phase"
                   },
                   {
                       "phrase":  "Breach and Clear",
@@ -2939,6 +3100,13 @@
                       "text":  "Methodical, professional and well-drilled, Imperial Navy Breachers work as a unit to breach and clear the corridors and chambers of enemy voidcraft, space hulks, orbital stations and more.\nOnce per turning point, when a ready friendly IMPERIAL NAVY BREACHER operative is activated, you can use this rule. If you do, select one other ready friendly IMPERIAL NAVY BREACHER operative visible to and within 3\" of that operative. When that first friendly operative is expended, you can activate that other friendly operative before your opponent activates. When that other operative is expended, your opponent then activates as normal.",
                       "page":  "core-rules",
                       "anchor":  "2.-Ready"
+                  },
+                  {
+                      "phrase":  "Overwhelm Target",
+                      "title":  "Overwhelm Target",
+                      "text":  "OVERWHELM TARGET",
+                      "page":  null,
+                      "anchor":  null
                   },
                   {
                       "phrase":  "Attack Order",
@@ -2953,13 +3121,6 @@
                       "text":  "DEFENCE ORDER",
                       "page":  null,
                       "anchor":  null
-                  },
-                  {
-                      "phrase":  "Limited 1",
-                      "title":  "Limited x",
-                      "text":  "After an operative uses this weapon a number of times in the battle equal to x, they no longer have it. If it’s used multiple times in one action (e.g. Blast), treat this as one use.",
-                      "page":  "appendix",
-                      "anchor":  "Limited-x"
                   },
                   {
                       "phrase":  "frag",
@@ -3008,7 +3169,7 @@
                       "title":  "Relay Orders",
                       "text":  "SIGNAL1AP\nSUPPORT. Select one other friendly DEATH KORPS operative visible to and within 6\" of this operative. Until the end of that operative’s next activation, add 1 to its APL stat.\nThis operative cannot perform this action while within control range of an enemy operative.",
                       "page":  "core-rules",
-                      "anchor":  "Firefight-Phase"
+                      "anchor":  "Visible"
                   },
                   {
                       "phrase":  "Void Armour",
@@ -3016,6 +3177,13 @@
                       "text":  "The armour worn by Imperial Navy Armsmen is void-sealed, meaning that they can fight in environments devoid of gravity or atmosphere. Such armour also serves to protect them from explosive blasts and flaming torrents.\nWhenever an operative is shooting a friendly IMPERIAL NAVY BREACHER operative, if the ranged weapon in that sequence has the Blast or Torrent weapon rule (excluding weapons that have a sweeping profile), you can re-roll one of your defence dice, or up to two of your defence dice if that friendly operative is a GRENADIER.\nFriendly IMPERIAL NAVY BREACHER operatives aren’t affected by the x\" Devastating x weapon rule (i.e. Devastating with a distance) unless they are the target during that sequence.",
                       "page":  null,
                       "anchor":  null
+                  },
+                  {
+                      "phrase":  "Haunting Focus",
+                      "title":  "Haunting Focus",
+                      "text":  "STRATEGIC GAMBIT. Select one enemy operative. Until the Ready step of the next Strategy phase, it gains your Haunting Focus token. The next time your opponent would activate an enemy operative that has your Haunting Focus token, if this operative is ready, you can activate this operative first (you cannot do so if you also rolled to prevent that operative’s activation with the NIGHTFIEND operative’s Harrowing Whispers additional rule during this turning point). If you do, during that activation, this operative must shoot against or fight against that enemy operative, and cannot do so against any other enemy operatives until it does (if this isn’t possible, this operative’s activation is cancelled). After completing this operative’s activation, your opponent activates that enemy operative (if possible), or activates a different enemy operative if they can’t.",
+                      "page":  "core-rules",
+                      "anchor":  "3.-Gambit"
                   },
                   {
                       "phrase":  "Stalwart Defence",
@@ -3057,7 +3225,7 @@
                       "title":  "Sanctification Orb",
                       "text":  "SANCTIFICATION ORB1AP\nSelect one enemy operative visible to and within 6\" of this operative. That operative and each other enemy operative within 1\" of it takes a doused test. For an operative to take a doused test, roll one D6: on a 3+, it gains one of your Doused tokens.\nWhenever a friendly SANCTIFIER operative is shooting an operative that has one of your Doused tokens with a weapon that has the Blaze weapon rule, that weapon also has the Seek weapon rule.\nAfter a friendly SANCTIFIER operative uses a weapon that has the Blaze weapon rule against an enemy operative that has one of your Doused tokens, remove that token (even if the Seek weapon rule wasn’t used).\nThis operative cannot perform this action while within control range of an enemy operative.",
                       "page":  "core-rules",
-                      "anchor":  "Actions"
+                      "anchor":  "Visible"
                   },
                   {
                       "phrase":  "krak grenade",
@@ -3086,6 +3254,13 @@
                       "text":  "INSPIRATIONAL LEADERSHIP",
                       "page":  null,
                       "anchor":  null
+                  },
+                  {
+                      "phrase":  "scanned",
+                      "title":  "scanned",
+                      "text":  "AUSPEX SCAN1AP\nUntil the start of this operative’s next activation or until it’s incapacitated (whichever comes first), whenever an enemy operative is within 8\" of this operative, that enemy operative is being scanned. Whenever a friendly KASRKIN operative is shooting an enemy operative that’s being scanned, that enemy operative cannot be obscured\nThis operative cannot perform this action while within control range of an enemy operative.",
+                      "page":  "core-rules",
+                      "anchor":  "Firefight-Phase"
                   },
                   {
                       "phrase":  "SKILL AT ARMS",
@@ -3153,7 +3328,7 @@
                   {
                       "phrase":  "landed",
                       "title":  "Drop Insertion",
-                      "text":  "Whether descending on thrumming grav-chutes from the holds of gunships, dropping through blasted rents within cramped vessels or leaping from the ruins of towering hab-blocks, these warriors hit their enemies like thunderbolts from on high.\nWhen setting up a TEMPESTUS AQUILON kill team before the battle, the first third of your kill team must be set up as normal. Each third thereafter can be set up above: place them to one side instead of in the killzone. For each third that’s set up above, you must set up the whole third in this way (not some of them), then place one of your Drop markers wholly within your drop zone.\nAs a STRATEGIC GAMBIT in the first and second turning point, you can move your Drop markers up to 4\" horizontally. In a killzone that uses the close quarters rules (e.g. Killzone: Gallowdark), this can be measured and moved through Wall terrain.\nIn the Firefight phase, friendly TEMPESTUS AQUILON operatives set up above are activated as normal. When you do, you can either expend or land that operative. If it lands, set it up in the killzone in a location it can be placed as follows (it’s no longer set up above):\nWithin 3\" horizontally of one of your Drop markers, or wholly within your drop zone.\nNot within control range of enemy operatives (unless you’re setting up a PRECURSOR operative, which can be set up within control range of an enemy operative).\nWith no part of its base underneath Vantage terrain.\nWith an order of your choice.\nThe operative is treated as performing the Reposition action (spend the AP accordingly), then continue its activation as normal. It’s obscured until the end of the next activation or the end of the turning point (whichever comes first).\nLess than half of your operatives can be set up above by the end of the first turning point. In other words, by the end of the first turning point, more than half of your operatives must have been set up in the killzone during the battle.\nWhen readying your operatives during the second and third turning points, remove one of your Drop markers. This means operatives still set up above are incapacitated at the end of the second turning point.",
+                      "text":  "Whether descending on thrumming grav-chutes from the holds of gunships, dropping through blasted rents within cramped vessels or leaping from the ruins of towering hab-blocks, these warriors hit their enemies like thunderbolts from on high.\nWhen setting up a TEMPESTUS AQUILON kill team before the battle, the first third of your kill team must be set up as normal. Each third thereafter can be set up above: place them to one side instead of in the killzone. For each third that’s set up above, you must set up the whole third in this way (not some of them), then place one of your Drop markers wholly within your drop zone.\nAs a STRATEGIC GAMBIT in the first and second turning point, you can move your Drop markers up to 4\" horizontally. In a killzone that uses the close quarters rules (e.g. Killzone: Tomb World), this can be measured and moved through Wall terrain.\nIn the Firefight phase, friendly TEMPESTUS AQUILON operatives set up above are activated as normal. When you do, you can either expend or land that operative. If it lands, set it up in the killzone in a location it can be placed as follows (it’s no longer set up above):\nWithin 3\" horizontally of one of your Drop markers, or wholly within your drop zone.\nNot within control range of enemy operatives (unless you’re setting up a PRECURSOR operative, which can be set up within control range of an enemy operative).\nWith no part of its base underneath Vantage terrain.\nWith an order of your choice.\nThe operative is treated as performing the Reposition action (spend the AP accordingly), then continue its activation as normal. It’s obscured until the end of the next activation or the end of the turning point (whichever comes first).\nLess than half of your operatives can be set up above by the end of the first turning point. In other words, by the end of the first turning point, more than half of your operatives must have been set up in the killzone during the battle.\nWhen readying your operatives during the second and third turning points, remove one of your Drop markers. This means operatives still set up above are incapacitated at the end of the second turning point.",
                       "page":  "core-rules",
                       "anchor":  "3.-Gambit"
                   },
@@ -3167,7 +3342,7 @@
                   {
                       "phrase":  "CHAPTER TACTIC",
                       "title":  "Chapter Tactics",
-                      "text":  "Each Space Marine Chapter is a martial brotherhood with its own combat philosophies, suited to the unique skills and temperaments of its battle-brothers. These tenets of war may be clothed in esoteric rituals built up over thousands of years, but remain as brutally effective as when they were first laid down.\nWhen selecting your kill team, select a primary and secondary CHAPTER TACTIC for friendly ANGEL OF DEATH operatives to gain for the battle. Multiple instances of the same CHAPTER TACTIC aren’t cumulative.\nDesigner’s Note: If you’re playing a series of games, i.e. a campaign or tournament, you must select the same primary and secondary CHAPTER TACTIC for every battle (you can still change the secondary with the Adaptive Tactics strategy ploy).\n1. AGGRESSIVE |\nThis operative’s melee weapons have the Rending weapon rule. |\n|\n2. DUELLER |\nWhenever this operative is fighting or retaliating, each of your normal successes can block one unresolved critical success (unless the enemy operative’s weapon has the Brutal weapon rule). |\n|\n3. RESOLUTE |\nYou can ignore any changes to this operative’s APL stat. and it isn’t affected by enemy operatives’ Shock weapon rule. |\n|\n4. STEALTHY |\nWhenever an operative is shooting this operative, if you can retain any cover saves, you can retain one additional cover save, or you can retain one cover save as a critical success instead. This isn’t cumulative with improved cover saves from Vantage terrain. |\n|\n5. MOBILE |\nThis operative can perform the Fall Back action for 1 less AP.\nThis operative can perform the Charge action while within control range of an enemy operative, and can leave that operative’s control range to do so (but then normal requirements for that move apply).\n|\n|\n6. HARDY |\nWhenever an operative is shooting this operative, defence dice results of 5+ are critical successes. |\n|\n7. SHARPSHOOTER |\nWhenever this operative is shooting during an activation in which it hasn’t performed the Charge, Fall Back or Reposition action, its bolt weapons have the Accurate 1 and Severe weapon rules |\n|\n8. SIEGE SPECIALIST |\nThis operative’s ranged weapons have the Saturate weapon rule. Whenever this operative is fighting or retaliating, enemy operatives cannot assist. |\n|",
+                      "text":  "Each Space Marine Chapter is a martial brotherhood with its own combat philosophies, suited to the unique skills and temperaments of its battle-brothers. These tenets of war may be clothed in esoteric rituals built up over thousands of years, but remain as brutally effective as when they were first laid down.\nWhen selecting your kill team, select a primary and secondary CHAPTER TACTIC for friendly ANGEL OF DEATH operatives to gain for the battle. Multiple instances of the same CHAPTER TACTIC aren’t cumulative.\nDesigner’s Note: If you’re playing a series of games, i.e. a campaign or tournament, you must select the same primary and secondary CHAPTER TACTIC for every battle (you can still change the secondary with the Adaptive Tactics strategy ploy).\n1. AGGRESSIVE |\nThis operative’s melee weapons have the Rending weapon rule. |\n|\n2. DUELLER |\nWhenever this operative is fighting or retaliating, each of your normal successes can block one unresolved critical success (unless the enemy operative’s weapon has the Brutal weapon rule). |\n|\n3. RESOLUTE |\nYou can ignore any changes to this operative’s APL stat and it isn’t affected by enemy operatives’ Shock weapon rule. |\n|\n4. STEALTHY |\nWhenever an operative is shooting this operative, if you can retain any cover saves, you can retain one additional cover save, or you can retain one cover save as a critical success instead. This isn’t cumulative with improved cover saves from Vantage terrain. |\n|\n5. MOBILE |\nThis operative can perform the Fall Back action for 1 less AP.\nThis operative can perform the Charge action while within control range of an enemy operative, and can leave that operative’s control range to do so (but then normal requirements for that move apply).\n|\n|\n6. HARDY |\nWhenever an operative is shooting this operative, defence dice results of 5+ are critical successes. |\n|\n7. SHARPSHOOTER |\nWhenever this operative is shooting during an activation in which it hasn’t performed the Charge, Fall Back or Reposition action, its bolt weapons have the Accurate 1 and Severe weapon rules |\n|\n8. SIEGE SPECIALIST |\nThis operative’s ranged weapons have the Saturate weapon rule. Whenever this operative is fighting or retaliating, enemy operatives cannot assist. |\n|",
                       "page":  null,
                       "anchor":  null
                   },
@@ -3186,9 +3361,30 @@
                       "anchor":  null
                   },
                   {
+                      "phrase":  "Lethal",
+                      "title":  "Lethal x+",
+                      "text":  "Your successes equal to or greater than x are critical successes, e.g. Lethal 5+.",
+                      "page":  "appendix",
+                      "anchor":  "Lethal-x"
+                  },
+                  {
                       "phrase":  "Adjust Doctrine",
                       "title":  "Adjust Doctrine",
                       "text":  "ADJUST DOCTRINE",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
+                      "phrase":  "Poison Objective",
+                      "title":  "Poison Objective",
+                      "text":  "POISON OBJECTIVE1AP\nSelect one objective marker this operative controls to gain one of your Terrorchem tokens. It cannot be an objective marker within control range of an enemy operative, or one that already has one of your Terrorchem tokens. The first time an enemy operative that doesn’t have one of your Terrorchem tokens contests that objective marker, that operative gains that Terrorchem token, then inflict 2D3 damage on it (if it’s during an action, at the end of that action).\nThis operative cannot perform this action while within control range of an enemy operative.",
+                      "page":  "core-rules",
+                      "anchor":  "Markers"
+                  },
+                  {
+                      "phrase":  "Sanctus-V Bioscryer Cuffs",
+                      "title":  "Sanctus-V Bioscryer Cuffs",
+                      "text":  "SANCTUS-V BIOSCRYER CUFFS",
                       "page":  null,
                       "anchor":  null
                   },
@@ -3207,11 +3403,25 @@
                       "anchor":  null
                   },
                   {
+                      "phrase":  "the Shield that Slays",
+                      "title":  "Strategy Ploys",
+                      "text":  "MISSION TACTICS",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
                       "phrase":  "Advanced Auspex Scan",
                       "title":  "Advanced Auspex Scan",
                       "text":  "ADVANCED AUSPEX SCAN",
                       "page":  null,
                       "anchor":  null
+                  },
+                  {
+                      "phrase":  "Terrorchem tokens",
+                      "title":  "Marker/Token Guide",
+                      "text":  "Portent token\nTerrorchem token\nFlay Them Alive token\nDisconcerting Mimicry token\nPoison Objective token\nGrisly Trophy token\nPrescience points\n(Values 1 \u0026 2)",
+                      "page":  "appendix",
+                      "anchor":  "MARKER-TOKEN-GUIDE"
                   },
                   {
                       "phrase":  "Patient Ambush",
@@ -3237,7 +3447,7 @@
                   {
                       "phrase":  "jumps",
                       "title":  "Jumping",
-                      "text":  "Operatives can jump from Vantage terrain higher than 2\" from the killzone floor when they move off it. You can move them up to 4\" horizontally from the edge when they jump, done like any other move except in one straight-line increment. The operative must then drop or climb from there.\nWhen jumping from Vantage terrain, if there is a terrain part such as a rampart at the edge the operative would jump from, the operative must climb it first then jump from the highest point it must climb over. When jumping to a terrain feature, you can ignore its height difference of 1\" or less, including its rampart (if any).",
+                      "text":  "Operatives can jump from Vantage terrain higher than 2\" from the killzone floor when they move off it. You can move them up to 4\" horizontally from the edge when they jump, done like any other move except in one straight-line increment. The operative must then drop or climb from there.\nWhen jumping from Vantage terrain, if there is a terrain part such as a rampart at the edge the operative would jump from, the operative must climb it first then jump from the highest point it must climb over. When jumping to a terrain feature, you can ignore its height difference of 1\" or less, including its rampart (if any). However, when jumping from a terrain feature, if it has a rampart, you must climb it first.",
                       "page":  "killzones",
                       "anchor":  "Jumping"
                   },
@@ -3247,6 +3457,13 @@
                       "text":  "Your successes equal to or greater than x are critical successes, e.g. Lethal 5+.",
                       "page":  "appendix",
                       "anchor":  "Lethal-x"
+                  },
+                  {
+                      "phrase":  "Optics",
+                      "title":  "Optics",
+                      "text":  "OPTICS1AP\nUntil the start of this operative’s next activation, whenever it’s shooting, enemy operatives cannot be obscured.\nThis operative cannot perform this action while within control range of an enemy operative.",
+                      "page":  "core-rules",
+                      "anchor":  "Firefight-Phase"
                   },
                   {
                       "phrase":  "STORM",
@@ -3265,9 +3482,16 @@
                   {
                       "phrase":  "Frenzy",
                       "title":  "Frenzy",
-                      "text":  "Fellgor Ravagers channel their pain into an animalistic frenzy, dismissing wounds and bursting with aggression.\nWhenever a friendly FELLGOR RAVAGER operative that doesn’t have one of your Frenzy tokens would be incapacitated during the battle, it’s not incapacitated and it gains one of your Frenzy tokens. All remaining attack dice are discarded (including yours if this operative is fighting or retaliating). If it has a Conceal order, change it to Engage.\nWhenever a friendly FELLGOR RAVAGER operative has one of your Frenzy tokens:\nIt’s only incapacitated as detailed overleaf.\nIt cannot have a Conceal order.\nIt’s injured.\nIt cannot perform the Pick Up Marker, unique (excluding Sweeping Blow, see VANDAL) or mission actions (excluding Operate Hatch)\nFor the purpose of determining control of markers and areas of the killzone, treat its APL stat as 1. This takes precedence over any stat changes.\nA friendly FELLGOR RAVAGER operative that has one of your Frenzy tokens is incapacitated when one of the following is met:\nIts activation or counteraction ends.\nAn enemy operative is fighting against or retaliating against it and your opponent strikes with a critical success.\nAn enemy operative is fighting against or retaliating against it and your opponent strikes it for a second time with a normal success. Note this can be strikes from two different Fight actions.\nAn enemy operative is shooting it and Critical Dmg is inflicted on it.\nAn enemy operative is shooting it and Normal Dmg from two or more attack dice is inflicted on it.\nThe battle ends (resolve this before any victory conditions that resolve at the end of the battle).\nYour opponent treats a FELLGOR RAVAGER operative as being incapacitated (instead of when it would be incapacitated normally) when it gains one of your Frenzy tokens for the purposes of scoring VPs (e.g. kill op) and faction rules that require it to be incapacitated (e.g. HAND OF THE ARCHON Power From Pain, CHAOS CULT Mutation, etc.).",
+                      "text":  "Fellgor Ravagers channel their pain into an animalistic frenzy, dismissing wounds and bursting with aggression.\nWhenever a friendly FELLGOR RAVAGER operative that doesn’t have one of your Frenzy tokens would be incapacitated during the battle, it’s not incapacitated and it gains one of your Frenzy tokens. All remaining attack dice are discarded (including yours if this operative is fighting or retaliating). If it has a Conceal order, change it to Engage.\nWhenever a friendly FELLGOR RAVAGER operative has one of your Frenzy tokens:\nIt’s only incapacitated as detailed overleaf.\nIt cannot have a Conceal order.\nIt’s injured.\nIt cannot perform the Pick Up Marker, unique (excluding Sweeping Blow, see VANDAL) or mission actions (excluding Breach and Operate Hatch)\nFor the purpose of determining control of markers and areas of the killzone, treat its APL stat as 1. This takes precedence over any stat changes.\nA friendly FELLGOR RAVAGER operative that has one of your Frenzy tokens is incapacitated when one of the following is met:\nIts activation or counteraction ends.\nAn enemy operative is fighting against or retaliating against it and your opponent strikes with a critical success.\nAn enemy operative is fighting against or retaliating against it and your opponent strikes it for a second time with a normal success. Note this can be strikes from two different Fight actions.\nAn enemy operative is shooting it and Critical Dmg is inflicted on it.\nAn enemy operative is shooting it and Normal Dmg from two or more attack dice is inflicted on it.\nThe battle ends (resolve this before any victory conditions that resolve at the end of the battle).\nYour opponent treats a FELLGOR RAVAGER operative as being incapacitated (instead of when it would be incapacitated normally) when it gains one of your Frenzy tokens for the purposes of scoring VPs (e.g. kill op) and faction rules that require it to be incapacitated (e.g. HAND OF THE ARCHON Power From Pain, CHAOS CULT Mutation, etc.).",
                       "page":  "core-rules",
                       "anchor":  "Damage"
+                  },
+                  {
+                      "phrase":  "Savage Fighters",
+                      "title":  "Strategy Ploys",
+                      "text":  "CLOAKED BY THE STORM",
+                      "page":  null,
+                      "anchor":  null
                   },
                   {
                       "phrase":  "TECHNO-CURSE",
@@ -3335,9 +3559,9 @@
                   {
                       "phrase":  "Carving Blow",
                       "title":  "Carving Blow",
-                      "text":  "CARVING BLOW1AP\nInflict 2D3 damage on each other operative visible to and within 2\" of this operative in an order of your choice (roll separately for each).\nThis operative cannot perform this action while it has a Conceal order, or during the same activation in which it performed the Slice From Above action (see Bladefins equipment), the Clawed Charge action (see Clawed Armour faction equipment) or two Fight actions (and vice versa).",
+                      "text":  "CARVING BLOW1AP\nInflict 2D3 damage on each other operative visible to and within 2\" of this operative in an order of your choice (roll separately for each).\nThis operative cannot perform this action while it has a Conceal order, or during the same activation in which it performed the Slice From Above action (see Bladefins faction equipment), the Clawed Charge action (see Clawed Armour faction equipment) or two Fight actions (and vice versa).",
                       "page":  "core-rules",
-                      "anchor":  "Firefight-Phase"
+                      "anchor":  "Visible"
                   },
                   {
                       "phrase":  "Bladefins",
@@ -3361,14 +3585,21 @@
                       "anchor":  null
                   },
                   {
-                      "phrase":  "Grisly Trophy tokens",
-                      "title":  "Marker/Token Guide",
-                      "text":  "Portent token\nTerrorchem token\nFlay Them Alive token\nDisconcerting Mimicry token\nPoison Objective token\nGrisly Trophy token\nPrescience points\n(Values 1 \u0026 2)",
-                      "page":  "appendix",
-                      "anchor":  "MARKER-TOKEN-GUIDE"
+                      "phrase":  "Disconcerting Mimicry",
+                      "title":  "Disconcerting Mimicry",
+                      "text":  "DISCONCERTING MIMICRY1AP\nPSYCHIC. Select one enemy operative within 6\" of this operative, then select one of the following for that enemy operative (you can only select each option once per battle):\nUntil the end of its next activation, subtract 1 from its APL stat.\nChange its order.\nPerform a free Dash action with it (specify the location for your opponent to move it to).\nThis operative cannot perform this action while within control range of an enemy operative.",
+                      "page":  "core-rules",
+                      "anchor":  "Firefight-Phase"
                   },
                   {
-                      "phrase":  "Terrorchem tokens",
+                      "phrase":  "FLY",
+                      "title":  "Fly",
+                      "text":  "The thrumming wings of the Vespids bear them aloft with speed and remarkable agility.\nWhenever a friendly VESPID STINGWING operative performs an action in which it moves, it can FLY. If it does, don’t move it. Instead, remove it from the killzone and set it back up wholly within a distance equal to its Move stat (or 3\" if it was a Dash) horizontally of its original location (in a killzone that uses the close quarters rules, e.g. Killzone: Tomb World, this distance cannot be measured over or through Wall terrain, and that operative cannot be set up on the other side of an access point – in other words it cannot FLY through an open hatchway). Note that it gains no additional distance when performing the Charge action. It must be set up in a location it can be placed, and unless it’s the Charge action, it cannot be set up within control range of an enemy operative.",
+                      "page":  "core-rules",
+                      "anchor":  "Actions"
+                  },
+                  {
+                      "phrase":  "Grisly Trophy tokens",
                       "title":  "Marker/Token Guide",
                       "text":  "Portent token\nTerrorchem token\nFlay Them Alive token\nDisconcerting Mimicry token\nPoison Objective token\nGrisly Trophy token\nPrescience points\n(Values 1 \u0026 2)",
                       "page":  "appendix",
@@ -3396,6 +3627,13 @@
                       "anchor":  null
                   },
                   {
+                      "phrase":  "Symbols of Bloody Worship",
+                      "title":  "Symbols of Bloody Worship",
+                      "text":  "SYMBOLS OF BLOODY WORSHIP",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
                       "phrase":  "Blooded token",
                       "title":  "Blooded",
                       "text":  "he Blooded seek to earn the favour of malign warp entities by hurling themselves into combat and slaying the most potent foes. Should they die in the attempt, their souls may serve as acceptable sacrifices.\nYou gain one Blooded token:\nIn the Ready step of each Strategy phase.\nThe first time an enemy operative is incapacitated during each turning point.\nThe first time a friendly operative is incapacitated within 6\" of an enemy operative during each turning point.\nAs a STRATEGIC GAMBIT, you can assign any of your unassigned Blooded tokens to friendly BLOODED operatives. Each operative cannot have more than one of your Blooded tokens. Then, if four or more friendly operatives in the killzone have one of your Blooded tokens, you can select one of them to be under the GAZE OF THE GODS until the end of the turning point.\nWhenever a friendly BLOODED operative has one of your Blooded tokens, its weapons have the Accurate 1 weapon rule. If that friendly BLOODED operative is under the GAZE OF THE GODS, you can retain one of your normal successes as a result of the Accurate 1 weapon rule as a critical success instead.",
@@ -3414,7 +3652,7 @@
                       "title":  "Signal",
                       "text":  "SIGNAL1AP\nSUPPORT. Select one other friendly BLOODED operative (excluding OGRYN) visible to and within 6\" of this operative. Until the end of that operative’s next activation, add 1 to its APL stat.\nThis operative cannot perform this action while within control range of an enemy operative.",
                       "page":  "core-rules",
-                      "anchor":  "Firefight-Phase"
+                      "anchor":  "Visible"
                   },
                   {
                       "phrase":  "Range 5\"",
@@ -3436,6 +3674,20 @@
                       "text":  "VIOLENT TEMPERAMENT",
                       "page":  null,
                       "anchor":  null
+                  },
+                  {
+                      "phrase":  "Sweeping Blow",
+                      "title":  "Sweeping Blow",
+                      "text":  "SWEEPING BLOW1AP\nInflict D3+1 damage on each other operative visible to and within 2\" of this operative in an order of your choice (roll separately for each).\nThis operative cannot perform this action while it has a Conceal order.",
+                      "page":  "core-rules",
+                      "anchor":  "Visible"
+                  },
+                  {
+                      "phrase":  "Mutation",
+                      "title":  "Mutation",
+                      "text":  "Through arcane ritual, the most devoted among a Chaos Cult have profane symbols carved into their flesh or tattooed onto their skin. Should the correct words of invocation be uttered, these icons appear to draw empyric power, mutating the form of the devotee. This doesn’t satisfy the dark cravings and power lust of some; depraved prayers are written upon flayed skin and nailed into tormented flesh, and daemons are summoned and bound into mortal bodies.\nDuring the battle, friendly CHAOS CULT operatives can MUTATE as follows:\nAs a STRATEGIC GAMBIT, you can MUTATE a number of friendly CHAOS CULT operatives based on the turning point as follows: TP1 = 2, TP2 = 2, TP3 = 3, TP4+ = 4.\nWhenever a friendly DEVOTEE operative incapacitates an enemy operative within its control range, it can MUTATE.\nEach operative cannot MUTATE more than once per turning point.\nWhenever a friendly operative MUTATES, select one of the following:\nIf it’s a DEVOTEE operative, turn it into a MUTANT operative.\nIf it’s a MUTANT operative, turn it into a TORMENT operative (max twice per turning point).\nIt can regain up to D3+1 lost wounds.\nYou cannot have more than five MUTANT operatives and three TORMENT operatives at once. Whenever a friendly operative turns into a new operative:\nSwap the miniatures, ensuring the centre of the new miniature’s base is as close as possible to where the centre of the old miniature’s base was. This can put it within control range of enemy operatives, and if the old miniature was, the new miniature must be if possible.\nThe new operative type loses a number of wounds equal to the lost wounds of its preceding operative type.\nIt’s still the same operative for any rules it’s already been selected for. The operative is simply a new operative type and will use that new type’s miniature and datacard rules.",
+                      "page":  "core-rules",
+                      "anchor":  "3.-Gambit"
                   },
                   {
                       "phrase":  "Animalistic Fury",
@@ -3466,18 +3718,18 @@
                       "anchor":  null
                   },
                   {
+                      "phrase":  "Blight Grenades",
+                      "title":  "Blight Grenades",
+                      "text":  "BLIGHT GRENADES",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
                       "phrase":  "Poison*",
                       "title":  "Poison",
                       "text":  "Nurgle deals in warp-tainted poisons, toxins, viral plagues and sicknesses of the soul that defy both natural resilience and medical intervention.\nIn the Resolve Attack Dice step, if you inflict damage with any successes, the operative this weapon is being used against (excluding friendly PLAGUE MARINE operatives) gains one of your Poison tokens (if it doesn’t already have one). Whenever an operative that has one of your Poison tokens is activated, inflict 1 damage on it.",
                       "page":  "core-rules",
                       "anchor":  "Firefight-Phase"
-                  },
-                  {
-                      "phrase":  "blight grenades",
-                      "title":  "blight grenades",
-                      "text":  "BLIGHT GRENADES",
-                      "page":  null,
-                      "anchor":  null
                   },
                   {
                       "phrase":  "Range 7\"",
@@ -3519,12 +3771,12 @@
                       "title":  "Temporal Flux",
                       "text":  "TEMPORAL FLUX1AP\nPSYCHIC. Select one friendly WARPCOVEN operative visible to and within 6\" of this operative and place your Temporal Flux marker within that operative’s control range.\nAt the end of that operative’s next activation, if it hasn’t been incapacitated and is still wholly within 6\" of your Temporal Flux marker, remove that operative from the killzone and set it back up in a location it can be placed; when it\u0027s set back up, it must have your Temporal Flux marker within its control range (or as close as possible). Then remove your Temporal Flux marker from the killzone. If that operative isn\u0027t wholly within 6\" of your Temporal Flux marker (including if it’s incapacitated), remove that marker from the killzone.\nThis operative cannot perform this action while within control range of an enemy operative, or if your Temporal Flux marker is currently in the killzone.",
                       "page":  "core-rules",
-                      "anchor":  "Firefight-Phase"
+                      "anchor":  "Visible"
                   },
                   {
                       "phrase":  "counteracts",
                       "title":  "Counteract",
-                      "text":  "When you would activate a ready friendly operative, if all your operatives are expended but your opponent still has ready operatives, you can select an expended friendly operative with an Engage order to perform a 1AP action (excluding Guard) for free. Each operative can only counteract once per turning point. That operative cannot move more than 2\", or must be set up wholly within 2\" if it’s removed and set up again, while counteracting (this is not a change to its Move stat, and takes precedence over all other rules). Counteracting is optional, so you can choose not to. In either case, activation alternates back to your opponent afterwards.\nCounteracting isn’t an activation, it’s instead of activating. This difference is important; for instance, it means action restrictions won\u0027t apply.",
+                      "text":  "When you would activate a ready friendly operative, if all your operatives are expended but your opponent still has ready operatives, you can select an expended friendly operative with an Engage order to perform a 1AP action (excluding Guard) for free. Each operative can only counteract once per turning point. That operative cannot move more than or be removed and set up more than 2\" away while counteracting (this is not a change to its Move stat, and takes precedence over all other rules). Counteracting is optional, so you can choose not to. In either case, activation alternates back to your opponent afterwards.\nCounteracting isn’t an activation, it’s instead of activating. This difference is important; for instance, it means action restrictions won\u0027t apply.",
                       "page":  "core-rules",
                       "anchor":  "Counteract"
                   },
@@ -3550,18 +3802,11 @@
                       "anchor":  null
                   },
                   {
-                      "phrase":  "Wrist Chains",
-                      "title":  "Wrist Chains",
-                      "text":  "WRIST CHAINS",
-                      "page":  null,
-                      "anchor":  null
-                  },
-                  {
                       "phrase":  "Warp Fold",
                       "title":  "Warp Fold",
                       "text":  "WARP FOLD1AP\nPSYCHIC. Select two friendly CORSAIR VOIDSCARRED operatives visible to and within 5\" of this operative. Remove them both from the killzone and set them back up in each other’s previous locations (in other words, swap their positions). If one of them performed the Charge, Fall Back or Reposition action during this turning point and the other is ready, the other cannot perform any of those actions in its activation during this turning point.\nThis operative cannot perform this action while within control range of an enemy operative.",
                       "page":  "core-rules",
-                      "anchor":  "2.-Ready"
+                      "anchor":  "Visible"
                   },
                   {
                       "phrase":  "Aeldari Raiders",
@@ -3615,14 +3860,14 @@
                   {
                       "phrase":  "Pain tokens",
                       "title":  "Power From Pain",
-                      "text":  "The Drukhari feed on the souls of their slain and tortured victims, drawing sustenance from the terrible agonies they inflict.\nAfter a friendly HAND OF THE ARCHON operative performs an action, it gains one of your Pain tokens if:\nAn enemy operative was injured during that action, but was not incapacitated.\nAn enemy operative was incapacitated during that action. If that enemy operative had a Wounds stat of 12 or more, that friendly operative gains two of your Pain tokens instead.\nYou can spend friendly operatives’ Pain tokens on invigorations when the ‘when’ condition is met. You cannot use more than one invigoration per activation or counteraction, except Stimulated Senses, which can be used once per activation or counteraction in addition to another invigorations.",
+                      "text":  "The Drukhari feed on the souls of their slain and tortured victims, drawing sustenance from the terrible agonies they inflict.\nAfter a friendly HAND OF THE ARCHON operative performs an action, it gains one of your Pain tokens if:\nAn enemy operative was injured during that action, but was not incapacitated.\nAn enemy operative was incapacitated during that action. If that enemy operative had a Wounds stat of 12 or more, that friendly operative gains two of your Pain tokens instead.\nYou can spend friendly operatives’ Pain tokens on invigorations when the ‘when’ condition is met. You cannot use more than one invigoration per activation or counteraction, except Stimulated Senses, which can be used once per activation or counteraction in addition to another invigoration.",
                       "page":  "core-rules",
                       "anchor":  "Damage"
                   },
                   {
                       "phrase":  "Poison tokens",
                       "title":  "Power From Pain",
-                      "text":  "The Drukhari feed on the souls of their slain and tortured victims, drawing sustenance from the terrible agonies they inflict.\nAfter a friendly HAND OF THE ARCHON operative performs an action, it gains one of your Pain tokens if:\nAn enemy operative was injured during that action, but was not incapacitated.\nAn enemy operative was incapacitated during that action. If that enemy operative had a Wounds stat of 12 or more, that friendly operative gains two of your Pain tokens instead.\nYou can spend friendly operatives’ Pain tokens on invigorations when the ‘when’ condition is met. You cannot use more than one invigoration per activation or counteraction, except Stimulated Senses, which can be used once per activation or counteraction in addition to another invigorations.",
+                      "text":  "The Drukhari feed on the souls of their slain and tortured victims, drawing sustenance from the terrible agonies they inflict.\nAfter a friendly HAND OF THE ARCHON operative performs an action, it gains one of your Pain tokens if:\nAn enemy operative was injured during that action, but was not incapacitated.\nAn enemy operative was incapacitated during that action. If that enemy operative had a Wounds stat of 12 or more, that friendly operative gains two of your Pain tokens instead.\nYou can spend friendly operatives’ Pain tokens on invigorations when the ‘when’ condition is met. You cannot use more than one invigoration per activation or counteraction, except Stimulated Senses, which can be used once per activation or counteraction in addition to another invigoration.",
                       "page":  "core-rules",
                       "anchor":  "Damage"
                   },
@@ -3643,7 +3888,7 @@
                   {
                       "phrase":  "Hardy Chapter Tactic",
                       "title":  "Chapter Tactics",
-                      "text":  "Each Space Marine Chapter is a martial brotherhood with its own combat philosophies, suited to the unique skills and temperaments of its battle-brothers. These tenets of war may be clothed in esoteric rituals built up over thousands of years, but remain as brutally effective as when they were first laid down.\nWhen selecting your kill team, select a primary and secondary CHAPTER TACTIC for friendly ANGEL OF DEATH operatives to gain for the battle. Multiple instances of the same CHAPTER TACTIC aren’t cumulative.\nDesigner’s Note: If you’re playing a series of games, i.e. a campaign or tournament, you must select the same primary and secondary CHAPTER TACTIC for every battle (you can still change the secondary with the Adaptive Tactics strategy ploy).\n1. AGGRESSIVE |\nThis operative’s melee weapons have the Rending weapon rule. |\n|\n2. DUELLER |\nWhenever this operative is fighting or retaliating, each of your normal successes can block one unresolved critical success (unless the enemy operative’s weapon has the Brutal weapon rule). |\n|\n3. RESOLUTE |\nYou can ignore any changes to this operative’s APL stat. and it isn’t affected by enemy operatives’ Shock weapon rule. |\n|\n4. STEALTHY |\nWhenever an operative is shooting this operative, if you can retain any cover saves, you can retain one additional cover save, or you can retain one cover save as a critical success instead. This isn’t cumulative with improved cover saves from Vantage terrain. |\n|\n5. MOBILE |\nThis operative can perform the Fall Back action for 1 less AP.\nThis operative can perform the Charge action while within control range of an enemy operative, and can leave that operative’s control range to do so (but then normal requirements for that move apply).\n|\n|\n6. HARDY |\nWhenever an operative is shooting this operative, defence dice results of 5+ are critical successes. |\n|\n7. SHARPSHOOTER |\nWhenever this operative is shooting during an activation in which it hasn’t performed the Charge, Fall Back or Reposition action, its bolt weapons have the Accurate 1 and Severe weapon rules |\n|\n8. SIEGE SPECIALIST |\nThis operative’s ranged weapons have the Saturate weapon rule. Whenever this operative is fighting or retaliating, enemy operatives cannot assist. |\n|",
+                      "text":  "Each Space Marine Chapter is a martial brotherhood with its own combat philosophies, suited to the unique skills and temperaments of its battle-brothers. These tenets of war may be clothed in esoteric rituals built up over thousands of years, but remain as brutally effective as when they were first laid down.\nWhen selecting your kill team, select a primary and secondary CHAPTER TACTIC for friendly ANGEL OF DEATH operatives to gain for the battle. Multiple instances of the same CHAPTER TACTIC aren’t cumulative.\nDesigner’s Note: If you’re playing a series of games, i.e. a campaign or tournament, you must select the same primary and secondary CHAPTER TACTIC for every battle (you can still change the secondary with the Adaptive Tactics strategy ploy).\n1. AGGRESSIVE |\nThis operative’s melee weapons have the Rending weapon rule. |\n|\n2. DUELLER |\nWhenever this operative is fighting or retaliating, each of your normal successes can block one unresolved critical success (unless the enemy operative’s weapon has the Brutal weapon rule). |\n|\n3. RESOLUTE |\nYou can ignore any changes to this operative’s APL stat and it isn’t affected by enemy operatives’ Shock weapon rule. |\n|\n4. STEALTHY |\nWhenever an operative is shooting this operative, if you can retain any cover saves, you can retain one additional cover save, or you can retain one cover save as a critical success instead. This isn’t cumulative with improved cover saves from Vantage terrain. |\n|\n5. MOBILE |\nThis operative can perform the Fall Back action for 1 less AP.\nThis operative can perform the Charge action while within control range of an enemy operative, and can leave that operative’s control range to do so (but then normal requirements for that move apply).\n|\n|\n6. HARDY |\nWhenever an operative is shooting this operative, defence dice results of 5+ are critical successes. |\n|\n7. SHARPSHOOTER |\nWhenever this operative is shooting during an activation in which it hasn’t performed the Charge, Fall Back or Reposition action, its bolt weapons have the Accurate 1 and Severe weapon rules |\n|\n8. SIEGE SPECIALIST |\nThis operative’s ranged weapons have the Saturate weapon rule. Whenever this operative is fighting or retaliating, enemy operatives cannot assist. |\n|",
                       "page":  null,
                       "anchor":  null
                   },
@@ -3653,13 +3898,6 @@
                       "text":  "ARMOURED UNDERSUIT",
                       "page":  null,
                       "anchor":  null
-                  },
-                  {
-                      "phrase":  "Haunting Focus",
-                      "title":  "Haunting Focus",
-                      "text":  "STRATEGIC GAMBIT. Select one enemy operative. Until the Ready step of the next Strategy phase, it gains your Haunting Focus token. The next time your opponent would activate an enemy operative that has your Haunting Focus token, if this operative is ready, you can activate this operative first (you cannot do so if you also rolled to prevent that operative’s activation with the NIGHTFIEND operative’s Harrowing Whispers additional rule during this turning point). If you do, during that activation, this operative must shoot against or fight against that enemy operative, and cannot do so against any other enemy operatives until it does (if this isn’t possible, this operative’s activation is cancelled). After completing this operative’s activation, your opponent activates that enemy operative (if possible), or activates a different enemy operative if they can’t.",
-                      "page":  "core-rules",
-                      "anchor":  "3.-Gambit"
                   },
                   {
                       "phrase":  "WITHIN SHADOW",
@@ -3685,7 +3923,7 @@
                   {
                       "phrase":  "Sprint",
                       "title":  "Sprint",
-                      "text":  "SPRINT0AP\nMove the active operative to a location it can be placed. This must be directly forwards or backwards in one or more straight-line increments, and increments are always rounded up to the nearest inch. It cannot move more than 9\" forwards or 3\" backwards per activation, and it cannot move more than 12\" per turning point.\nBefore or after one of the increments, you can pivot the active operative up to 45°. This doesn’t use any of its movement allowance, and it can then continue its movement with any remaining move distance.\nThe active operative cannot climb or finish the move on Vantage terrain higher than 2\" from the killzone floor. It can move through operatives and it treats terrain parts less than 2\" tall as Accessible terrain. Whenever it moves through an equipment terrain feature, remove that terrain feature from the battle.\nAn operative cannot perform this action while counteracting. For the purposes of your opponent’s rules, mission rules and killzone rules, this action is treated as the Reposition action, or the Charge action if the active operative ends the action within control range of an enemy operative.",
+                      "text":  "SPRINT0AP\nMove the active operative to a location it can be placed. This must be directly forwards or backwards in one or more straight-line increments, and increments are always rounded up to the nearest inch. It cannot move more than 9\" forwards or 3\" backwards per activation, and it cannot move more than 12\" per turning point.\nBefore or after one of the increments, you can pivot the active operative up to 45°. This doesn’t use any of its movement allowance, and it can then continue its movement with any remaining move distance.\nThe active operative cannot climb or finish the move on Vantage terrain higher than 2\" from the killzone floor. It can move through operatives and it treats terrain parts less than 2\" tall as Accessible terrain. Whenever it moves through an equipment terrain feature, remove that terrain feature from the battle.\nAn operative cannot perform this action while counteracting. For the purposes of your opponent’s rules, mission rules and killzone rules, this action is treated as the Reposition action, or the Charge action if the active operative ends the action within control range of an enemy operative. An operative cannot perform this action while it has a Conceal order if it would end the action within control range of an enemy operative.",
                       "page":  "core-rules",
                       "anchor":  "2.-Perform-Actions"
                   },
@@ -3697,6 +3935,13 @@
                       "anchor":  "Actions"
                   },
                   {
+                      "phrase":  "Knux-Smash",
+                      "title":  "Knux-Smash",
+                      "text":  "KNUX SMASH1AP\nSelect one enemy operative within this operative’s control range. You can move that enemy operative up to 3\" to a location it can be placed. Then inflict D3+1 damage on it (even if you don’t move it); if the D3 result is a 3, also subtract 1 from that enemy operative’s APL stat until the end of its next activation. This operative can then immediately perform a free Charge action (even if it’s already performed the Charge action during that activation), but cannot move more than 3\" during that action.\nThis operative cannot perform this action unless an enemy operative is within its control range.",
+                      "page":  "core-rules",
+                      "anchor":  "Firefight-Phase"
+                  },
+                  {
                       "phrase":  "Cleansing of the Pale Moon",
                       "title":  "Cleansing of the Pale Moon",
                       "text":  "CLEANSING OF THE PALE MOON",
@@ -3704,14 +3949,49 @@
                       "anchor":  null
                   },
                   {
+                      "phrase":  "Portable Barricade",
+                      "title":  "Portable Barricade",
+                      "text":  "1X PORTABLE BARRICADE",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
                       "phrase":  "Turn",
                       "title":  "Turn",
-                      "text":  "TURN1AP\nPivot the active operative up to 45°. This doesn’t use any of its movement allowance.\nAn operative cannot perform this action while counteracting. For the purposes of your opponent’s rules, mission rules and killzone rules, this action is treated as the Dash action, or the Charge action if the active operative ends the action within control range of an enemy operative.",
+                      "text":  "TURN1AP\nPivot the active operative up to 45°. This doesn’t use any of its movement allowance.\nAn operative cannot perform this action while counteracting. For the purposes of your opponent’s rules, mission rules and killzone rules, this action is treated as the Dash action, or the Charge action if the active operative ends the action within control range of an enemy operative. An operative cannot perform this action while it has a Conceal order if it would end the action within control range of an enemy operative.",
                       "page":  "core-rules",
                       "anchor":  "2.-Perform-Actions"
                   },
                   {
+                      "phrase":  "Leap",
+                      "title":  "Leap",
+                      "text":  "LEAP",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
+                      "phrase":  "Vectored Retro-thrusters",
+                      "title":  "Vectored Retro-thrusters",
+                      "text":  "VECTORED RETRO-THRUSTERS",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
+                      "phrase":  "SPEED 4+",
+                      "title":  "Mercurial Speed",
+                      "text":  "Controlled breeding and harsh environments have granted drakesteeds powerful muscles. At their master’s command, they can switch from poised stillness to breakneck lunges too fast for the eye to follow.\nEach friendly EXODITE DRAGON MASTER operative has a SPEED that has three levels: SPEED 3-, SPEED 4+ and SPEED 7+. An operative can only have one SPEED level at a time, and it starts the battle with SPEED 3-.\nAn EXODITE DRAGON MASTER MOUNTED operative has SPEED 3- if either of the following are true:\nIt ends the Sprint action and it either moved backwards or less than 4\" forwards.\nIt ends its activation without performing the Sprint action.\nAn EXODITE DRAGON MASTER MOUNTED operative has SPEED 4+ if it ends the Sprint action and moved 4\" or more during that action, or SPEED 7+ instead if it moved 7\" or more during that action.\nWhenever an operative is shooting a friendly EXODITE DRAGON MASTER operative, if that friendly operative has SPEED 4+, you can retain one of your defence dice as a normal success without rolling it; if it has SPEED 7+, you can retain one as a critical success instead.\nEXODITE DRAGON MASTER DRAKOLITHE operatives’ SPEED changes as described on their datacard.",
+                      "page":  "core-rules",
+                      "anchor":  "Actions"
+                  },
+                  {
                       "phrase":  "SPEED 3-",
+                      "title":  "Mercurial Speed",
+                      "text":  "Controlled breeding and harsh environments have granted drakesteeds powerful muscles. At their master’s command, they can switch from poised stillness to breakneck lunges too fast for the eye to follow.\nEach friendly EXODITE DRAGON MASTER operative has a SPEED that has three levels: SPEED 3-, SPEED 4+ and SPEED 7+. An operative can only have one SPEED level at a time, and it starts the battle with SPEED 3-.\nAn EXODITE DRAGON MASTER MOUNTED operative has SPEED 3- if either of the following are true:\nIt ends the Sprint action and it either moved backwards or less than 4\" forwards.\nIt ends its activation without performing the Sprint action.\nAn EXODITE DRAGON MASTER MOUNTED operative has SPEED 4+ if it ends the Sprint action and moved 4\" or more during that action, or SPEED 7+ instead if it moved 7\" or more during that action.\nWhenever an operative is shooting a friendly EXODITE DRAGON MASTER operative, if that friendly operative has SPEED 4+, you can retain one of your defence dice as a normal success without rolling it; if it has SPEED 7+, you can retain one as a critical success instead.\nEXODITE DRAGON MASTER DRAKOLITHE operatives’ SPEED changes as described on their datacard.",
+                      "page":  "core-rules",
+                      "anchor":  "Actions"
+                  },
+                  {
+                      "phrase":  "SPEED 7+",
                       "title":  "Mercurial Speed",
                       "text":  "Controlled breeding and harsh environments have granted drakesteeds powerful muscles. At their master’s command, they can switch from poised stillness to breakneck lunges too fast for the eye to follow.\nEach friendly EXODITE DRAGON MASTER operative has a SPEED that has three levels: SPEED 3-, SPEED 4+ and SPEED 7+. An operative can only have one SPEED level at a time, and it starts the battle with SPEED 3-.\nAn EXODITE DRAGON MASTER MOUNTED operative has SPEED 3- if either of the following are true:\nIt ends the Sprint action and it either moved backwards or less than 4\" forwards.\nIt ends its activation without performing the Sprint action.\nAn EXODITE DRAGON MASTER MOUNTED operative has SPEED 4+ if it ends the Sprint action and moved 4\" or more during that action, or SPEED 7+ instead if it moved 7\" or more during that action.\nWhenever an operative is shooting a friendly EXODITE DRAGON MASTER operative, if that friendly operative has SPEED 4+, you can retain one of your defence dice as a normal success without rolling it; if it has SPEED 7+, you can retain one as a critical success instead.\nEXODITE DRAGON MASTER DRAKOLITHE operatives’ SPEED changes as described on their datacard.",
                       "page":  "core-rules",
@@ -3725,18 +4005,11 @@
                       "anchor":  "Firefight-Phase"
                   },
                   {
-                      "phrase":  "SPEED 4+",
-                      "title":  "Mercurial Speed",
-                      "text":  "Controlled breeding and harsh environments have granted drakesteeds powerful muscles. At their master’s command, they can switch from poised stillness to breakneck lunges too fast for the eye to follow.\nEach friendly EXODITE DRAGON MASTER operative has a SPEED that has three levels: SPEED 3-, SPEED 4+ and SPEED 7+. An operative can only have one SPEED level at a time, and it starts the battle with SPEED 3-.\nAn EXODITE DRAGON MASTER MOUNTED operative has SPEED 3- if either of the following are true:\nIt ends the Sprint action and it either moved backwards or less than 4\" forwards.\nIt ends its activation without performing the Sprint action.\nAn EXODITE DRAGON MASTER MOUNTED operative has SPEED 4+ if it ends the Sprint action and moved 4\" or more during that action, or SPEED 7+ instead if it moved 7\" or more during that action.\nWhenever an operative is shooting a friendly EXODITE DRAGON MASTER operative, if that friendly operative has SPEED 4+, you can retain one of your defence dice as a normal success without rolling it; if it has SPEED 7+, you can retain one as a critical success instead.\nEXODITE DRAGON MASTER DRAKOLITHE operatives’ SPEED changes as described on their datacard.",
-                      "page":  "core-rules",
-                      "anchor":  "Actions"
-                  },
-                  {
-                      "phrase":  "SPEED 7+",
-                      "title":  "Mercurial Speed",
-                      "text":  "Controlled breeding and harsh environments have granted drakesteeds powerful muscles. At their master’s command, they can switch from poised stillness to breakneck lunges too fast for the eye to follow.\nEach friendly EXODITE DRAGON MASTER operative has a SPEED that has three levels: SPEED 3-, SPEED 4+ and SPEED 7+. An operative can only have one SPEED level at a time, and it starts the battle with SPEED 3-.\nAn EXODITE DRAGON MASTER MOUNTED operative has SPEED 3- if either of the following are true:\nIt ends the Sprint action and it either moved backwards or less than 4\" forwards.\nIt ends its activation without performing the Sprint action.\nAn EXODITE DRAGON MASTER MOUNTED operative has SPEED 4+ if it ends the Sprint action and moved 4\" or more during that action, or SPEED 7+ instead if it moved 7\" or more during that action.\nWhenever an operative is shooting a friendly EXODITE DRAGON MASTER operative, if that friendly operative has SPEED 4+, you can retain one of your defence dice as a normal success without rolling it; if it has SPEED 7+, you can retain one as a critical success instead.\nEXODITE DRAGON MASTER DRAKOLITHE operatives’ SPEED changes as described on their datacard.",
-                      "page":  "core-rules",
-                      "anchor":  "Actions"
+                      "phrase":  "The Curtain Falls",
+                      "title":  "The Curtain Falls",
+                      "text":  "THE CURTAIN FALLS",
+                      "page":  null,
+                      "anchor":  null
                   },
                   {
                       "phrase":  "ACCOLADE",
@@ -3769,9 +4042,9 @@
                   {
                       "phrase":  "Weave Darkness",
                       "title":  "Weave Darkness",
-                      "text":  "WEAVE DARKNESS1AP\nRemove your Weave Darkness marker from the killzone (if any). Then place your Weave Darkness marker visible to this operative, or on Vantage terrain of a terrain feature visible to this operative. That marker creates an area of smoke with the same size and effects as a smoke grenade, except you don’t remove it during the following turning point. If this operative is incapacitated, remove your Weave Darkness marker from the killzone.\nThis operative cannot perform this action while within control range of an enemy operative.",
-                      "page":  "killzones",
-                      "anchor":  "Vantage"
+                      "text":  "WEAVE DARKNESS1AP\nRemove your Weave Darkness marker from the killzone (if any). Then place your Weave Darkness marker visible to this operative, or on Vantage terrain of a terrain feature visible to this operative. That marker creates an area of smoke with the same size and effects as a smoke grenade (see universal equipment), except you don’t remove it during the following turning point. If this operative is incapacitated, remove your Weave Darkness marker from the killzone.\nThis operative cannot perform this action while within control range of an enemy operative.",
+                      "page":  "core-rules",
+                      "anchor":  "Visible"
                   },
                   {
                       "phrase":  "Call the Storm",
@@ -3797,7 +4070,7 @@
                   {
                       "phrase":  "Medic!",
                       "title":  "Medic!",
-                      "text":  "The first time during each turning point that another friendly BROOD BROTHER operative (excluding PATRIARCH) would be removed from the killzone as incapacitated while visible to and within 3\" of this operative, you can use this rule, providing neither this nor that operative is within control range of an enemy operative. If you do, that friendly operative isn’t incapacitated and has 1 wound remaining. That friendly operative can then immediately perform a free Dash action, but must end that move within this operative’s control range. Subtract 1 from this and that operative’s APL stats until the end of their next activations respectively, and if this rule was used during that friendly operative’s activation, that activation ends. You cannot use this rule if this operative is incapacitated.",
+                      "text":  "The first time during each turning point that another friendly BROOD BROTHER operative (excluding PATRIARCH) would be incapacitated while visible to and within 3\" of this operative, you can use this rule, providing neither this nor that operative is within control range of an enemy operative. If you do, that friendly operative isn’t incapacitated, has 1 wound remaining and cannot be incapacitated for the remainder of the action. After that action, that friendly operative can immediately perform a free Dash action, but must end that move within this operative’s control range. Subtract 1 from this and that operative’s APL stats until the end of their next activations respectively, and if this rule was used during that friendly operative’s activation, that activation ends. You cannot use this rule if this operative is incapacitated, or if it’s a Shoot action and this operative would be a primary or secondary target.",
                       "page":  "core-rules",
                       "anchor":  "Damage"
                   },
@@ -3819,6 +4092,13 @@
                       "phrase":  "Coiled Serpent",
                       "title":  "Coiled Serpent",
                       "text":  "COILED SERPENT",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
+                      "phrase":  "Cult Ambush",
+                      "title":  "Cult Ambush",
+                      "text":  "When the Day of Ascension arrives, the Cult strike as one, catching their foes unawares with lethal ambushes and surprise assaults.\nWhenever a friendly WYRMBLADE operative is shooting or fighting during its activation, if its order was changed from Conceal to Engage at the start of that activation, or it wasn’t visible to enemy operatives at the start of that activation, that friendly operative’s weapons have the Ceaseless weapon rule.",
                       "page":  null,
                       "anchor":  null
                   },
@@ -3853,14 +4133,7 @@
                   {
                       "phrase":  "\u003cB\u003eOBELISK NODE MATRIX\u003c/B\u003e",
                       "title":  "Obelisk Node Matrix",
-                      "text":  "Obelisk nodes are concentrations of Necron technology, hubs of energy and data streams. Whether raised up from their sites of ancient burial, formed from restructured local matter or phased into place from a pocket dimension, these angular nodes can empower a Cryptek and their servants. Impelled into positions where they can connect in a matrix of power, they aid the Cryptek’s ambitions whilst hampering their foes.\nAs a STRATEGIC GAMBIT in the first turning point, place your three OBELISK NODE markers wholly within your territory. As a STRATEGIC GAMBIT in each turning point after the first, you can move each of your OBELISK NODE markers up to 3\" horizontally.\nYour OBELISK NODE markers control other markers within 1\" of them that no enemy operatives contest (treat your OBELISK NODE markers as friendly operatives for this purpose). If more than one player would use their OBELISK NODE markers to control the same marker, no OBELISK NODE markers control it.\nWhenever one of your OBELISK NODE markers is within 6\" horizontally of another of your OBELISK NODE markers, those markers and the area between them create an OBELISK NODE MATRIX above and below (in other words, their height in the killzone is irrelevant). If all three of your OBELISK NODE markers fulfil this, it creates a larger combined OBELISK NODE MATRIX.\nWhenever a friendly CANOPTEK CIRCLE operative is within your OBELISK NODE MATRIX:\nWeapons on its datacard have the Accurate 2 weapon rule.\nAdd 1 to its APL stat (to a maximum of 3).",
-                      "page":  "core-rules",
-                      "anchor":  "3.-Gambit"
-                  },
-                  {
-                      "phrase":  "A Ceaseless Scuttling",
-                      "title":  "A Ceaseless Scuttling",
-                      "text":  "As a STRATEGIC GAMBIT in each turning point after the first, if you have less than three nonincapacitated friendly CANOPTEK CIRCLE WARRIOR operatives, you can set up another one ready and with a Conceal order wholly within your drop zone (you can select its weapon options as normal).",
+                      "text":  "Obelisk nodes are concentrations of Necron technology, hubs of energy and data streams. Whether raised up from their sites of ancient burial, formed from restructured local matter or phased into place from a pocket dimension, these angular nodes can empower a Cryptek and their servants. Impelled into positions where they can connect in a matrix of power, they aid the Cryptek’s ambitions whilst hampering their foes.\nAs a STRATEGIC GAMBIT in the first turning point, place your three OBELISK NODE markers wholly within your territory. As a STRATEGIC GAMBIT in each turning point after the first, you can move each of your OBELISK NODE markers up to 3\" horizontally.\nYour OBELISK NODE markers control other markers within 1\" of them that no enemy operatives contest (treat your OBELISK NODE markers as friendly operatives for this purpose). If more than one player would use their OBELISK NODE markers to control the same marker, no OBELISK NODE markers control it.\nWhenever one of your OBELISK NODE markers is within 6\" horizontally of another of your OBELISK NODE markers, those markers and the area between them create an OBELISK NODE MATRIX above and below (in other words, their height in the killzone is irrelevant). If all three of your OBELISK NODE markers fulfil this, it creates a larger combined OBELISK NODE MATRIX.\nWhenever a friendly CANOPTEK CIRCLE operative is within your OBELISK NODE MATRIX:\nWeapons on its datacard have the Accurate 1 weapon rule.\nAdd 1 to its APL stat (to a maximum of 3).",
                       "page":  "core-rules",
                       "anchor":  "3.-Gambit"
                   },
@@ -3881,7 +4154,7 @@
                   {
                       "phrase":  "\u003cB\u003eOBELISK NODE\u003c/B\u003e",
                       "title":  "Obelisk Node Matrix",
-                      "text":  "Obelisk nodes are concentrations of Necron technology, hubs of energy and data streams. Whether raised up from their sites of ancient burial, formed from restructured local matter or phased into place from a pocket dimension, these angular nodes can empower a Cryptek and their servants. Impelled into positions where they can connect in a matrix of power, they aid the Cryptek’s ambitions whilst hampering their foes.\nAs a STRATEGIC GAMBIT in the first turning point, place your three OBELISK NODE markers wholly within your territory. As a STRATEGIC GAMBIT in each turning point after the first, you can move each of your OBELISK NODE markers up to 3\" horizontally.\nYour OBELISK NODE markers control other markers within 1\" of them that no enemy operatives contest (treat your OBELISK NODE markers as friendly operatives for this purpose). If more than one player would use their OBELISK NODE markers to control the same marker, no OBELISK NODE markers control it.\nWhenever one of your OBELISK NODE markers is within 6\" horizontally of another of your OBELISK NODE markers, those markers and the area between them create an OBELISK NODE MATRIX above and below (in other words, their height in the killzone is irrelevant). If all three of your OBELISK NODE markers fulfil this, it creates a larger combined OBELISK NODE MATRIX.\nWhenever a friendly CANOPTEK CIRCLE operative is within your OBELISK NODE MATRIX:\nWeapons on its datacard have the Accurate 2 weapon rule.\nAdd 1 to its APL stat (to a maximum of 3).",
+                      "text":  "Obelisk nodes are concentrations of Necron technology, hubs of energy and data streams. Whether raised up from their sites of ancient burial, formed from restructured local matter or phased into place from a pocket dimension, these angular nodes can empower a Cryptek and their servants. Impelled into positions where they can connect in a matrix of power, they aid the Cryptek’s ambitions whilst hampering their foes.\nAs a STRATEGIC GAMBIT in the first turning point, place your three OBELISK NODE markers wholly within your territory. As a STRATEGIC GAMBIT in each turning point after the first, you can move each of your OBELISK NODE markers up to 3\" horizontally.\nYour OBELISK NODE markers control other markers within 1\" of them that no enemy operatives contest (treat your OBELISK NODE markers as friendly operatives for this purpose). If more than one player would use their OBELISK NODE markers to control the same marker, no OBELISK NODE markers control it.\nWhenever one of your OBELISK NODE markers is within 6\" horizontally of another of your OBELISK NODE markers, those markers and the area between them create an OBELISK NODE MATRIX above and below (in other words, their height in the killzone is irrelevant). If all three of your OBELISK NODE markers fulfil this, it creates a larger combined OBELISK NODE MATRIX.\nWhenever a friendly CANOPTEK CIRCLE operative is within your OBELISK NODE MATRIX:\nWeapons on its datacard have the Accurate 1 weapon rule.\nAdd 1 to its APL stat (to a maximum of 3).",
                       "page":  "core-rules",
                       "anchor":  "3.-Gambit"
                   },
@@ -3907,11 +4180,18 @@
                       "anchor":  null
                   },
                   {
+                      "phrase":  "A Ceaseless Scuttling",
+                      "title":  "A Ceaseless Scuttling",
+                      "text":  "As a STRATEGIC GAMBIT in each turning point after the first, if you have less than three nonincapacitated friendly CANOPTEK CIRCLE WARRIOR operatives, you can set up another one ready and with a Conceal order wholly within your drop zone (you can select its weapon options as normal).",
+                      "page":  "core-rules",
+                      "anchor":  "3.-Gambit"
+                  },
+                  {
                       "phrase":  "*Dimensional Banishment",
                       "title":  "*Dimensional Banishment",
-                      "text":  "After this operative uses this weapon, if you inflicted damage or retained any critical successes, if the target wasn’t incapacitated, roll 2D6: if the result is higher than the target’s remaining wounds, the target is incapacitated (taking precedence over rules that prevent incapacitation, e.g. Medic!, FELLGOR RAVAGER Frenzy) and your opponent cannot place a Reanimation marker (HIEROTEK CIRCLE) for that operative, if relevant. This rule has no effect if the target is a NEMESIS operative or Red Terror NPO.",
+                      "text":  "After this operative uses this weapon, if you inflicted damage or retained any critical successes, roll 2D6: if the result is higher than the target’s remaining wounds, the target is incapacitated (taking precedence over rules that prevent incapacitation, e.g. Medic!, FELLGOR RAVAGER Frenzy) and your opponent cannot place a Reanimation marker (HIEROTEK CIRCLE) for that operative, if relevant. This rule has no effect if the target is a NEMESIS operative or Red Terror NPO.",
                       "page":  "core-rules",
-                      "anchor":  "Damage"
+                      "anchor":  "Precedence"
                   },
                   {
                       "phrase":  "Reanimation",
@@ -3923,7 +4203,7 @@
                   {
                       "phrase":  "\u003cKY\u003eOBELISK\u003c/KY\u003e \u003cKY\u003eNODE\u003c/KY\u003e",
                       "title":  "Obelisk Node Matrix",
-                      "text":  "Obelisk nodes are concentrations of Necron technology, hubs of energy and data streams. Whether raised up from their sites of ancient burial, formed from restructured local matter or phased into place from a pocket dimension, these angular nodes can empower a Cryptek and their servants. Impelled into positions where they can connect in a matrix of power, they aid the Cryptek’s ambitions whilst hampering their foes.\nAs a STRATEGIC GAMBIT in the first turning point, place your three OBELISK NODE markers wholly within your territory. As a STRATEGIC GAMBIT in each turning point after the first, you can move each of your OBELISK NODE markers up to 3\" horizontally.\nYour OBELISK NODE markers control other markers within 1\" of them that no enemy operatives contest (treat your OBELISK NODE markers as friendly operatives for this purpose). If more than one player would use their OBELISK NODE markers to control the same marker, no OBELISK NODE markers control it.\nWhenever one of your OBELISK NODE markers is within 6\" horizontally of another of your OBELISK NODE markers, those markers and the area between them create an OBELISK NODE MATRIX above and below (in other words, their height in the killzone is irrelevant). If all three of your OBELISK NODE markers fulfil this, it creates a larger combined OBELISK NODE MATRIX.\nWhenever a friendly CANOPTEK CIRCLE operative is within your OBELISK NODE MATRIX:\nWeapons on its datacard have the Accurate 2 weapon rule.\nAdd 1 to its APL stat (to a maximum of 3).",
+                      "text":  "Obelisk nodes are concentrations of Necron technology, hubs of energy and data streams. Whether raised up from their sites of ancient burial, formed from restructured local matter or phased into place from a pocket dimension, these angular nodes can empower a Cryptek and their servants. Impelled into positions where they can connect in a matrix of power, they aid the Cryptek’s ambitions whilst hampering their foes.\nAs a STRATEGIC GAMBIT in the first turning point, place your three OBELISK NODE markers wholly within your territory. As a STRATEGIC GAMBIT in each turning point after the first, you can move each of your OBELISK NODE markers up to 3\" horizontally.\nYour OBELISK NODE markers control other markers within 1\" of them that no enemy operatives contest (treat your OBELISK NODE markers as friendly operatives for this purpose). If more than one player would use their OBELISK NODE markers to control the same marker, no OBELISK NODE markers control it.\nWhenever one of your OBELISK NODE markers is within 6\" horizontally of another of your OBELISK NODE markers, those markers and the area between them create an OBELISK NODE MATRIX above and below (in other words, their height in the killzone is irrelevant). If all three of your OBELISK NODE markers fulfil this, it creates a larger combined OBELISK NODE MATRIX.\nWhenever a friendly CANOPTEK CIRCLE operative is within your OBELISK NODE MATRIX:\nWeapons on its datacard have the Accurate 1 weapon rule.\nAdd 1 to its APL stat (to a maximum of 3).",
                       "page":  "core-rules",
                       "anchor":  "3.-Gambit"
                   },
@@ -3981,7 +4261,7 @@
                       "title":  "Chronometron",
                       "text":  "CHRONOMETRON1AP\nSUPPORT. Select one friendly HIEROTEK CIRCLE operative visible to and within 6\" of this operative. Until the start of this operative’s next activation, until this operative is incapacitated or until this action is performed again by a friendly operative (whichever comes first), subtract 1 from the Atk stat of an operative’s weapons whenever it’s shooting that selected operative.\nThis operative cannot perform this action while within control range of an enemy operative.",
                       "page":  "core-rules",
-                      "anchor":  "Firefight-Phase"
+                      "anchor":  "Visible"
                   },
                   {
                       "phrase":  "REANIMATED",
@@ -4001,27 +4281,20 @@
                       "phrase":  "Reanimate",
                       "title":  "Reanimate",
                       "text":  "REANIMATE1/2AP\nSelect one of your Reanimation markers visible to and within 6\" of this operative. Roll one D6: on a 3+, a friendly operative is REANIMATED; if you spent 1 additional AP, a friendly operative is automatically REANIMATED (you don’t need to roll one D6). An operative that’s REANIMATED from this unique action is set up expended if it was already expended during this turning point.\nThis operative cannot perform this action while within control range of an enemy operative.",
-                      "page":  null,
-                      "anchor":  null
+                      "page":  "core-rules",
+                      "anchor":  "Visible"
                   },
                   {
                       "phrase":  "Accelerate",
                       "title":  "Accelerate",
                       "text":  "ACCELERATE1AP\nSelect one friendly DEATHMARK or IMMORTAL operative visible to and within 6\" of this operative. Until the end of that operative’s next activation, add 1 to its APL stat.\nThis operative cannot perform this action while within control range of an enemy operative.",
                       "page":  "core-rules",
-                      "anchor":  "Firefight-Phase"
+                      "anchor":  "Visible"
                   },
                   {
                       "phrase":  "Door Fight",
                       "title":  "Door Fight",
                       "text":  "DOOR FIGHT1AP\nFight with the active operative (see fight sequence).\nIn the Select Enemy Operative step, instead select an enemy operative on the killzone floor and within 2\" of, and on the other side of, a door the active operative is touching. For the duration of that action, those operatives are treated as being within each other’s control range.\nThis action is treated as a Fight action. An operative cannot perform this action while within control range of an enemy operative, or if its base isn’t touching a door.",
-                      "page":  null,
-                      "anchor":  null
-                  },
-                  {
-                      "phrase":  "Kaboom!",
-                      "title":  "Kaboom!",
-                      "text":  "KABOOM!",
                       "page":  null,
                       "anchor":  null
                   },
@@ -4033,18 +4306,25 @@
                       "anchor":  "Control-Range"
                   },
                   {
-                      "phrase":  "counteractions",
-                      "title":  "Counteract",
-                      "text":  "When you would activate a ready friendly operative, if all your operatives are expended but your opponent still has ready operatives, you can select an expended friendly operative with an Engage order to perform a 1AP action (excluding Guard) for free. Each operative can only counteract once per turning point. That operative cannot move more than 2\", or must be set up wholly within 2\" if it’s removed and set up again, while counteracting (this is not a change to its Move stat, and takes precedence over all other rules). Counteracting is optional, so you can choose not to. In either case, activation alternates back to your opponent afterwards.\nCounteracting isn’t an activation, it’s instead of activating. This difference is important; for instance, it means action restrictions won\u0027t apply.",
-                      "page":  "core-rules",
-                      "anchor":  "Counteract"
-                  },
-                  {
-                      "phrase":  "Drill Rokkits",
-                      "title":  "Drill Rokkits",
-                      "text":  "DRILL ROKKITS",
+                      "phrase":  "Kaboom!",
+                      "title":  "Kaboom!",
+                      "text":  "KABOOM!",
                       "page":  null,
                       "anchor":  null
+                  },
+                  {
+                      "phrase":  "Tanked Up",
+                      "title":  "Tanked Up",
+                      "text":  "Wrecka Krews are empowered by the thrill of explosive combat, lending them fresh impetus as they undertake their murderous rampages.\nThe first time a friendly WRECKA KREW operative (excluding BOMB SQUIG) that has an Engage order performs either the Charge, Shoot or Fight action (excluding Guard) during each of its activations/counteractions, add 1 to its APL stat until the start of its next activation.",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
+                      "phrase":  "counteractions",
+                      "title":  "Counteract",
+                      "text":  "When you would activate a ready friendly operative, if all your operatives are expended but your opponent still has ready operatives, you can select an expended friendly operative with an Engage order to perform a 1AP action (excluding Guard) for free. Each operative can only counteract once per turning point. That operative cannot move more than or be removed and set up more than 2\" away while counteracting (this is not a change to its Move stat, and takes precedence over all other rules). Counteracting is optional, so you can choose not to. In either case, activation alternates back to your opponent afterwards.\nCounteracting isn’t an activation, it’s instead of activating. This difference is important; for instance, it means action restrictions won\u0027t apply.",
+                      "page":  "core-rules",
+                      "anchor":  "Counteract"
                   },
                   {
                       "phrase":  "Wrecka point",
@@ -4054,9 +4334,9 @@
                       "anchor":  null
                   },
                   {
-                      "phrase":  "Portable Barricade",
-                      "title":  "Portable Barricade",
-                      "text":  "1X PORTABLE BARRICADE",
+                      "phrase":  "Drill Rokkits",
+                      "title":  "Drill Rokkits",
+                      "text":  "DRILL ROKKITS",
                       "page":  null,
                       "anchor":  null
                   },
@@ -4073,13 +4353,6 @@
                       "text":  "DESTRUCTION",
                       "page":  null,
                       "anchor":  null
-                  },
-                  {
-                      "phrase":  "climb up",
-                      "title":  "Climbing",
-                      "text":  "An operative must be within 1\" horizontally and 3\" vertically of terrain that’s visible to them to climb it. Each climb is treated as a minimum of 2\" vertically (e.g. a 1\" distance is treated as 2\").",
-                      "page":  "killzones",
-                      "anchor":  "Climbing"
                   },
                   {
                       "phrase":  "Meat",
@@ -4110,16 +4383,23 @@
                       "anchor":  "MARKER-TOKEN-GUIDE"
                   },
                   {
+                      "phrase":  "Point-Blank Fusillade",
+                      "title":  "Point-Blank Fusillade",
+                      "text":  "POINT-BLANK FUSILLADE",
+                      "page":  null,
+                      "anchor":  null
+                  },
+                  {
                       "phrase":  "Markerlight",
                       "title":  "Markerlight",
-                      "text":  "MARKERLIGHT1AP\nSelect one enemy operative visible to this operative. That enemy operative gains one of your Markerlight tokens (to a maximum of four).\nAn operative cannot perform this action while within control range of an enemy operative. If an operative (excluding MB3 RECON DRONE) would perform the Shoot action (excluding Guard) and this action during the same activation, only the target of that Shoot action can be selected for this action (and vice versa).",
+                      "text":  "MARKERLIGHT1AP\nSelect one enemy operative visible to this operative. That enemy operative gains one of your Markerlight tokens (to a maximum of five).\nAn operative cannot perform this action while within control range of an enemy operative. If an operative (excluding MB3 RECON DRONE) would perform the Shoot action (excluding Guard) and this action during the same activation, only the target of that Shoot action can be selected for this action (and vice versa).",
                       "page":  "core-rules",
-                      "anchor":  "Actions"
+                      "anchor":  "Visible"
                   },
                   {
                       "phrase":  "Markerlights",
                       "title":  "Markerlights",
-                      "text":  "Markerlights are laser targeting systems that feed information to the weapon-mounted scopes and helmet targeting systems of nearby T’au units.\nSome PATHFINDER operatives (indicated on their datacard) can perform the Markerlight unique action:\nMARKERLIGHT1AP\nSelect one enemy operative visible to this operative. That enemy operative gains one of your Markerlight tokens (to a maximum of four).\nAn operative cannot perform this action while within control range of an enemy operative. If an operative (excluding MB3 RECON DRONE) would perform the Shoot action (excluding Guard) and this action during the same activation, only the target of that Shoot action can be selected for this action (and vice versa).\nOnce during each of their activations, whenever an enemy operative that has any of your Markerlight tokens performs the Dash, Charge, Fall Back or Reposition action, remove one of those tokens.\nWhile only some PATHFINDER operatives can perform the Markerlight action, all PATHFINDER operatives can benefit from its effects. Whenever a friendly PATHFINDER operative is shooting with a weapon from its datacard (excluding ASSAULT GRENADIER’s fusion grenade), it has additional rules determined by the number of your Markerlight tokens the target has. These are cumulative, so if an enemy operative has two of your Markerlight tokens, the friendly operative shooting it has the rules for 1 and 2 tokens during that sequence.\nMARKER­LIGHT TOKENS | ADDITIONAL RULES |\n1 | Saturate and Balanced weapon rules. |\n2 | Improve the Hit stat of that friendly operative’s ranged weapons by 1 (to a maximum of 3+). |\n3 | The target cannot be obscured. |\n4 | Seek Light weapon rule. |\n5 | Seek weapon rule. |\n|",
+                      "text":  "Markerlights are laser targeting systems that feed information to the weapon-mounted scopes and helmet targeting systems of nearby T’au units.\nSome PATHFINDER operatives (indicated on their datacard) can perform the Markerlight unique action:\nMARKERLIGHT1AP\nSelect one enemy operative visible to this operative. That enemy operative gains one of your Markerlight tokens (to a maximum of five).\nAn operative cannot perform this action while within control range of an enemy operative. If an operative (excluding MB3 RECON DRONE) would perform the Shoot action (excluding Guard) and this action during the same activation, only the target of that Shoot action can be selected for this action (and vice versa).\nOnce during each of their activations, whenever an enemy operative that has any of your Markerlight tokens performs the Dash, Charge, Fall Back or Reposition action, remove one of those tokens.\nWhile only some PATHFINDER operatives can perform the Markerlight action, all PATHFINDER operatives can benefit from its effects. Whenever a friendly PATHFINDER operative is shooting with a weapon from its datacard (excluding ASSAULT GRENADIER’s fusion grenade), it has additional rules determined by the number of your Markerlight tokens the target has. These are cumulative, so if an enemy operative has two of your Markerlight tokens, the friendly operative shooting it has the rules for 1 and 2 tokens during that sequence.\nMARKER­LIGHT TOKENS | ADDITIONAL RULES |\n1 | Saturate and Balanced weapon rules. |\n2 | Improve the Hit stat of that friendly operative’s ranged weapons by 1 (to a maximum of 3+). |\n3 | The target cannot be obscured. |\n4 | Seek Light weapon rule. |\n5 | Seek weapon rule. |\n|",
                       "page":  "core-rules",
                       "anchor":  "Actions"
                   },
@@ -4140,28 +4420,28 @@
                   {
                       "phrase":  "Communion point",
                       "title":  "Communion",
-                      "text":  "Other species struggle to understand and interact with Vespids. The T’au have managed to establish strong links through various technological aids, most notably their communion helms. The Vespids have accepted these aids as beneficial, but the true extent of their impact is unknown.\nCommunion points are used to maintain the tactical focus of friendly VESPID STINGWING operatives. In the Ready step of each Strategy phase, you gain D3 Communion points, plus 1 if a friendly OVERSIGHT DRONE operative is in the killzone. Communion points are used as follows (OVERSIGHT DRONE operatives aren’t affected by the following):\nWhenever a friendly VESPID STINGWING operative is performing the Shoot action, it can only target the closest enemy operative within 8\" of it (excluding enemy operatives within control range of other friendly VESPID STINGWING operatives) unless you spend 1 of your Communion points. For weapons with the Blast and Torrent weapon rules, only the first target must be selected in this way.\nWhenever a friendly VESPID STINGWING operative (excluding DRONE) performs the Charge action, it must end the action within control range of the closest enemy operative it can unless you spend 1 of your Communion points.\nWhenever you would perform the Pick Up Marker or a mission action (excluding Operate Hatch) with a friendly VESPID STINGWING operative, you must also spend 1 of your Communion points to do so.\nWhenever a friendly VESPID STINGWING operative is shooting, you can spend 1 (and only 1) of your Communion points to re-roll one of your attack dice.",
+                      "text":  "Other species struggle to understand and interact with Vespids. The T’au have managed to establish strong links through various technological aids, most notably their communion helms. The Vespids have accepted these aids as beneficial, but the true extent of their impact is unknown.\nCommunion points are used to maintain the tactical focus of friendly VESPID STINGWING operatives. In the Ready step of each Strategy phase, you gain D3 Communion points, plus 1 if a friendly OVERSIGHT DRONE operative is in the killzone. Communion points are used as follows (OVERSIGHT DRONE operatives aren’t affected by the following):\nWhenever a friendly VESPID STINGWING operative is performing the Shoot action, it can only target the closest enemy operative within 8\" of it (excluding enemy operatives within control range of other friendly VESPID STINGWING operatives) unless you spend 1 of your Communion points. For weapons with the Blast and Torrent weapon rules, only the first target must be selected in this way.\nWhenever a friendly VESPID STINGWING operative (excluding DRONE) performs the Charge action, it must end the action within control range of the closest enemy operative it can unless you spend 1 of your Communion points.\nWhenever you would perform the Pick Up Marker or a mission action (excluding Breach and Operate Hatch) with a friendly VESPID STINGWING operative, you must also spend 1 of your Communion points to do so.\nWhenever a friendly VESPID STINGWING operative is shooting, you can spend 1 (and only 1) of your Communion points to re-roll one of your attack dice.",
                       "page":  "core-rules",
                       "anchor":  "2.-Ready"
                   },
                   {
-                      "phrase":  "FLY",
-                      "title":  "Fly",
-                      "text":  "The thrumming wings of the Vespids bear them aloft with speed and remarkable agility.\nWhenever a friendly VESPID STINGWING operative performs an action in which it moves, it can FLY. If it does, don’t move it. Instead, remove it from the killzone and set it back up wholly within a distance equal to its Move stat (or 3\" if it was a Dash) horizontally of its original location (in a killzone that uses the close quarters rules, e.g. Killzone: Tomb World, this distance cannot be measured over or through Wall terrain, and that operative cannot be set up on the other side of an access point – in other words it cannot FLY through an open hatchway). Note that it gains no additional distance when performing the Charge action. It must be set up in a location it can be placed, and unless it’s the Charge action, it cannot be set up within control range of an enemy operative.",
-                      "page":  "core-rules",
-                      "anchor":  "Actions"
+                      "phrase":  "Ocelli",
+                      "title":  "Ocelli",
+                      "text":  "OCELLI",
+                      "page":  null,
+                      "anchor":  null
                   },
                   {
                       "phrase":  "Communion",
                       "title":  "Communion",
-                      "text":  "Other species struggle to understand and interact with Vespids. The T’au have managed to establish strong links through various technological aids, most notably their communion helms. The Vespids have accepted these aids as beneficial, but the true extent of their impact is unknown.\nCommunion points are used to maintain the tactical focus of friendly VESPID STINGWING operatives. In the Ready step of each Strategy phase, you gain D3 Communion points, plus 1 if a friendly OVERSIGHT DRONE operative is in the killzone. Communion points are used as follows (OVERSIGHT DRONE operatives aren’t affected by the following):\nWhenever a friendly VESPID STINGWING operative is performing the Shoot action, it can only target the closest enemy operative within 8\" of it (excluding enemy operatives within control range of other friendly VESPID STINGWING operatives) unless you spend 1 of your Communion points. For weapons with the Blast and Torrent weapon rules, only the first target must be selected in this way.\nWhenever a friendly VESPID STINGWING operative (excluding DRONE) performs the Charge action, it must end the action within control range of the closest enemy operative it can unless you spend 1 of your Communion points.\nWhenever you would perform the Pick Up Marker or a mission action (excluding Operate Hatch) with a friendly VESPID STINGWING operative, you must also spend 1 of your Communion points to do so.\nWhenever a friendly VESPID STINGWING operative is shooting, you can spend 1 (and only 1) of your Communion points to re-roll one of your attack dice.",
+                      "text":  "Other species struggle to understand and interact with Vespids. The T’au have managed to establish strong links through various technological aids, most notably their communion helms. The Vespids have accepted these aids as beneficial, but the true extent of their impact is unknown.\nCommunion points are used to maintain the tactical focus of friendly VESPID STINGWING operatives. In the Ready step of each Strategy phase, you gain D3 Communion points, plus 1 if a friendly OVERSIGHT DRONE operative is in the killzone. Communion points are used as follows (OVERSIGHT DRONE operatives aren’t affected by the following):\nWhenever a friendly VESPID STINGWING operative is performing the Shoot action, it can only target the closest enemy operative within 8\" of it (excluding enemy operatives within control range of other friendly VESPID STINGWING operatives) unless you spend 1 of your Communion points. For weapons with the Blast and Torrent weapon rules, only the first target must be selected in this way.\nWhenever a friendly VESPID STINGWING operative (excluding DRONE) performs the Charge action, it must end the action within control range of the closest enemy operative it can unless you spend 1 of your Communion points.\nWhenever you would perform the Pick Up Marker or a mission action (excluding Breach and Operate Hatch) with a friendly VESPID STINGWING operative, you must also spend 1 of your Communion points to do so.\nWhenever a friendly VESPID STINGWING operative is shooting, you can spend 1 (and only 1) of your Communion points to re-roll one of your attack dice.",
                       "page":  "core-rules",
                       "anchor":  "2.-Ready"
                   },
                   {
                       "phrase":  "Communion points",
                       "title":  "Communion",
-                      "text":  "Other species struggle to understand and interact with Vespids. The T’au have managed to establish strong links through various technological aids, most notably their communion helms. The Vespids have accepted these aids as beneficial, but the true extent of their impact is unknown.\nCommunion points are used to maintain the tactical focus of friendly VESPID STINGWING operatives. In the Ready step of each Strategy phase, you gain D3 Communion points, plus 1 if a friendly OVERSIGHT DRONE operative is in the killzone. Communion points are used as follows (OVERSIGHT DRONE operatives aren’t affected by the following):\nWhenever a friendly VESPID STINGWING operative is performing the Shoot action, it can only target the closest enemy operative within 8\" of it (excluding enemy operatives within control range of other friendly VESPID STINGWING operatives) unless you spend 1 of your Communion points. For weapons with the Blast and Torrent weapon rules, only the first target must be selected in this way.\nWhenever a friendly VESPID STINGWING operative (excluding DRONE) performs the Charge action, it must end the action within control range of the closest enemy operative it can unless you spend 1 of your Communion points.\nWhenever you would perform the Pick Up Marker or a mission action (excluding Operate Hatch) with a friendly VESPID STINGWING operative, you must also spend 1 of your Communion points to do so.\nWhenever a friendly VESPID STINGWING operative is shooting, you can spend 1 (and only 1) of your Communion points to re-roll one of your attack dice.",
+                      "text":  "Other species struggle to understand and interact with Vespids. The T’au have managed to establish strong links through various technological aids, most notably their communion helms. The Vespids have accepted these aids as beneficial, but the true extent of their impact is unknown.\nCommunion points are used to maintain the tactical focus of friendly VESPID STINGWING operatives. In the Ready step of each Strategy phase, you gain D3 Communion points, plus 1 if a friendly OVERSIGHT DRONE operative is in the killzone. Communion points are used as follows (OVERSIGHT DRONE operatives aren’t affected by the following):\nWhenever a friendly VESPID STINGWING operative is performing the Shoot action, it can only target the closest enemy operative within 8\" of it (excluding enemy operatives within control range of other friendly VESPID STINGWING operatives) unless you spend 1 of your Communion points. For weapons with the Blast and Torrent weapon rules, only the first target must be selected in this way.\nWhenever a friendly VESPID STINGWING operative (excluding DRONE) performs the Charge action, it must end the action within control range of the closest enemy operative it can unless you spend 1 of your Communion points.\nWhenever you would perform the Pick Up Marker or a mission action (excluding Breach and Operate Hatch) with a friendly VESPID STINGWING operative, you must also spend 1 of your Communion points to do so.\nWhenever a friendly VESPID STINGWING operative is shooting, you can spend 1 (and only 1) of your Communion points to re-roll one of your attack dice.",
                       "page":  "core-rules",
                       "anchor":  "2.-Ready"
                   },
@@ -4201,18 +4481,18 @@
                       "anchor":  null
                   },
                   {
-                      "phrase":  "Vectored Retro-Thrusters",
-                      "title":  "Vectored Retro-Thrusters",
-                      "text":  "VECTORED RETRO-THRUSTERS",
-                      "page":  null,
-                      "anchor":  null
-                  },
-                  {
                       "phrase":  "razorwire",
                       "title":  "razorwire",
                       "text":  "1X RAZOR WIRE",
                       "page":  null,
                       "anchor":  null
+                  },
+                  {
+                      "phrase":  "Accurate X",
+                      "title":  "Accurate x",
+                      "text":  "You can retain up to x attack dice as normal successes without rolling them. If a weapon has more than one instance of Accurate x, you can treat it as one instance of Accurate 2 instead (this takes precedence over x rules).",
+                      "page":  "appendix",
+                      "anchor":  "Accurate-x"
                   },
                   {
                       "phrase":  "Accurate 3",
@@ -4227,13 +4507,6 @@
                       "text":  "Select a valid target as normal as the primary target, then select any number of other valid targets within x of the first valid target, but not within control range of friendly operatives, as secondary targets, e.g. Torrent 2\". Shoot with this weapon against all of them in an order of your choice (roll each sequence separately).",
                       "page":  "appendix",
                       "anchor":  "Torrent-x"
-                  },
-                  {
-                      "phrase":  "Accurate X",
-                      "title":  "Accurate x",
-                      "text":  "You can retain up to x attack dice as normal successes without rolling them. If a weapon has more than one instance of Accurate x, you can treat it as one instance of Accurate 2 instead (this takes precedence over x rules).",
-                      "page":  "appendix",
-                      "anchor":  "Accurate-x"
                   },
                   {
                       "phrase":  "Kauyon",
@@ -4252,14 +4525,14 @@
                   {
                       "phrase":  "underground",
                       "title":  "Burrow",
-                      "text":  "Raveners will emerge from their tunnels to strike at unsuspecting victims, then disappear again before their foe can properly react.\nWhen setting up a RAVENER kill team before the battle, your first two operatives must be set up as normal. Each other friendly RAVENER operative thereafter can be set up underground: place it to one side instead of in the killzone.\nIn the Firefight phase, friendly RAVENER operatives set up underground are activated and can counteract as normal. Whenever a friendly RAVENER operative is underground, it cannot perform any actions other than Burrow. At the end of the battle, each friendly RAVENER operative that’s underground is incapacitated.\nFriendly RAVENER operatives can perform the following unique action:\nBURROW1AP\nIf this operative is underground, set it up on your TUNNEL in a location it can be placed (it’s no longer underground, and it can be set up within control range of enemy operatives). Until the end of the activation/counteraction, subtract 2\" from its Move stat.\nAlternatively, instead of resolving the above effect, if this operative is in the killzone and on your TUNNEL, remove it from the killzone: it’s now underground.\nAn operative cannot perform this action while carrying a marker.",
+                      "text":  "Raveners will emerge from their tunnels to strike at unsuspecting victims, then disappear again before their foe can properly react.\nWhen setting up a RAVENER kill team before the battle, your first two operatives must be set up as normal. Each other friendly RAVENER operative thereafter can be set up underground: place it to one side instead of in the killzone.\nIn the Firefight phase, friendly RAVENER operatives set up underground are activated and can counteract as normal. Whenever a friendly RAVENER operative is underground, it cannot perform any actions other than Burrow. At the end of the battle, each friendly RAVENER operative that’s underground is incapacitated.\nFriendly RAVENER operatives can perform the following unique action:\nBURROW1AP\nIf this operative is underground, set it up on your TUNNEL in a location it can be placed (it’s no longer underground, and it can be set up within control range of enemy operatives). Until the end of the activation/counteraction, subtract 2\" from its Move stat.\nAlternatively, instead of resolving the above effect, if this operative is in the killzone and on your TUNNEL, remove it from the killzone: it’s now underground.\nAn operative cannot perform this action while carrying a marker, or if it isn’t either underground or on your TUNNEL.",
                       "page":  "core-rules",
                       "anchor":  "Firefight-Phase"
                   },
                   {
                       "phrase":  "Burrow",
                       "title":  "Burrow",
-                      "text":  "BURROW1AP\nIf this operative is underground, set it up on your TUNNEL in a location it can be placed (it’s no longer underground, and it can be set up within control range of enemy operatives). Until the end of the activation/counteraction, subtract 2\" from its Move stat.\nAlternatively, instead of resolving the above effect, if this operative is in the killzone and on your TUNNEL, remove it from the killzone: it’s now underground.\nAn operative cannot perform this action while carrying a marker.",
+                      "text":  "BURROW1AP\nIf this operative is underground, set it up on your TUNNEL in a location it can be placed (it’s no longer underground, and it can be set up within control range of enemy operatives). Until the end of the activation/counteraction, subtract 2\" from its Move stat.\nAlternatively, instead of resolving the above effect, if this operative is in the killzone and on your TUNNEL, remove it from the killzone: it’s now underground.\nAn operative cannot perform this action while carrying a marker, or if it isn’t either underground or on your TUNNEL.",
                       "page":  "core-rules",
                       "anchor":  "Firefight-Phase"
                   },

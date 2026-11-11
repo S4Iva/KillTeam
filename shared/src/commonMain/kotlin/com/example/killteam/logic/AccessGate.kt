@@ -4,7 +4,7 @@ import com.russhwolf.settings.Settings
 
 /** Ed25519 public key (hex) of the access codes; set with `tools/generate-access-code.ps1 -NewKey`. An empty key switches the access check off. */
 object AccessConfig {
-    const val PUBLIC_KEY = "783f7b3f61be219380ac1b4c5acf100f71f4198e27f75346512aede1c1415eaf"
+    const val PUBLIC_KEY = "b20f2a89d4aa157ae042761ff4c2d23422f43d8adbb12d49bbbca2186027d6de"
 }
 
 enum class AccessResult { Unlocked, Wrong, Expired, ClockChanged }

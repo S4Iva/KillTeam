@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kill Team Companion - Mock-ups Punktevergabe im Game Wizard</title>
+<style>
+  :root { --bg: #121212; --surface: #1e1e1e; --surface2: #2a2a2a; --line: #3a3a3a; --orange: #e8650a; --text: #f2f2f2; --muted: #a0a0a0; --ok: #4caf7a; --warn: #f2c14e; --crit: #4a90d9; --kill: #d9534f; --tac: #5cb85c; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #000; color: var(--text); font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.hint { color: var(--muted); margin: 0 0 24px; font-size: 14px; max-width: 900px; line-height: 1.45; }
+  .row { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
+  .col h2 { font-size: 14px; color: var(--orange); margin: 0 0 4px; text-transform: uppercase; letter-spacing: .08em; }
+  .col small { display: block; color: var(--muted); font-size: 12px; margin: 0 0 10px; max-width: 360px; line-height: 1.4; }
+
+  .phone { width: 360px; height: 740px; background: var(--bg); border: 8px solid #333; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+  .topbar { background: var(--surface); border-bottom: 2px solid var(--orange); padding: 10px 14px; }
+  .topbar .title { font-weight: 700; font-size: 16px; }
+  .topbar .sub { font-size: 12px; color: var(--orange); margin-top: 2px; }
+  .content { flex: 1; overflow-y: auto; padding: 12px 14px 16px; scrollbar-width: thin; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+  .card h3 { margin: 0 0 8px; font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
+  .card h3 b { color: var(--orange); font-size: 18px; }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 12px 0 6px; }
+  .muted { color: var(--muted); font-size: 12px; line-height: 1.4; }
+
+  .btn { display: block; width: 100%; padding: 12px; border-radius: 8px; border: 2px solid var(--orange); background: var(--orange); color: #000; font-weight: 700; font-size: 14px; text-align: center; cursor: pointer; margin-top: 8px; }
+  .btn.sec { background: transparent; color: var(--orange); }
+  .btn.small { padding: 7px; font-size: 12px; }
+
+  /* step indicator */
+  .steps { display: flex; gap: 4px; margin-top: 8px; }
+  .steps i { flex: 1; height: 5px; border-radius: 3px; background: var(--line); }
+  .steps i.on { background: var(--orange); }
+  .steps i.cur { background: linear-gradient(90deg, var(--orange) 50%, var(--line) 50%); }
+  .steplabels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-top: 3px; }
+  .steplabels span.cur { color: var(--orange); font-weight: 700; }
+
+  /* op rows */
+  .op { padding: 8px 0; border-top: 1px solid var(--line); }
+  .op:first-of-type { border-top: 0; }
+  .oprow { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .dot.crit { background: var(--crit); } .dot.kill { background: var(--kill); } .dot.tac { background: var(--tac); }
+  .opname { flex: 1; font-size: 13px; font-weight: 600; }
+  .opname span { display: block; font-size: 11px; font-weight: 400; color: var(--muted); }
+  .step { display: flex; align-items: center; gap: 6px; }
+  .step button { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--orange); background: transparent; color: var(--orange); font-size: 16px; cursor: pointer; }
+  .step span { min-width: 22px; text-align: center; font-weight: 700; }
+  .bar { display: flex; gap: 3px; margin-top: 6px; }
+  .bar i { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+  .bar i.on { background: var(--orange); }
+  .bar i.new { background: var(--ok); }
+  .delta { font-size: 11px; color: var(--ok); font-weight: 700; }
+  .auto { font-size: 10px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; padding: 1px 6px; }
+
+  /* tables */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: center; color: var(--muted); font-weight: 600; padding: 4px; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  td { padding: 5px 4px; text-align: center; border-bottom: 1px solid var(--surface2); }
+  tr.total td { font-weight: 700; border-top: 2px solid var(--orange); color: var(--orange); }
+  tr.cur td { background: #2a1f17; }
+
+  /* sticky score bar (variant B) */
+  .scorebar { display: flex; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .scorebar .p { flex: 1; padding: 8px 12px; cursor: pointer; }
+  .scorebar .p + .p { border-left: 1px solid var(--line); text-align: right; }
+  .scorebar .p b { font-size: 22px; color: var(--orange); display: block; line-height: 1; }
+  .scorebar .p span { font-size: 11px; color: var(--muted); }
+  .chips { display: flex; gap: 4px; margin-top: 4px; }
+  .chips i { font-style: normal; font-size: 10px; padding: 1px 6px; border-radius: 8px; background: var(--surface2); color: var(--text); }
+  .chips i.crit { border-left: 3px solid var(--crit); } .chips i.kill { border-left: 3px solid var(--kill); } .chips i.tac { border-left: 3px solid var(--tac); }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--bg); border-top: 2px solid var(--orange); border-radius: 18px 18px 0 0; padding: 14px; display: none; z-index: 5; max-height: 80%; overflow-y: auto; }
+  .sheet.show { display: block; }
+  .bg { position: absolute; inset: 0; background: rgba(0,0,0,.55); display: none; z-index: 4; }
+  .bg.show { display: block; }
+  .quick { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+  .quick div { flex: 1 1 45%; text-align: center; padding: 10px 4px; border-radius: 8px; border: 1px solid var(--orange); color: var(--orange); font-size: 13px; font-weight: 700; cursor: pointer; }
+  .log { font-size: 12px; color: var(--muted); }
+  .log div { padding: 4px 0; border-top: 1px solid var(--line); display: flex; justify-content: space-between; }
+
+  /* timeline (variant C) */
+  .tl { display: flex; align-items: flex-start; gap: 0; margin: 4px 0 10px; }
+  .tl .n { flex: 1; text-align: center; position: relative; font-size: 11px; color: var(--muted); }
+  .tl .n b { display: flex; width: 30px; height: 30px; margin: 0 auto 4px; border-radius: 50%; border: 2px solid var(--line); align-items: center; justify-content: center; font-size: 13px; color: var(--muted); background: var(--bg); position: relative; z-index: 1; }
+  .tl .n::before { content: ""; position: absolute; top: 14px; left: -50%; right: 50%; height: 2px; background: var(--line); }
+  .tl .n:first-child::before { display: none; }
+  .tl .n.done b { background: var(--orange); border-color: var(--orange); color: #000; }
+  .tl .n.done::before, .tl .n.cur::before { background: var(--orange); }
+  .tl .n.cur b { border-color: var(--orange); color: var(--orange); }
+  .tl .n.cur { color: var(--orange); font-weight: 700; }
+  .phases { display: flex; gap: 6px; margin-bottom: 10px; }
+  .phases div { flex: 1; text-align: center; padding: 8px 2px; font-size: 11px; border-radius: 16px; border: 1px solid var(--line); color: var(--muted); }
+  .phases div.done { border-color: var(--ok); color: var(--ok); }
+  .phases div.cur { background: var(--orange); color: #000; border-color: var(--orange); font-weight: 700; }
+  .banner { border: 1px solid var(--orange); border-radius: 10px; background: #2a1f17; padding: 10px 12px; font-size: 13px; margin-bottom: 12px; }
+  .banner b { color: var(--orange); }
+  .notes { max-width: 340px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .notes li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<h1>Mock-ups: Punktevergabe am Ende des Turning Points</h1>
+<p class="hint">Drei Varianten, wie der Game Wizard die VP-Vergabe sichtbarer macht. Heute stehen die Zähler (Crit, Kill, Tac) tief in den Spielerkarten der Firefight phase. Alle drei Entwürfe sind klickbar, haben aber keine App-Logik. Zahlen sind Platzhalter.</p>
+
+<div class="row">
+
+  <!-- Variant A -->
+  <div class="col">
+    <h2>A &middot; Eigener Schritt "Score"</h2>
+    <small>Jeder Turning Point endet mit einem festen Schritt: Strategy &rarr; Firefight &rarr; Score. Pro Spieler drei Zeilen (Crit, Kill, Tac) mit VP dieses Turning Points; Kill kommt automatisch aus den Ausgeschalteten.</small>
+    <div class="phone">
+      <div class="topbar">
+        <div class="title">Turning Point 2/4</div>
+        <div class="sub">Step 3 of 3: Score</div>
+        <div class="steps"><i class="on"></i><i class="on"></i><i class="cur"></i></div>
+        <div class="steplabels"><span>Strategy</span><span>Firefight</span><span class="cur">Score</span></div>
+      </div>
+      <div class="content" id="a"></div>
+    </div>
+  </div>
+
+  <!-- Variant B -->
+  <div class="col">
+    <h2>B &middot; Fester Punktebalken + Schnellvergabe</h2>
+    <small>Oben immer der Punktestand beider Spieler. Antippen öffnet ein Blatt mit großen Schnellbuttons und dem Verlauf, so geht die Vergabe in jeder Phase mit zwei Taps.</small>
+    <div class="phone" id="bphone">
+      <div class="topbar"><div class="title">Turning Point 2/4</div><div class="sub">Firefight phase</div></div>
+      <div class="scorebar" id="bbar"></div>
+      <div class="content">
+        <div class="card"><h3>Player 1 - Kasrkin <span class="muted">CP 3</span></h3>
+          <div class="muted">Sergeant, 2 Troopers ... (Spielerkarte wie bisher, ohne Zähler)</div></div>
+        <div class="card"><h3>Player 2 - Nemesis Claw <span class="muted">CP 2</span></h3>
+          <div class="muted">Visionary, Gunner ... (Spielerkarte wie bisher, ohne Zähler)</div></div>
+        <div class="btn sec" onclick="openSheet(0)">Score points: Player 1</div>
+        <div class="btn sec" onclick="openSheet(1)">Score points: Player 2</div>
+        <div class="btn">Next: Score</div>
+      </div>
+      <div class="bg" id="bbg" onclick="closeSheet()"></div>
+      <div class="sheet" id="bsheet"></div>
+    </div>
+  </div>
+
+  <!-- Variant C -->
+  <div class="col">
+    <h2>C &middot; Zeitleiste und Tabelle je Turning Point</h2>
+    <small>Der Wizard zeigt TP 1-4 und die drei Phasen. Eine Tabelle sammelt die VP je Turning Point, so sieht man am Ende jedes Zuges, wer wo punktet; bestätigen schließt den Turning Point ab.</small>
+    <div class="phone">
+      <div class="topbar"><div class="title">Game</div><div class="sub">Turning Point 2/4 &middot; Score</div></div>
+      <div class="content">
+        <div class="tl">
+          <div class="n done"><b>1</b>TP 1</div>
+          <div class="n cur"><b>2</b>TP 2</div>
+          <div class="n"><b>3</b>TP 3</div>
+          <div class="n"><b>4</b>TP 4</div>
+        </div>
+        <div class="phases"><div class="done">Strategy</div><div class="done">Firefight</div><div class="cur">Score</div></div>
+        <div class="banner"><b>Score the turning point.</b> Tap a cell to change the VP of this turning point. Kill VP follow the incapacitated operatives.</div>
+        <div class="card">
+          <table id="ctable"></table>
+        </div>
+        <div class="card">
+          <h3>Primary op preview</h3>
+          <div class="muted">Revealed at the end of the battle: Player 1 Kill op, Player 2 Tac op (hidden until then). Bonus VP = half of that op, rounded up.</div>
+        </div>
+        <div class="btn">Confirm scoring and continue</div>
+        <div class="btn sec small">Edit earlier turning point</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col notes">
+    <h2>Vergleich</h2>
+    <ul>
+      <li><b>A</b> ist am klarsten: ein fester Schritt am Ende, nichts wird vergessen. Kostet einen Tap mehr je Turning Point.</li>
+      <li><b>B</b> ist am schnellsten im Spiel: Punkte lassen sich jederzeit vergeben, der Stand ist immer sichtbar. Es gibt keinen erzwungenen Abschluss.</li>
+      <li><b>C</b> macht den Verlauf sichtbar (VP je Turning Point) und lässt sich mit A oder B kombinieren, z. B. A als Schritt und C als Übersicht.</li>
+      <li>In allen Varianten: Kill VP automatisch aus der Kill-Grade-Tabelle, Tac VP mit Hinweis auf das Limit pro Turning Point (VP-6), Maximum je Op 6 VP.</li>
+      <li>Das Ready/Expended-Umschalten der Operatives entfällt (siehe Änderung 2026-11-11).</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  // ---- Variant A ----
+  const MAXOP = 6;
+  const A = { p: [
+    { name: "Player 1", team: "Kasrkin", crit: [1, 0], tac: [0, 1], kill: 2, killNew: 1 },
+    { name: "Player 2", team: "Nemesis Claw", crit: [0, 1], tac: [1, 0], kill: 1, killNew: 0 },
+  ] };
+  const total = (p) => p.crit[0] + p.crit[1] + p.tac[0] + p.tac[1] + p.kill;
+  function bar(before, now, max) {
+    return `<div class="bar">${Array.from({ length: max }, (_, i) => `<i class="${i < before ? "on" : i < before + now ? "new" : ""}"></i>`).join("")}</div>`;
+  }
+  function aStep(pi, key, d) {
+    const p = A.p[pi];
+    p[key][1] = Math.max(0, Math.min(MAXOP - p[key][0], p[key][1] + d));
+    drawA();
+  }
+  function drawA() {
+    document.getElementById("a").innerHTML = A.p.map((p, i) => `
+      <div class="card">
+        <h3>${p.name} - ${p.team} <b>${total(p)} VP</b></h3>
+        <div class="op">
+          <div class="oprow"><span class="dot crit"></span><div class="opname">Crit op<span>${p.crit[0] + p.crit[1]}/6 total</span></div>
+            <div class="step"><button onclick="aStep(${i},'crit',-1)">-</button><span>+${p.crit[1]}</span><button onclick="aStep(${i},'crit',1)">+</button></div></div>
+          ${bar(p.crit[0], p.crit[1], MAXOP)}
+        </div>
+        <div class="op">
+          <div class="oprow"><span class="dot kill"></span><div class="opname">Kill op <span class="auto">auto</span><span>Grade ${p.kill}/5 &middot; 4 incapacitated</span></div>
+            <div class="delta">+${p.killNew} this TP</div></div>
+          ${bar(p.kill - p.killNew, p.killNew, 5)}
+        </div>
+        <div class="op">
+          <div class="oprow"><span class="dot tac"></span><div class="opname">Tac op<span>${p.tac[0] + p.tac[1]}/6 &middot; max. 2 VP per turning point</span></div>
+            <div class="step"><button onclick="aStep(${i},'tac',-1)">-</button><span>+${p.tac[1]}</span><button onclick="aStep(${i},'tac',1)">+</button></div></div>
+          ${bar(p.tac[0], p.tac[1], MAXOP)}
+        </div>
+      </div>`).join("") + `<div class="btn">Confirm scoring: Next turning point (3)</div><div class="muted" style="margin-top:8px">Green = VP of this turning point, orange = earlier turning points.</div>`;
+  }
+  drawA();
+
+  // ---- Variant B ----
+  const B = { p: [{ crit: 1, kill: 2, tac: 1, log: ["TP1 Crit +1", "TP1 Kill +1", "TP2 Kill +1", "TP2 Tac +1"] }, { crit: 1, kill: 1, tac: 1, log: ["TP1 Tac +1", "TP2 Crit +1", "TP2 Kill +1"] }], open: 0 };
+  const btotal = (p) => p.crit + p.kill + p.tac;
+  function drawB() {
+    document.getElementById("bbar").innerHTML = B.p.map((p, i) => `
+      <div class="p" onclick="openSheet(${i})"><b>${btotal(p)}</b><span>Player ${i + 1}</span>
+        <div class="chips" style="${i ? "justify-content:flex-end" : ""}"><i class="crit">${p.crit}</i><i class="kill">${p.kill}</i><i class="tac">${p.tac}</i></div></div>`).join("");
+    const p = B.p[B.open];
+    document.getElementById("bsheet").innerHTML = `
+      <h3 style="margin:0 0 4px">Player ${B.open + 1}: score points</h3>
+      <div class="muted">Total ${btotal(p)} VP. Kill VP follow the incapacitated operatives.</div>
+      <div class="quick">
+        <div onclick="bAdd('crit')">+1 Crit op</div><div onclick="bAdd('tac')">+1 Tac op</div>
+        <div onclick="bAdd('kill')">Opponent operative out</div><div onclick="bUndo()">Undo last</div>
+      </div>
+      <div class="label">Log</div><div class="log">${p.log.slice().reverse().map(l => `<div><span>${l}</span></div>`).join("")}</div>
+      <div class="btn" onclick="closeSheet()">Done</div>`;
+  }
+  function openSheet(i) { B.open = i; drawB(); document.getElementById("bsheet").classList.add("show"); document.getElementById("bbg").classList.add("show"); }
+  function closeSheet() { document.getElementById("bsheet").classList.remove("show"); document.getElementById("bbg").classList.remove("show"); }
+  function bAdd(k) { const p = B.p[B.open]; if (p[k] < (k === "kill" ? 5 : 6)) { p[k]++; p.log.push(`TP2 ${k[0].toUpperCase() + k.slice(1)} +1`); } drawB(); }
+  function bUndo() { const p = B.p[B.open]; const l = p.log.pop(); if (l) { const k = l.split(" ")[1].toLowerCase(); if (p[k] > 0) p[k]--; } drawB(); }
+  drawB();
+
+  // ---- Variant C ----
+  const C = { rows: [["TP 1", 1, 0, 0, 1, 0, 1], ["TP 2", 0, 1, 1, 1, 1, 0]] };
+  function drawC() {
+    const rows = C.rows;
+    const sums = [1, 2, 3, 4].map(c => rows.reduce((s, r) => s + r[c], 0));
+    document.getElementById("ctable").innerHTML = `
+      <tr><th></th><th colspan="3">Player 1</th><th colspan="3">Player 2</th></tr>
+      <tr><th>TP</th><th>Crit</th><th>Kill</th><th>Tac</th><th>Crit</th><th>Kill</th><th>Tac</th></tr>
+      ${rows.map((r, ri) => `<tr class="${ri === 1 ? "cur" : ""}"><td>${r[0]}${ri === 1 ? " *" : ""}</td>${[1,2,3].map(c => `<td>${r[c]}</td>`).join("")}${[4,5,6].map(c => `<td>${r[c]}</td>`).join("")}</tr>`).join("")}
+      <tr><td>TP 3</td><td colspan="6" class="muted" style="text-align:center">-</td></tr>
+      <tr><td>TP 4</td><td colspan="6" class="muted" style="text-align:center">-</td></tr>
+      <tr class="total"><td>Total</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+      <tr><td></td><td colspan="3"><b>3 VP</b></td><td colspan="3"><b>3 VP</b></td></tr>`;
+  }
+  drawC();
+</script>
+</body>
+</html>

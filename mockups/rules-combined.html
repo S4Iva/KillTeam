@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kill Team Companion - Mock-up Rules kombiniert (B1 + B2 + B3 + B4)</title>
+<style>
+  :root { --bg: #121212; --surface: #1e1e1e; --surface2: #2a2a2a; --line: #3a3a3a; --orange: #e8650a; --text: #f2f2f2; --muted: #a0a0a0; --head: #1b2a33; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #000; color: var(--text); font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.hint { color: var(--muted); margin: 0 0 24px; font-size: 14px; max-width: 900px; line-height: 1.45; }
+  .row { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+  .col h2 { font-size: 14px; color: var(--orange); margin: 0 0 4px; text-transform: uppercase; letter-spacing: .08em; }
+  .col small { display: block; color: var(--muted); font-size: 12px; margin: 0 0 10px; max-width: 360px; line-height: 1.4; }
+  .notes { max-width: 320px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .notes li { margin-bottom: 6px; }
+
+  .phone { width: 360px; height: 760px; background: var(--bg); border: 8px solid #333; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+  .topbar { background: var(--surface); padding: 10px 14px 0; }
+  .topbar .title { font-weight: 700; font-size: 16px; padding-bottom: 8px; }
+  .seg { display: flex; margin: 0 -14px; border-bottom: 2px solid var(--orange); }
+  .seg div { flex: 1; text-align: center; padding: 9px 0; font-size: 13px; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+  .seg div.act { color: var(--orange); font-weight: 700; border-bottom-color: var(--orange); }
+  .content { flex: 1; overflow-y: auto; padding: 12px 14px 16px; scrollbar-width: thin; position: relative; }
+  .nav { display: flex; background: var(--surface); border-top: 1px solid var(--line); }
+  .nav div { flex: 1; text-align: center; padding: 7px 0 6px; font-size: 10px; color: var(--muted); }
+  .nav div b { display: block; font-size: 17px; font-weight: 400; }
+  .nav div.act { color: var(--orange); }
+
+  .search { background: var(--surface2); border: 1px solid var(--line); border-radius: 22px; padding: 10px 14px; font-size: 14px; color: var(--text); width: 100%; outline: none; }
+  .search:focus { border-color: var(--orange); }
+  .tabs { display: flex; border-bottom: 1px solid var(--line); margin: 6px 0 8px; }
+  .tabs div { flex: 1; text-align: center; padding: 8px 0; font-size: 12px; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; }
+  .tabs div.act { color: var(--orange); border-bottom-color: var(--orange); font-weight: 700; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+  .chips.scroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-left: -14px; margin-right: -14px; padding: 0 14px; }
+  .chips div { white-space: nowrap; font-size: 12px; padding: 6px 11px; border-radius: 16px; border: 1px solid var(--line); color: var(--muted); cursor: pointer; }
+  .chips div.pin { border-color: var(--orange); color: var(--orange); }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 14px 0 4px; display: flex; justify-content: space-between; }
+  .label .act { color: var(--orange); cursor: pointer; text-transform: none; letter-spacing: 0; }
+  .muted { color: var(--muted); font-size: 12px; line-height: 1.4; }
+  mark { background: #5a3a12; color: #ffd9a8; border-radius: 3px; padding: 0 2px; }
+  .star { color: var(--muted); font-size: 20px; cursor: pointer; line-height: 1; user-select: none; }
+  .star.on { color: var(--orange); }
+
+  .row2 { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; }
+  .row2 .t { flex: 1; font-weight: 600; font-size: 13px; }
+  .row2 .t span { display: block; font-weight: 400; font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .row2.open { border-color: var(--orange); flex-wrap: wrap; }
+  .row2 .full { flex-basis: 100%; font-size: 12px; color: #d8d8d8; line-height: 1.45; border-top: 1px solid var(--line); padding-top: 8px; }
+  .ap { font-size: 11px; font-weight: 700; color: #000; background: var(--orange); border-radius: 8px; padding: 1px 7px; white-space: nowrap; }
+  .tag { font-size: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 1px 7px; color: var(--muted); white-space: nowrap; }
+  .btn { display: block; width: 100%; padding: 11px; border-radius: 8px; border: 2px solid var(--orange); background: var(--orange); color: #000; font-weight: 700; font-size: 13px; text-align: center; cursor: pointer; margin-top: 8px; }
+  .btn.sec { background: transparent; color: var(--orange); }
+  .btn.small { padding: 7px; font-size: 12px; }
+
+  .sugg { position: absolute; left: 14px; right: 14px; top: 56px; background: var(--surface); border: 1px solid var(--orange); border-radius: 12px; z-index: 6; overflow: hidden; }
+  .sugg div { padding: 9px 12px; font-size: 13px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; cursor: pointer; }
+  .sugg div:first-child { border-top: 0; }
+  .sugg span { color: var(--muted); font-size: 11px; }
+  .group { margin-top: 12px; }
+  .group h4 { margin: 0 0 6px; font-size: 12px; color: var(--orange); text-transform: uppercase; letter-spacing: .06em; display: flex; justify-content: space-between; }
+  .hit { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; margin-bottom: 6px; cursor: pointer; font-size: 13px; }
+  .hit b { display: block; }
+  .hit span { display: block; font-size: 12px; color: #cfcfcf; margin-top: 3px; line-height: 1.4; }
+
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--bg); border-top: 2px solid var(--orange); border-radius: 18px 18px 0 0; padding: 14px; display: none; z-index: 8; max-height: 70%; overflow-y: auto; }
+  .sheet.show { display: block; }
+  .bg { position: absolute; inset: 0; background: rgba(0,0,0,.55); display: none; z-index: 7; }
+  .bg.show { display: block; }
+  .sheet h3 { margin: 0 0 6px; font-size: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .sheet p { font-size: 13px; line-height: 1.5; margin: 6px 0; color: #dcdcdc; }
+  .rail { position: absolute; right: 2px; top: 130px; bottom: 70px; width: 18px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; font-size: 10px; color: var(--orange); z-index: 3; }
+  .rail span { cursor: pointer; padding: 1px 4px; }
+  .letter { font-size: 18px; font-weight: 700; color: var(--orange); margin: 14px 0 4px; border-bottom: 1px solid var(--line); }
+  .gl { padding: 8px 22px 8px 0; border-bottom: 1px solid var(--surface2); cursor: pointer; font-size: 13px; }
+  .gl span { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+</style>
+</head>
+<body>
+<h1>Mock-up: Rules-Tab kombiniert</h1>
+<p class="hint">B1 (Schnellreferenz) als Startseite, B2 (Suche mit Vorschlägen und Gruppen) als Suchverhalten, B3 (Schlüsselwort-Leiste mit Popup) darüber und B4 (Glossar A-Z) als eigener Reiter "Glossary". Drei Bildschirme, jeder einzeln bedienbar. Klickbarer Entwurf ohne App-Logik; Regeltexte sind Platzhalter.</p>
+
+<div class="row">
+  <div class="col"><h2>1 &middot; Startseite</h2>
+    <small>Oben Suche, darunter die Leiste mit Angepinnten und häufigen Schlüsselwörtern (Popup), dann die Schnellreferenz mit Tabs und zuletzt die letzten Suchen.</small>
+    <div class="phone" id="app1"></div></div>
+  <div class="col"><h2>2 &middot; Suche</h2>
+    <small>Beim Tippen erscheinen Vorschläge, mit Enter oder Tipp auf "Search all" gruppierte Treffer nach Art mit Anzahl.</small>
+    <div class="phone" id="app2"></div></div>
+  <div class="col"><h2>3 &middot; Reiter "Glossary"</h2>
+    <small>Alle Begriffe alphabetisch mit Buchstabenleiste und Filter; ein Tipp öffnet dieselbe Regel als Popup wie in der Leiste.</small>
+    <div class="phone" id="app3"></div></div>
+
+  <div class="col notes">
+    <h2>Aufbau</h2>
+    <ul>
+      <li>Der Rules-Tab hat zwei Reiter: "Rules" (Start, Suche, Leiste, Schnellreferenz) und "Glossary" (A-Z).</li>
+      <li>Das Popup für Schlüsselwörter ist dasselbe in Leiste, Glossar und Suchtreffern (Pin, Stern, "Open page").</li>
+      <li>Angepinnte Begriffe und Favoriten teilen sich den Speicher der bestehenden Favoriten (RF-4 bis RF-7).</li>
+      <li>Der Zustand der Suche (Text, Ergebnis) gilt nur für die laufende Ansicht; die letzten Suchen werden gespeichert.</li>
+      <li>Alle drei Bildschirme laufen mit demselben Code, nur mit anderem Startzustand.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  const kw = { Piercing: "Remove X defence dice from the defender before they roll. Piercing Crits X applies only to critical successes.", Blast: "Make the same attack against each other operative visible to and within X of the target.", Cover: "A defending operative in cover retains one normal success as a critical success.", Obscured: "Ranged attacks against an obscured target can only hit on critical successes.", Conceal: "An operative with a Conceal order cannot be targeted if it is in cover and not visible.", Engage: "An operative with an Engage order can perform Shoot and Fight actions.", Devastating: "Each critical success immediately inflicts X damage on the defender.", Heavy: "An operative cannot make a Reposition action in the same activation it makes a shooting attack with this weapon." };
+  const quick = {
+    Actions: [["Dash", "1 AP", "Move up to Move; not within control range of an enemy.", "Move the operative up to its Move stat. It cannot move within control range of an enemy operative."], ["Fall Back", "2 AP", "Move out of enemy control range.", "Move up to the Move stat, moving out of control range. Cannot be performed with an Engage order."], ["Fight", "1 AP", "Fight an enemy within control range.", "Select an enemy operative within control range. Both players fight in turn, starting with the attacker."], ["Reposition", "1 AP", "Move up to 3\".", "Move up to 3\". It cannot be combined with Dash."], ["Shoot", "1 AP", "Ranged attack on a visible target.", "Select a ranged weapon and a valid target; roll attack dice."]],
+    "Weapon rules": [["Piercing X", "", "Remove X defence dice.", kw.Piercing], ["Blast X", "", "Also hits operatives within X.", kw.Blast], ["Devastating X", "", "Crits inflict X damage.", kw.Devastating]],
+    Terrain: [["Cover", "", "Retain a success as a crit.", kw.Cover], ["Obscured", "", "Hit on crits only.", kw.Obscured]],
+    Conditions: [["Engage order", "", "Can Shoot and Fight.", kw.Engage], ["Conceal order", "", "Hidden from visible enemies.", kw.Conceal]],
+  };
+  const all = [["Piercing X", "Weapon rule", "Remove X defence dice before they roll."], ["Piercing Crits X", "Weapon rule", "Applies only to critical successes."], ["Pistolier", "Operative", "Kroot Pistolier datacard (Farstalker Kinband)."], ["Pathfinder", "Team", "T'au Pathfinders kill team."], ["Fight", "Action", "Fight an enemy within control range."], ["Fall Back", "Action", "Move out of enemy control range."], ["Plasma pistol", "Weapon", "Used by Kasrkin Sergeant and Novitiate Superior."]];
+  const terms = Object.keys(kw).concat(["Accurate", "Balanced", "Ceaseless", "Counteract", "Dash", "Fall Back", "Fight", "Injured", "Lethal", "Limited", "Mortal wounds", "Reposition", "Saturate", "Shoot", "Silent", "Torrent"]);
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  function createApp(root, init) {
+    const s = Object.assign({ tab: "rules", q: "", done: false, qtab: "Actions", open: null, sheet: null, pinned: ["Piercing", "Cover"], favs: { Fight: true }, recent: ["blast", "cover", "conceal"], gq: "", focus: null }, init);
+    const el = root;
+    function star(k) { return `<span class="star ${s.favs[k] ? "on" : ""}" data-a="fav" data-v="${k}">${s.favs[k] ? "&#9733;" : "&#9734;"}</span>`; }
+
+    function rulesTab() {
+      const q = s.q.toLowerCase();
+      const matches = q.length >= 2 ? all.filter(a => (a[0] + " " + a[2]).toLowerCase().includes(q)) : [];
+      let h = `<input class="search" data-in="q" placeholder="Search rules, teams, operatives" value="${s.q}">`;
+      if (q.length >= 2 && !s.done) {
+        h += `<div class="sugg">${matches.slice(0, 4).map(m => `<div data-a="go" data-v="${m[0]}">${m[0]}<span>${m[1]}</span></div>`).join("") || "<div>No suggestions</div>"}<div data-a="go" data-v="${s.q}" style="color:var(--orange)">Search all for "${s.q}"</div></div>`;
+      }
+      if (s.done) {
+        const groups = {};
+        matches.forEach(m => (groups[m[1]] = groups[m[1]] || []).push(m));
+        h += `<div class="label"><span>${matches.length} results for "${s.q}"</span><span class="act" data-a="clear">Clear</span></div>` +
+          Object.entries(groups).map(([g, items]) => `<div class="group"><h4>${g}<span>${items.length}</span></h4>${items.map(i => `<div class="hit" ${kw[i[0].split(" ")[0]] ? `data-a="sheet" data-v="${i[0].split(" ")[0]}"` : ""}><b>${i[0].replace(new RegExp("(" + esc(s.q) + ")", "i"), "<mark>$1</mark>")}</b><span>${i[2]}</span></div>`).join("")}</div>`).join("");
+        return h;
+      }
+      if (q.length < 2) {
+        h += `<div class="label"><span>Pinned</span><span class="act">Edit</span></div>
+          <div class="chips scroll">${s.pinned.map(k => `<div class="pin" data-a="sheet" data-v="${k}">&#128204; ${k}</div>`).join("")}</div>
+          <div class="label"><span>Common keywords</span></div>
+          <div class="chips scroll">${Object.keys(kw).map(k => `<div data-a="sheet" data-v="${k}">${k}</div>`).join("")}</div>
+          <div class="label"><span>Quick reference</span><span class="act">All rule pages</span></div>
+          <div class="tabs">${Object.keys(quick).map(t => `<div class="${s.qtab === t ? "act" : ""}" data-a="qtab" data-v="${t}">${t}</div>`).join("")}</div>
+          ${quick[s.qtab].map(r => `<div class="row2 ${s.open === r[0] ? "open" : ""}" data-a="open" data-v="${r[0]}"><div class="t">${r[0]}<span>${r[2]}</span></div>${r[1] ? `<span class="ap">${r[1]}</span>` : ""}${star(r[0])}${s.open === r[0] ? `<div class="full">${r[3]}<div class="btn sec small">Open page "${s.qtab}"</div></div>` : ""}</div>`).join("")}
+          <div class="label"><span>Recent searches</span><span class="act">Clear</span></div>
+          <div class="chips">${s.recent.map(r => `<div data-a="go" data-v="${r}">${r}</div>`).join("")}</div>`;
+      }
+      return h;
+    }
+
+    function glossaryTab() {
+      const list = terms.filter(t => s.gq.length < 1 || t.toLowerCase().includes(s.gq.toLowerCase())).sort();
+      const letters = [...new Set(list.map(t => t[0].toUpperCase()))];
+      return `<input class="search" data-in="gq" placeholder="Filter glossary" value="${s.gq}">` +
+        letters.map(l => `<div class="letter" data-letter="${l}">${l}</div>` + list.filter(t => t[0].toUpperCase() === l).map(t => `<div class="gl" data-a="sheet" data-v="${t}">${t}<span>${(kw[t] || "Placeholder rule text for " + t + ".").slice(0, 60)}...</span></div>`).join("")).join("");
+    }
+
+    function render() {
+      const gl = s.tab === "glossary";
+      const letters = [...new Set(terms.filter(t => s.gq.length < 1 || t.toLowerCase().includes(s.gq.toLowerCase())).map(t => t[0].toUpperCase()))];
+      el.innerHTML = `
+        <div class="topbar"><div class="title">Rules</div>
+          <div class="seg"><div class="${gl ? "" : "act"}" data-a="tab" data-v="rules">Rules</div><div class="${gl ? "act" : ""}" data-a="tab" data-v="glossary">Glossary</div></div></div>
+        <div class="content">${gl ? glossaryTab() : rulesTab()}</div>
+        ${gl ? `<div class="rail">${"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => `<span data-a="jump" data-v="${l}" style="${letters.includes(l) ? "" : "opacity:.3"}">${l}</span>`).join("")}</div>` : ""}
+        <div class="bg ${s.sheet ? "show" : ""}" data-a="close"></div>
+        <div class="sheet ${s.sheet ? "show" : ""}">${s.sheet ? `<h3>${s.sheet}<span>${star(s.sheet)}</span></h3><div class="muted">Keyword &middot; Core Rules</div><p>${kw[s.sheet] || "Placeholder rule text for " + s.sheet + "."}</p>
+          <div class="btn sec small" data-a="pin" data-v="${s.sheet}">${s.pinned.includes(s.sheet) ? "Unpin" : "Pin to Rules start"}</div><div class="btn">Open page</div>` : ""}</div>
+        <div class="nav"><div><b>&#9876;</b>Generator</div><div><b>&#9654;</b>Game</div><div><b>&#9733;</b>Teams</div><div class="act"><b>&#9776;</b>Rules</div><div><b>&#8230;</b>More</div></div>`;
+      if (s.focus) {
+        const input = el.querySelector(`[data-in="${s.focus}"]`);
+        if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+      }
+    }
+
+    el.addEventListener("click", e => {
+      const t = e.target.closest("[data-a]"); if (!t) return;
+      const a = t.dataset.a, v = t.dataset.v; s.focus = null;
+      if (a === "tab") { s.tab = v; s.sheet = null; }
+      else if (a === "qtab") { s.qtab = v; s.open = null; }
+      else if (a === "open") s.open = s.open === v ? null : v;
+      else if (a === "fav") { e.stopPropagation(); s.favs[v] = !s.favs[v]; }
+      else if (a === "sheet") s.sheet = v;
+      else if (a === "close") s.sheet = null;
+      else if (a === "pin") s.pinned = s.pinned.includes(v) ? s.pinned.filter(x => x !== v) : [...s.pinned, v];
+      else if (a === "go") { s.q = v; s.done = true; if (!s.recent.includes(v.toLowerCase())) s.recent = [v.toLowerCase(), ...s.recent].slice(0, 4); }
+      else if (a === "clear") { s.q = ""; s.done = false; }
+      else if (a === "jump") { render(); const x = el.querySelector(`[data-letter="${v}"]`); if (x) x.scrollIntoView({ block: "start" }); return; }
+      render();
+    });
+    el.addEventListener("input", e => {
+      const k = e.target.dataset.in; if (!k) return;
+      s[k] = e.target.value; if (k === "q") s.done = false; s.focus = k; render();
+    });
+    el.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.dataset.in === "q" && s.q.length >= 2) { s.done = true; s.focus = null; render(); } });
+    render();
+  }
+
+  createApp(document.getElementById("app1"), {});
+  createApp(document.getElementById("app2"), { q: "pier" });
+  createApp(document.getElementById("app3"), { tab: "glossary" });
+</script>
+</body>
+</html>
