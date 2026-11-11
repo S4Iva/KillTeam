@@ -124,7 +124,7 @@ function Parse-FactionRules($html) {
 function Parse-Block($chunk) {
     $paras = @()
     if ($chunk -match 'h_actions_ds') {
-        $hm = [regex]::Match($chunk, '<h3 class="h_actions_ds">([\s\S]*?)</h3>')
+        $hm = [regex]::Match($chunk, '<h3(?: id="[^"]*")? class="h_actions_ds">([\s\S]*?)</h3>')
         $apm = [regex]::Match($hm.Groups[1].Value, '<span>([\s\S]*?)</span>')
         $ap = if ($apm.Success) { Strip $apm.Groups[1].Value } else { '' }
         $name = Strip ([regex]::Replace($hm.Groups[1].Value, '<span>[\s\S]*?</span>', ''))
@@ -156,14 +156,14 @@ function Parse-Datacards($html) {
     $cards = @()
     for ($i = 1; $i -lt $parts.Count; $i++) {
         $p = $parts[$i]
-        $nm = [regex]::Match($p, '<h3 id="[^"]*" class="pTable_h3"><div>([^<]*)')
+        $nm = [regex]::Match($p, '<h3(?: id="[^"]*")? class="pTable_h3"><div>([^<]*)')
         if (-not $nm.Success) { continue }
         $stats = @{}
         foreach ($m in [regex]::Matches($p, '(APL|MOVE|SAVE|WOUNDS)<div class="dsStat"><img[^>]*>([\s\S]*?)</div>')) {
             $stats[$m.Groups[1].Value.ToLower()] = (Strip $m.Groups[2].Value)
         }
         $weapons = @()
-        foreach ($tb in [regex]::Matches($p, '<tbody class=" bkg">([\s\S]*?)</tbody>')) {
+        foreach ($tb in [regex]::Matches($p, '<tbody[^>]*>([\s\S]*?)</tbody>')) {
             $b = $tb.Groups[1].Value
             $type = if ($b -match 'wsDataMelee') { 'melee' } else { 'ranged' }
             $names = [regex]::Matches($b, '<td class="wTable2_short pad2626"><span>([^<]*)</span>')
@@ -292,6 +292,8 @@ foreach ($slug in $slugs) {
 }
 
 if ($failed.Count -gt 0) { Write-Output "Abbruch, nichts geschrieben. Fehlgeschlagen: $($failed -join ', ')"; exit 1 }
+$empty = @($teams | Where-Object { $_.operatives.Count -eq 0 } | ForEach-Object { $_.slug })
+if ($empty.Count -gt 0) { Write-Output "Abbruch, nichts geschrieben. Teams ohne Operatives (Seitenaufbau bei Wahapedia geaendert?): $($empty -join ', ')"; exit 1 }
 $file = Join-Path $res 'killteams.json'
 $utf8 = New-Object Text.UTF8Encoding($false)
 $old = $null

@@ -1,6 +1,6 @@
 {
     "source":  "wahapedia.ru/kill-team3",
-    "importedAt":  "2026-11-02",
+    "importedAt":  "2026-11-11",
     "teams":  [
                   {
                       "slug":  "celestian-insidiants",
@@ -11556,7 +11556,7 @@
                                          "Seek \u0026 Destroy",
                                          "Security"
                                      ],
-                      "version":  "APRIL ’26",
+                      "version":  "April ’26",
                       "updated":  "April 2026",
                       "composition":  [
                                           "1 KASRKIN SERGEANT operative with one of the following options:Bolt pistol; power weapon",
@@ -11666,7 +11666,7 @@
                                             {
                                                 "name":  "ELIMINATION PATTERN",
                                                 "cost":  "",
-                                                "text":  "Having already outmanoeuvred the foe, the Kasrkin attempt to fell their target in a single volley.\nWhenever a friendly KASRKIN operative is shooting with a hot-shot weapon against an operative that cannot retain any cover saves or is being scanned (see RECON-TROOPER), that weapon has the Piercing Crits 1 weapon rule, or Piercing 1 instead if it’s a hot-shot volley gun.",
+                                                "text":  "Having already outmanoeuvred the foe, the Kasrkin attempt to fell their target in a single volley.\nWhenever a friendly KASRKIN operative is shooting with a hot-shot weapon against an operative that either cannot retain any cover saves or is being scanned (see RECON-TROOPER), that weapon has the Piercing Crits 1 weapon rule, or Piercing 1 instead if it’s a hot-shot volley gun.",
                                                 "paras":  [
                                                               {
                                                                   "kind":  "flavor",
@@ -11674,7 +11674,7 @@
                                                               },
                                                               {
                                                                   "kind":  "text",
-                                                                  "text":  "Whenever a friendly KASRKIN operative is shooting with a hot-shot weapon against an operative that cannot retain any cover saves or is being scanned (see RECON-TROOPER), that weapon has the Piercing Crits 1 weapon rule, or Piercing 1 instead if it’s a hot-shot volley gun."
+                                                                  "text":  "Whenever a friendly KASRKIN operative is shooting with a hot-shot weapon against an operative that either cannot retain any cover saves or is being scanned (see RECON-TROOPER), that weapon has the Piercing Crits 1 weapon rule, or Piercing 1 instead if it’s a hot-shot volley gun."
                                                               }
                                                           ]
                                             },
@@ -12060,7 +12060,7 @@
                                                                  "atk":  "4",
                                                                  "hit":  "3+",
                                                                  "dmg":  "4/6",
-                                                                 "wr":  "-"
+                                                                 "wr":  "Lethal 5+"
                                                              }
                                                          ],
                                              "rules":  [
